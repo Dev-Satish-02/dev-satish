@@ -112,7 +112,6 @@ export default function Hero() {
             />
             <div
               style={{
-                background: 'linear-gradient(135deg,#2addcd 0%,#008379 100%)',
                 border: '3px solid #1b1b1c',
                 aspectRatio: '1',
                 display: 'flex',
@@ -121,18 +120,15 @@ export default function Hero() {
                 overflow: 'hidden',
               }}
             >
-              <span
+              <img
+                src={`${import.meta.env.BASE_URL}images/pixel.png`}
+                alt="Dev Satish"
                 style={{
-                  fontFamily: "'Anybody',sans-serif",
-                  fontWeight: 900,
-                  fontSize: '96px',
-                  color: '#fff',
-                  letterSpacing: '-0.04em',
-                  opacity: 0.9,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
                 }}
-              >
-                DS
-              </span>
+              />
             </div>
             <div style={{ position: 'absolute', bottom: '14px', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>
               <span className="sticker" style={{ background: '#fcf8f9', fontSize: '11px', transform: 'rotate(-2deg)', display: 'inline-block' }}>
