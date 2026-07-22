@@ -7,8 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "deploy-build": "rm -rf docs && vite build && cp -r dist docs"
+
   },
+  
   "dependencies": {
     "framer-motion": "^12.42.2",
     "react": "^19.1.0",

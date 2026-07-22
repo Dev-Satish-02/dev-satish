@@ -6,3 +6,10 @@ export default defineConfig({
   base: '/dev-satish/',
   plugins: [react(), tailwindcss()],
 });
+
+
+// npm run deploy-build
+// git add .
+// git commit -m "Update site"
+// git push
+
