@@ -27,18 +27,6 @@ export default function CustomCursor() {
         }}
       />
 
-      <motion.div
-        className="custom-cursor-dot"
-        style={{
-          x: cursor.cursorX,
-          y: cursor.cursorY,
-          scale: cursor.dotScale,
-          width: cursor.config.dotSize,
-          height: cursor.config.dotSize,
-          backgroundColor: cursor.config.color,
-        }}
-      />
-
       <div className={innerTextClassName}>{cursor.label}</div>
     </div>
   );

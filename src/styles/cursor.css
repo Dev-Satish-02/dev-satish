@@ -7,7 +7,6 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.custom-cursor-dot,
 .custom-cursor-ring {
   position: fixed;
   top: 0;
@@ -15,15 +14,6 @@
   pointer-events: none;
   transform: translate(-50%, -50%);
   will-change: transform, opacity;
-}
-
-.custom-cursor-dot {
-  border-radius: 50%;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18);
-  z-index: 100000;
-}
-
-.custom-cursor-ring {
   border-radius: 50%;
   border: 1.5px solid;
   background: transparent;
@@ -54,7 +44,8 @@
 }
 
 @media (pointer: fine) {
-  body.has-custom-cursor {
+  body.has-custom-cursor,
+  body.has-custom-cursor * {
     cursor: none !important;
   }
 }

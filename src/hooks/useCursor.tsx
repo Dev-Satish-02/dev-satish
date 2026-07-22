@@ -4,7 +4,6 @@ import { MotionValue, useMotionValue, useReducedMotion, useSpring } from 'framer
 export type CursorVariant = 'default' | 'link' | 'input' | 'image' | 'drag';
 
 export interface CursorConfig {
-  dotSize?: number;
   ringSize?: number;
   ringScale?: number;
   ringHoverScale?: number;
@@ -29,7 +28,6 @@ export interface CursorController {
   label: string;
   cursorX: MotionValue<number>;
   cursorY: MotionValue<number>;
-  dotScale: MotionValue<number>;
   ringX: MotionValue<number>;
   ringY: MotionValue<number>;
   ringScale: MotionValue<number>;
@@ -56,23 +54,22 @@ export function useCursorVariant(): CursorVariant {
 
 const defaultConfig: Required<CursorConfig> = {
   // increased defaults for a more prominent cursor
-  dotSize: 16,
   ringSize: 36,
   ringScale: 1,
-  ringHoverScale: 1.55,
-  ringImageScale: 1.9,
-  ringDragScale: 1.9,
+  ringHoverScale: 1.14,
+  ringImageScale: 1.38,
+  ringDragScale: 1.38,
   ringInputScale: 0.92,
-  pressedScale: 0.78,
+  pressedScale: 0.88,
   color: '#ffffff',
   outlineColor: '#ffffff',
   blendMode: 'difference',
-  subtleOpacity: 0.7,
+  subtleOpacity: 0.72,
   springConfig: {
-    // tuned spring for a smooth, premium lag
-    stiffness: 220,
-    damping: 28,
-    mass: 0.9,
+    // reduced lag while keeping a smooth premium motion
+    stiffness: 520,
+    damping: 42,
+    mass: 0.82,
   },
 };
 
@@ -146,7 +143,6 @@ export function useCursorController(config?: CursorConfig): CursorController {
   const variantRef = useRef<CursorVariant>('default');
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
-  const dotScale = useMotionValue(1);
   const baseRingScale = useMotionValue(mergedConfig.ringScale);
   const ringX = useSpring(cursorX, mergedConfig.springConfig);
   const ringY = useSpring(cursorY, mergedConfig.springConfig);
@@ -157,12 +153,6 @@ export function useCursorController(config?: CursorConfig): CursorController {
     setVariantState(nextVariant);
     setLabel(getVariantLabel(nextVariant));
     baseRingScale.set(getVariantScale(nextVariant, mergedConfig));
-    // hide the center dot for clickable elements (links/buttons)
-    if (nextVariant === 'link') {
-      dotScale.set(0);
-    } else {
-      dotScale.set(1);
-    }
   };
 
   useEffect(() => {
@@ -215,18 +205,10 @@ export function useCursorController(config?: CursorConfig): CursorController {
     const handlePointerDown = () => {
       const activeScale = getVariantScale(variantRef.current, mergedConfig) * mergedConfig.pressedScale;
       baseRingScale.set(activeScale);
-      // only animate the dot on press if it's visible for the current variant
-      if (variantRef.current !== 'link') {
-        dotScale.set(mergedConfig.pressedScale);
-      }
     };
 
     const handlePointerUp = () => {
       baseRingScale.set(getVariantScale(variantRef.current, mergedConfig));
-      // restore dot only when it should be visible
-      if (variantRef.current !== 'link') {
-        dotScale.set(1);
-      }
     };
 
     document.addEventListener('pointermove', handlePointerMove);
@@ -238,7 +220,7 @@ export function useCursorController(config?: CursorConfig): CursorController {
       document.removeEventListener('pointerdown', handlePointerDown);
       document.removeEventListener('pointerup', handlePointerUp);
     };
-  }, [isEnabled, mergedConfig, cursorX, cursorY, dotScale, baseRingScale]);
+  }, [isEnabled, mergedConfig, cursorX, cursorY, baseRingScale]);
 
   useEffect(() => {
     if (!isEnabled) {
@@ -254,7 +236,6 @@ export function useCursorController(config?: CursorConfig): CursorController {
     label,
     cursorX,
     cursorY,
-    dotScale,
     ringX,
     ringY,
     ringScale,
