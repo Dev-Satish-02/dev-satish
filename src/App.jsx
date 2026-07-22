@@ -6,6 +6,8 @@ import Skills from './components/Skills';
 import Blog from './components/Blog';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
+import CustomCursor from './components/CustomCursor';
+import { CursorProvider } from './hooks/useCursor';
 import { useActiveNav, useScrollReveal } from './hooks/usePortfolioEffects';
 
 export default function App() {
@@ -13,7 +15,8 @@ export default function App() {
   useActiveNav();
 
   return (
-    <>
+    <CursorProvider>
+      <CustomCursor />
       <Header />
       <Hero />
       <Experience />
@@ -22,6 +25,6 @@ export default function App() {
       <Blog />
       <Contact />
       <Footer />
-    </>
+    </CursorProvider>
   );
 }
