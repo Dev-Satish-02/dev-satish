@@ -20,7 +20,11 @@ export default function Blog() {
               {selectedCategory ? ` Showing ${selectedCategory.category} posts.` : ' Browse the categories to find an article that fits your interests.'}
             </p>
           </div>
-          <Link to="/" className="nbtn" style={{ background: '#e51152', color: '#fff' }}>
+          <Link
+            to="/"
+            className="nbtn"
+            style={{ background: '#e51152', color: '#fff' }}
+          >
             Back Home
           </Link>
         </div>

@@ -1,4 +1,5 @@
-const modules = import.meta.glob('../content/blog/**/*.mdx', { eager: true });
+// content lives at the project root `content/` folder — from `src/lib` we need to go up two levels
+const modules = import.meta.glob('../../content/blog/**/*.mdx', { eager: true });
 
 const posts = Object.entries(modules).map(([path, module]) => {
   const parts = path.split('/');

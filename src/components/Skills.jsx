@@ -16,8 +16,8 @@ export default function Skills() {
               <span style={{ fontFamily: "'Anybody',sans-serif", fontWeight: 900, fontSize: '13px', color: '#fff', textAlign: 'center', lineHeight: 1.1 }}>B.E.</span>
             </div>
             <div>
-              <h3 style={{ fontFamily: "'Anybody',sans-serif", fontWeight: 900, fontSize: '18px', textTransform: 'uppercase' }}>BITS PILANI</h3>
-              <div className="sticker" style={{ background: '#fdc003', color: '#1b1b1c', fontSize: '10px', margin: '8px 0' }}>
+              <h3 style={{ fontFamily: "'Anybody',sans-serif", fontWeight: 900, fontSize: '22px', textTransform: 'uppercase' }}>BITS PILANI</h3>
+              <div className="sticker" style={{ background: '#fdc003', color: '#1b1b1c', fontSize: '14px', margin: '8px 0' }}>
                 Bachelor of Engineering in Mechanical Engineering
               </div>
               <p style={{ fontSize: '12px', color: '#5c3f42' }}>Aug 2023 – Present · Rajasthan, India</p>
@@ -28,8 +28,8 @@ export default function Skills() {
               <span style={{ fontFamily: "'Anybody',sans-serif", fontWeight: 900, fontSize: '13px', color: '#1b1b1c', textAlign: 'center', lineHeight: 1.1 }}>M.Sc.</span>
             </div>
             <div>
-              <h3 style={{ fontFamily: "'Anybody',sans-serif", fontWeight: 900, fontSize: '18px', textTransform: 'uppercase' }}>BITS PILANI</h3>
-              <div className="sticker" style={{ background: '#2addcd', color: '#1b1b1c', fontSize: '10px', margin: '8px 0' }}>
+              <h3 style={{ fontFamily: "'Anybody',sans-serif", fontWeight: 900, fontSize: '22px', textTransform: 'uppercase' }}>BITS PILANI</h3>
+              <div className="sticker" style={{ background: '#2addcd', color: '#1b1b1c', fontSize: '14px', margin: '8px 0' }}>
                 Master of Science in Biological Sciences
               </div>
               <p style={{ fontSize: '12px', color: '#5c3f42' }}>Aug 2023 – Present · Dual Degree</p>

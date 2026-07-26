@@ -18,11 +18,14 @@ export default function Contact() {
         </a>
 
         <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap', marginBottom: '32px' }}>
-          <a href="https://github.com/devsatish08" target="_blank" rel="noreferrer" className="nbtn" style={{ background: '#1b1b1c', color: '#fff', padding: '12px 24px', fontSize: '12px' }}>
+          <a href="https://github.com/Dev-Satish-02" target="_blank" rel="noreferrer" className="nbtn" style={{ background: '#1b1b1c', color: '#fff', padding: '12px 24px', fontSize: '12px' }}>
             GitHub ↗
           </a>
-          <a href="https://linkedin.com/in/devsatish" target="_blank" rel="noreferrer" className="nbtn" style={{ background: '#fff', color: '#1b1b1c', padding: '12px 24px', fontSize: '12px' }}>
+          <a href="https://linkedin.com/in/dev-satish" target="_blank" rel="noreferrer" className="nbtn" style={{ background: '#fff', color: '#1b1b1c', padding: '12px 24px', fontSize: '12px' }}>
             LinkedIn ↗
+          </a>
+          <a href="https://twitter.com/devtech08" target="_blank" rel="noreferrer" className="nbtn" style={{ background: '#1da1f2', color: '#fff', padding: '12px 24px', fontSize: '12px' }}>
+            Twitter ↗
           </a>
           <a href="tel:+917506857789" className="nbtn" style={{ background: '#fdc003', color: '#1b1b1c', padding: '12px 24px', fontSize: '12px' }}>
             +91 75068 57789

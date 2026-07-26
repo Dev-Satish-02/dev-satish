@@ -16,11 +16,14 @@ export default function Footer() {
         © DEV SATISH 
       </div>
       <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-        <a href="https://linkedin.com/in/devsatish" target="_blank" rel="noreferrer" className="footer-link">
+        <a href="https://linkedin.com/in/dev-satish" target="_blank" rel="noreferrer" className="footer-link">
           LinkedIn
         </a>
-        <a href="https://github.com/devsatish08" target="_blank" rel="noreferrer" className="footer-link">
+        <a href="https://github.com/Dev-Satish-02" target="_blank" rel="noreferrer" className="footer-link">
           GitHub
+        </a>
+        <a href="https://twitter.com/devtech08" target="_blank" rel="noreferrer" className="footer-link">
+          Twitter
         </a>
         <a href="mailto:devsatish08@gmail.com" className="footer-link">
           Email

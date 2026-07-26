@@ -90,7 +90,7 @@ export default function Hero() {
             <a href="mailto:devsatish08@gmail.com" className="nbtn" style={{ background: '#fdc003', color: '#1b1b1c', padding: '14px 18px', fontSize: '13px' }}>
               ↓ Email
             </a>
-            <a href="https://github.com/devsatish08" target="_blank" rel="noreferrer" className="nbtn" style={{ background: '#fff', color: '#1b1b1c', padding: '14px 18px', fontSize: '13px' }}>
+            <a href="https://github.com/Dev-Satish-02" target="_blank" rel="noreferrer" className="nbtn" style={{ background: '#fff', color: '#1b1b1c', padding: '14px 18px', fontSize: '13px' }}>
               GitHub ↗
             </a>
           </div>
