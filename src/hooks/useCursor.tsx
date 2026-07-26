@@ -67,7 +67,7 @@ const defaultConfig: Required<CursorConfig> = {
   subtleOpacity: 0.72,
   springConfig: {
     // reduced lag while keeping a smooth premium motion
-    stiffness: 520,
+    stiffness: 1000,
     damping: 42,
     mass: 0.82,
   },

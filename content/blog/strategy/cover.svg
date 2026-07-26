@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240">
+  <rect width="400" height="240" fill="#e51152" />
+  <rect x="18" y="18" width="364" height="204" fill="#fff" stroke="#1b1b1c" stroke-width="6" />
+  <text x="50%" y="40%" dominant-baseline="middle" text-anchor="middle" fill="#1b1b1c" font-family="Anybody, sans-serif" font-size="32">Strategy</text>
+  <text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" fill="#1b1b1c" font-family="JetBrains Mono, monospace" font-size="18">GTM Playbook</text>
+</svg>

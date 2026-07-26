@@ -1,30 +1,27 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import Blog from './pages/Blog';
+import Post from './pages/Post';
 import Header from './components/Header';
-import Hero from './components/Hero';
-import Experience from './components/Experience';
-import Projects from './components/Projects';
-import Skills from './components/Skills';
-import Blog from './components/Blog';
-import Contact from './components/Contact';
-import Footer from './components/Footer';
 import CustomCursor from './components/CustomCursor';
 import { CursorProvider } from './hooks/useCursor';
-import { useActiveNav, useScrollReveal } from './hooks/usePortfolioEffects';
 
 export default function App() {
-  useScrollReveal();
-  useActiveNav();
+  const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 
   return (
     <CursorProvider>
       <CustomCursor />
-      <Header />
-      <Hero />
-      <Experience />
-      <Projects />
-      <Skills />
-      <Blog />
-      <Contact />
-      <Footer />
+      <BrowserRouter basename={basePath}>
+        <Header />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:category" element={<Blog />} />
+          <Route path="/blog/:category/:slug" element={<Post />} />
+          <Route path="*" element={<Home />} />
+        </Routes>
+      </BrowserRouter>
     </CursorProvider>
   );
 }
