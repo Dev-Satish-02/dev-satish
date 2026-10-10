@@ -1,68 +1,59 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { NAV_LINKS } from '../data/content';
+import SiteLink from './NavLink';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
 
-  const toggleMenu = () => setMenuOpen((open) => !open);
-  const closeMenu = () => setMenuOpen(false);
+  useEffect(() => setMenuOpen(false), [location]);
+
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [menuOpen]);
 
   return (
     <>
-      <header id="top" className="site-header">
-        <Link to="/" className="site-header-brand">
-          DEV SATISH
+      <header className={`site-header${menuOpen ? ' menu-open' : ''}`}>
+        <Link to="/" className="brand" aria-label="Dev Satish, home">
+          <span className="brand-kanji">
+            開発<b>物語</b>
+          </span>
+          <span className="brand-latin">DEVMONOGATARI</span>
         </Link>
-        <nav className="desktop-nav">
-          {NAV_LINKS.map(({ href, label }) => {
-            const isHash = href.includes('#');
-            const isRoute = href.startsWith('/') && !isHash;
-            const isActive = isRoute && location.pathname.startsWith(href);
-
-            if (isRoute) {
-              return (
-                <Link key={href} to={href} className={`nav-link${isActive ? ' nav-active' : ''}`}>
-                  {label}
-                </Link>
-              );
-            }
-
+        <nav className="desktop-nav" aria-label="Main">
+          {NAV_LINKS.map((item) => {
+            const active = item.to && location.pathname.startsWith(item.to);
             return (
-              <a key={href} href={href} className="nav-link">
-                {label}
-              </a>
+              <SiteLink key={item.label} item={item} className={`nav-link${active ? ' nav-active' : ''}`}>
+                <span>{item.kanji}</span>
+                {item.label}
+              </SiteLink>
             );
           })}
         </nav>
-        <a href="mailto:devsatish08@gmail.com" className="nbtn hire-btn">
-          HIRE ME →
-        </a>
         <button
           type="button"
           className="hamburger"
-          onClick={toggleMenu}
-          aria-label="menu"
+          onClick={() => setMenuOpen((open) => !open)}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}
         >
-          {menuOpen ? '✕' : '☰'}
+          {menuOpen ? '閉' : '目'}
         </button>
       </header>
 
-      <div id="mobile-menu" className={`mobile-menu ${menuOpen ? 'open' : ''}`}>
-        {NAV_LINKS.map(({ href, label }) => {
-          const isHash = href.includes('#');
-          const isRoute = href.startsWith('/') && !isHash;
-          return isRoute ? (
-            <Link key={href} to={href} className="mobile-nav-link" onClick={closeMenu}>
-              {label}
-            </Link>
-          ) : (
-            <a key={href} href={href} className="mobile-nav-link" onClick={closeMenu}>
-              {label}
-            </a>
-          );
-        })}
+      <div className={`mobile-menu${menuOpen ? ' open' : ''}`} aria-hidden={!menuOpen}>
+        {NAV_LINKS.map((item) => (
+          <SiteLink key={item.label} item={item} className="mobile-nav-link" onClick={() => setMenuOpen(false)}>
+            <span>{item.kanji}</span>
+            {item.label}
+          </SiteLink>
+        ))}
       </div>
     </>
   );

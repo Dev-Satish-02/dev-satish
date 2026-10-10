@@ -1,7 +1,7 @@
-import { useParams, Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { MDXProvider } from '@mdx-js/react';
 import MDXComponents from '../components/MDXComponents';
-import { getPost } from '../lib/blog';
+import { categoryStyle, formatDate, getAdjacentPosts, getPost } from '../lib/blog';
 
 export default function Post() {
   const { category, slug } = useParams();
@@ -9,61 +9,89 @@ export default function Post() {
 
   if (!post) {
     return (
-      <main className="blog-page" style={{ padding: 'clamp(64px, 8vw, 90px) clamp(16px, 5vw, 64px)' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <p>Post not found.</p>
-          <Link
-            to="/blog"
-            className="nbtn"
-            style={{
-              marginTop: '24px',
-              display: 'inline-flex',
-              lineHeight: 1,
-              padding: '10px 16px',
-            }}
-          >
-            Back to Blog
-          </Link>
-        </div>
+      <main>
+        <section className="page-card tone-ink">
+          <div className="page-card-kanji" aria-hidden="true">
+            無
+          </div>
+          <div className="page-card-inner">
+            <p className="eyebrow">404 · Missing chapter</p>
+            <h1 className="page-title">This chapter doesn&apos;t exist.</h1>
+            <div style={{ marginTop: 32 }}>
+              <Link to="/blog" className="btn btn--paper">
+                ← Back to the notes
+              </Link>
+            </div>
+          </div>
+        </section>
       </main>
     );
   }
 
+  const style = categoryStyle(post.categorySlug);
+  const { newer, older } = getAdjacentPosts(post.categorySlug, post.slug);
+
   return (
-    <main className="blog-page" style={{ padding: 'clamp(64px, 8vw, 90px) clamp(16px, 5vw, 64px)' }}>
-      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '18px', marginBottom: '30px' }}>
-          <div>
-            <span className="sticker" style={{ background: '#fcf8f9', color: '#1b1b1c' }}>{post.category}</span>
-            <h1 style={{ fontFamily: "'Anybody',sans-serif", fontSize: 'clamp(42px, 6vw, 66px)', lineHeight: 1, marginTop: '18px' }}>
-              {post.title}
-            </h1>
-            <p style={{ color: '#5c3f42', marginTop: '16px' }}>{new Date(post.date).toLocaleDateString()}</p>
-          </div>
-          <Link
-            to="/blog"
-            className="nbtn"
-            style={{
-              background: '#e51152',
-              color: '#fff',
-              lineHeight: 1,
-              padding: '10px 16px',
-            }}
-          >
-            Back to Blog
-          </Link>
+    <main>
+      <section className={`page-card tone-${style.color}`}>
+        <div className="page-card-kanji" aria-hidden="true">
+          {style.kanji}
         </div>
+        <div className="page-card-inner">
+          <Link to={`/blog/${post.categorySlug}`} className="back-link">
+            ← {style.kanji} · {post.category}
+          </Link>
+          <h1 className="page-title">{post.title}</h1>
+          {post.summary && <p className="page-lede">{post.summary}</p>}
+          <div className="post-meta">
+            <span>{formatDate(post.date)}</span>
+            {post.tags.map((tag) => (
+              <span key={tag}>#{tag}</span>
+            ))}
+          </div>
+        </div>
+      </section>
 
-        {post.coverImage && (
-          <img src={post.coverImage} alt={post.title} style={{ width: '100%', marginBottom: '32px', border: '3px solid #1b1b1c' }} />
-        )}
+      <section className="page-body">
+        <div className="post-layout">
+          <aside className="post-aside" aria-hidden="true">
+            <span className="vertical">{style.kanji}</span>
+          </aside>
+          <div>
+            <article className="prose">
+              <MDXProvider components={MDXComponents}>
+                <post.Component />
+              </MDXProvider>
+            </article>
 
-        <article className="blog-post-content" style={{ color: '#1b1b1c', lineHeight: 1.8 }}>
-          <MDXProvider components={MDXComponents}>
-            <post.Component />
-          </MDXProvider>
-        </article>
-      </div>
+            <div className="post-end">
+              <div className="post-end-mark">（終）</div>
+            </div>
+
+            <nav className="post-nav" aria-label="More notes">
+              {older ? (
+                <Link to={`/blog/${older.categorySlug}/${older.slug}`}>
+                  <span className="eyebrow">← Previous chapter</span>
+                  <span className="t">{older.title}</span>
+                </Link>
+              ) : (
+                <span className="empty" />
+              )}
+              {newer ? (
+                <Link to={`/blog/${newer.categorySlug}/${newer.slug}`}>
+                  <span className="eyebrow">Next chapter →</span>
+                  <span className="t">{newer.title}</span>
+                </Link>
+              ) : (
+                <Link to="/blog">
+                  <span className="eyebrow">目次 →</span>
+                  <span className="t">All notes</span>
+                </Link>
+              )}
+            </nav>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }

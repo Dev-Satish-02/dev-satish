@@ -1,3 +1,4 @@
+import { CATEGORY_STYLE, DEFAULT_CATEGORY_STYLE } from '../data/content';
 // content lives at the project root `content/` folder — from `src/lib` we need to go up two levels
 const modules = import.meta.glob('../../content/blog/**/*.mdx', { eager: true });
 
@@ -57,4 +58,20 @@ export function getPost(categorySlug, slug) {
 
 export function getCategories() {
   return categories;
+}
+
+export function getAdjacentPosts(categorySlug, slug) {
+  const index = allPosts.findIndex((post) => post.categorySlug === categorySlug && post.slug === slug);
+  return {
+    newer: index > 0 ? allPosts[index - 1] : null,
+    older: index >= 0 && index < allPosts.length - 1 ? allPosts[index + 1] : null,
+  };
+}
+
+export function categoryStyle(categorySlug) {
+  return CATEGORY_STYLE[categorySlug] || DEFAULT_CATEGORY_STYLE;
+}
+
+export function formatDate(date) {
+  return new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
 }

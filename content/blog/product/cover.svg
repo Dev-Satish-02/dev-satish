@@ -1,6 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240">
-  <rect width="400" height="240" fill="#fdc003" />
-  <rect x="18" y="18" width="364" height="204" fill="#fff" stroke="#1b1b1c" stroke-width="6" />
-  <text x="50%" y="40%" dominant-baseline="middle" text-anchor="middle" fill="#1b1b1c" font-family="Anybody, sans-serif" font-size="32">Product</text>
-  <text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" fill="#1b1b1c" font-family="JetBrains Mono, monospace" font-size="18">Roadmap Rituals</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420">
+  <rect width="800" height="420" fill="#c3122f"/>
+  <text x="780" y="300" fill="#f2ede3" opacity="0.16" font-family="'Shippori Mincho B1','Noto Serif JP','Hiragino Mincho ProN',serif" font-weight="800" font-size="230" text-anchor="end">製品</text>
+  <text x="40" y="58" fill="#f2ede3" opacity="0.75" font-family="'JetBrains Mono',monospace" font-size="14" letter-spacing="4">EPISODE 04 · NOTES</text>
+  <rect x="40" y="80" width="60" height="3" fill="#0e0d0d"/>
+  <text x="40" y="330" fill="#f2ede3" font-family="'Shippori Mincho B1','Noto Serif JP',serif" font-weight="800" font-size="56">Product</text>
+  <text x="40" y="378" fill="#f2ede3" opacity="0.75" font-family="'Shippori Mincho B1','Noto Serif JP',serif" font-weight="700" font-size="20" letter-spacing="6">開発物語 · 随筆</text>
 </svg>

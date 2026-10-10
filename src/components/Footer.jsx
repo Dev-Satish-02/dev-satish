@@ -1,33 +1,27 @@
+import { PROFILE, SOCIALS } from '../data/content';
+
 export default function Footer() {
   return (
-    <footer
-      style={{
-        background: '#1b1b1c',
-        borderTop: '3px solid #1b1b1c',
-        padding: 'clamp(20px,4vw,36px) clamp(16px,5vw,64px)',
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '16px',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-      }}
-    >
-      <div style={{ fontFamily: "'Anybody',sans-serif", fontWeight: 900, fontSize: 'clamp(16px,3vw,28px)', color: '#fcf8f9', letterSpacing: '-0.01em' }}>
-        © DEV SATISH 
+    <footer className="site-footer">
+      <div className="footer-inner">
+        <div className="footer-end">
+          つづく
+          <small>To be continued</small>
+        </div>
+        <nav className="footer-links" aria-label="Elsewhere">
+          {SOCIALS.map((s) => (
+            <a key={s.label} href={s.href} target="_blank" rel="noreferrer" className="footer-link">
+              {s.label}
+            </a>
+          ))}
+          <a href={`mailto:${PROFILE.email}`} className="footer-link">
+            Email
+          </a>
+        </nav>
       </div>
-      <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-        <a href="https://linkedin.com/in/dev-satish" target="_blank" rel="noreferrer" className="footer-link">
-          LinkedIn
-        </a>
-        <a href="https://github.com/Dev-Satish-02" target="_blank" rel="noreferrer" className="footer-link">
-          GitHub
-        </a>
-        <a href="https://twitter.com/devtech08" target="_blank" rel="noreferrer" className="footer-link">
-          Twitter
-        </a>
-        <a href="mailto:devsatish08@gmail.com" className="footer-link">
-          Email
-        </a>
+      <div className="footer-base">
+        <span>© {new Date().getFullYear()} {PROFILE.name} · 開発物語</span>
+        <span>A story still being written</span>
       </div>
     </footer>
   );
