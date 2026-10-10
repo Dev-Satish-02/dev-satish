@@ -1,96 +1,67 @@
 import { Link, useParams } from 'react-router-dom';
 import { MDXProvider } from '@mdx-js/react';
+import Scene from '../components/Scene';
 import MDXComponents from '../components/MDXComponents';
-import { categoryStyle, formatDate, getAdjacentPosts, getPost } from '../lib/blog';
+import { formatDate, getAdjacentPosts, getPost, seasonFor } from '../lib/blog';
+import { useScrollReveal } from '../hooks/usePortfolioEffects';
 
 export default function Post() {
   const { category, slug } = useParams();
   const post = getPost(category, slug);
+  useScrollReveal(`${category}/${slug}`);
 
   if (!post) {
     return (
-      <main>
-        <section className="page-card tone-ink">
-          <div className="page-card-kanji" aria-hidden="true">
-            無
-          </div>
-          <div className="page-card-inner">
-            <p className="eyebrow">404 · Missing chapter</p>
-            <h1 className="page-title">This chapter doesn&apos;t exist.</h1>
-            <div style={{ marginTop: 32 }}>
-              <Link to="/blog" className="btn btn--paper">
-                ← Back to the notes
-              </Link>
-            </div>
-          </div>
-        </section>
+      <main id="main">
+        <Scene id="missing" season="rain" label="Interlude" title="This post doesn't exist." className="page-head">
+          <Link to="/blog" className="btn btn--paper">
+            Back to all posts
+          </Link>
+        </Scene>
       </main>
     );
   }
 
-  const style = categoryStyle(post.categorySlug);
   const { newer, older } = getAdjacentPosts(post.categorySlug, post.slug);
 
   return (
-    <main>
-      <section className={`page-card tone-${style.color}`}>
-        <div className="page-card-kanji" aria-hidden="true">
-          {style.kanji}
-        </div>
-        <div className="page-card-inner">
-          <Link to={`/blog/${post.categorySlug}`} className="back-link">
-            ← {style.kanji} · {post.category}
+    <main id="main">
+      <Scene id="post" season="rain" label={post.category} className={`page-head post-head season-${seasonFor(post.categorySlug)}`}>
+        <div className="post-head-inner">
+          <Link to={`/blog/${post.categorySlug}`} className="back-link mono">
+            ← {post.category}
           </Link>
-          <h1 className="page-title">{post.title}</h1>
-          {post.summary && <p className="page-lede">{post.summary}</p>}
-          <div className="post-meta">
-            <span>{formatDate(post.date)}</span>
-            {post.tags.map((tag) => (
-              <span key={tag}>#{tag}</span>
+          <h1 className="post-title">{post.title}</h1>
+          {post.summary && <p className="post-summary">{post.summary}</p>}
+          <p className="post-meta mono">
+            <time>{formatDate(post.date)}</time>
+            {post.tags.map((t) => (
+              <span key={t}>#{t}</span>
             ))}
-          </div>
+          </p>
         </div>
-      </section>
-
-      <section className="page-body">
-        <div className="post-layout">
-          <aside className="post-aside" aria-hidden="true">
-            <span className="vertical">{style.kanji}</span>
-          </aside>
-          <div>
-            <article className="prose">
-              <MDXProvider components={MDXComponents}>
-                <post.Component />
-              </MDXProvider>
-            </article>
-
-            <div className="post-end">
-              <div className="post-end-mark">（終）</div>
-            </div>
-
-            <nav className="post-nav" aria-label="More notes">
-              {older ? (
-                <Link to={`/blog/${older.categorySlug}/${older.slug}`}>
-                  <span className="eyebrow">← Previous chapter</span>
-                  <span className="t">{older.title}</span>
-                </Link>
-              ) : (
-                <span className="empty" />
-              )}
-              {newer ? (
-                <Link to={`/blog/${newer.categorySlug}/${newer.slug}`}>
-                  <span className="eyebrow">Next chapter →</span>
-                  <span className="t">{newer.title}</span>
-                </Link>
-              ) : (
-                <Link to="/blog">
-                  <span className="eyebrow">目次 →</span>
-                  <span className="t">All notes</span>
-                </Link>
-              )}
-            </nav>
-          </div>
-        </div>
+      </Scene>
+      <section className="paper-section" data-season="none">
+        <article className="prose">
+          <MDXProvider components={MDXComponents}>
+            <post.Component />
+          </MDXProvider>
+          <p className="post-end">End</p>
+        </article>
+        <nav className="post-nav" aria-label="More posts">
+          {older ? (
+            <Link to={`/blog/${older.categorySlug}/${older.slug}`}>
+              <span className="mono">← Previous</span>
+              <strong>{older.title}</strong>
+            </Link>
+          ) : (
+            <span />
+          )}
+          <Link to={newer ? `/blog/${newer.categorySlug}/${newer.slug}` : '/blog'} className="post-nav-next">
+            <span className="mono">{newer ? 'Next →' : 'All posts →'}</span>
+            <strong>{newer ? newer.title : 'Writing'}</strong>
+          </Link>
+        </nav>
       </section>
     </main>
   );

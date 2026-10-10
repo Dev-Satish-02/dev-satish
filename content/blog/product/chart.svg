@@ -11,6 +11,6 @@
   <rect x="400" y="180" width="90" height="130" fill="#0e0d0d"/>
   <rect x="550" y="90" width="90" height="220" fill="#c3122f"/>
   <g font-family="'Shippori Mincho B1','Noto Serif JP',serif" font-weight="800" font-size="20" fill="#0e0d0d" text-anchor="middle">
-    <text x="145" y="340">壱</text><text x="295" y="340">弐</text><text x="445" y="340">参</text><text x="595" y="340" fill="#c3122f">肆</text>
+    <text x="145" y="340">Q1</text><text x="295" y="340">Q2</text><text x="445" y="340">Q3</text><text x="595" y="340" fill="#c3122f">Q4</text>
   </g>
 </svg>

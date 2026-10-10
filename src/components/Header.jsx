@@ -1,59 +1,102 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { NAV_LINKS } from '../data/content';
-import SiteLink from './NavLink';
+import { NAV_LINKS, PROFILE } from '../data/content';
+import { motionPref, setMotion, useStore } from '../lib/store';
+import useResume from '../hooks/useResume';
+import { FileIcon, MotionIcon } from './Icons';
+
+function NavItem({ item, className, onClick }) {
+  const to = item.to || { pathname: '/', hash: `#${item.hash}` };
+  return (
+    <Link to={to} className={className} onClick={onClick} data-hash={item.hash}>
+      {item.label}
+    </Link>
+  );
+}
+
+export function Wordmark({ small }) {
+  return (
+    <span className={`wordmark${small ? ' wordmark--small' : ''}`}>
+      DEVOGATARI<i aria-hidden="true" />
+    </span>
+  );
+}
 
 export default function Header() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const location = useLocation();
+  const motion = useStore(motionPref);
+  const resume = useResume();
 
-  useEffect(() => setMenuOpen(false), [location]);
-
+  useEffect(() => setOpen(false), [location]);
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [menuOpen]);
+    document.documentElement.classList.toggle('menu-open', open);
+  }, [open]);
+
+  const toggleMotion = () => setMotion(motion === 'on' ? 'off' : 'on');
 
   return (
     <>
-      <header className={`site-header${menuOpen ? ' menu-open' : ''}`}>
-        <Link to="/" className="brand" aria-label="Dev Satish, home">
-          <span className="brand-kanji">
-            開発<b>物語</b>
-          </span>
-          <span className="brand-latin">DEVMONOGATARI</span>
+      <a href="#main" className="skip-link">
+        Skip to content
+      </a>
+      <header className={`site-header${open ? ' is-open' : ''}`}>
+        <Link to="/" className="brand" aria-label="Devogatari, Dev Satish's portfolio, home">
+          <Wordmark />
         </Link>
-        <nav className="desktop-nav" aria-label="Main">
-          {NAV_LINKS.map((item) => {
-            const active = item.to && location.pathname.startsWith(item.to);
-            return (
-              <SiteLink key={item.label} item={item} className={`nav-link${active ? ' nav-active' : ''}`}>
-                <span>{item.kanji}</span>
-                {item.label}
-              </SiteLink>
-            );
-          })}
+        <nav className="nav" aria-label="Main">
+          {NAV_LINKS.map((item) => (
+            <NavItem
+              key={item.label}
+              item={item}
+              className={`nav-link${item.to && location.pathname.startsWith(item.to) ? ' is-active' : ''}`}
+            />
+          ))}
         </nav>
-        <button
-          type="button"
-          className="hamburger"
-          onClick={() => setMenuOpen((open) => !open)}
-          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-          aria-expanded={menuOpen}
-        >
-          {menuOpen ? '閉' : '目'}
-        </button>
+        <div className="header-actions">
+          <button
+            type="button"
+            className="icon-btn"
+            onClick={toggleMotion}
+            aria-pressed={motion === 'on'}
+            title={motion === 'on' ? 'Turn off animations' : 'Turn on animations'}
+          >
+            <MotionIcon on={motion === 'on'} />
+            <span className="sr-only">Animations {motion === 'on' ? 'on' : 'off'}</span>
+          </button>
+          {resume && (
+            <a href={resume} className="btn btn--ghost btn--sm hide-sm" target="_blank" rel="noreferrer">
+              <FileIcon /> Résumé
+            </a>
+          )}
+          <a href={`mailto:${PROFILE.email}`} className="btn btn--sm hide-sm">
+            Hire me
+          </a>
+          <button
+            type="button"
+            className="menu-btn"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+          >
+            {open ? 'Close' : 'Menu'}
+          </button>
+        </div>
       </header>
-
-      <div className={`mobile-menu${menuOpen ? ' open' : ''}`} aria-hidden={!menuOpen}>
+      <div id="mobile-menu" className={`mobile-menu${open ? ' is-open' : ''}`} hidden={!open}>
         {NAV_LINKS.map((item) => (
-          <SiteLink key={item.label} item={item} className="mobile-nav-link" onClick={() => setMenuOpen(false)}>
-            <span>{item.kanji}</span>
-            {item.label}
-          </SiteLink>
+          <NavItem key={item.label} item={item} className="mobile-link" onClick={() => setOpen(false)} />
         ))}
+        <div className="mobile-actions">
+          <a href={`mailto:${PROFILE.email}`} className="btn">
+            Email me
+          </a>
+          {resume && (
+            <a href={resume} className="btn btn--ghost" target="_blank" rel="noreferrer">
+              Résumé
+            </a>
+          )}
+        </div>
       </div>
     </>
   );

@@ -1,24 +1,22 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-// Reveals `.reveal` and `.flash-in` elements as they scroll into view.
-// Re-runs when `key` changes so client-side navigation picks up new elements.
+// Reveals `.reveal` elements as they scroll into view. Re-runs when `key` changes.
 export function useScrollReveal(key) {
   useEffect(() => {
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry, i) => {
           if (entry.isIntersecting) {
-            entry.target.style.transitionDelay = `${(i % 4) * 60}ms`;
+            entry.target.style.transitionDelay = `${(i % 4) * 70}ms`;
             entry.target.classList.add('show');
             obs.unobserve(entry.target);
           }
         });
       },
-      { threshold: 0.07 }
+      { threshold: 0.08 }
     );
-
-    document.querySelectorAll('.reveal:not(.show), .flash-in:not(.show)').forEach((el) => obs.observe(el));
+    document.querySelectorAll('.reveal:not(.show)').forEach((el) => obs.observe(el));
     return () => obs.disconnect();
   }, [key]);
 }
@@ -26,29 +24,26 @@ export function useScrollReveal(key) {
 export function useActiveNav() {
   useEffect(() => {
     const sections = document.querySelectorAll('section[id]');
-    const navLinks = document.querySelectorAll('.nav-link[data-hash]');
-
-    const navObs = new IntersectionObserver(
+    const links = () => document.querySelectorAll('.nav-link[data-hash]');
+    const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            navLinks.forEach((link) => link.classList.toggle('nav-active', link.dataset.hash === entry.target.id));
+            links().forEach((l) => l.classList.toggle('is-active', l.dataset.hash === entry.target.id));
           }
         });
       },
-      { rootMargin: '-40% 0px -55% 0px' }
+      { rootMargin: '-45% 0px -50% 0px' }
     );
-
-    sections.forEach((section) => navObs.observe(section));
+    sections.forEach((s) => io.observe(s));
     return () => {
-      navObs.disconnect();
-      navLinks.forEach((link) => link.classList.remove('nav-active'));
+      io.disconnect();
+      links().forEach((l) => l.classList.remove('is-active'));
     };
   }, []);
 }
 
-// Router links to "/#section" don't scroll by themselves; this does, and resets
-// scroll to the top on ordinary page changes.
+// Router links to "/#section" don't scroll on their own; this does, and resets scroll on page changes.
 export function useScrollToHash() {
   const { pathname, hash } = useLocation();
   useEffect(() => {
@@ -61,4 +56,14 @@ export function useScrollToHash() {
     }
     window.scrollTo(0, 0);
   }, [pathname, hash]);
+}
+
+// Résumé link only shows once public/resume.pdf actually exists.
+export async function fileExists(url) {
+  try {
+    const res = await fetch(url, { method: 'HEAD' });
+    return res.ok && !(res.headers.get('content-type') || '').includes('text/html');
+  } catch {
+    return false;
+  }
 }

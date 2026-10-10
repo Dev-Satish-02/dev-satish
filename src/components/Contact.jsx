@@ -1,57 +1,49 @@
-import { EPISODES, PROFILE, SOCIALS } from '../data/content';
+import Scene from './Scene';
+import { PROFILE, SCENES, SOCIALS } from '../data/content';
+import useResume from '../hooks/useResume';
+import { ArrowIcon, FileIcon, MailIcon } from './Icons';
 
-// The contact section is staged as the series' 次回予告 (next-episode preview).
+// The finale: staged as the series' next-episode preview.
 export default function Contact() {
-  const ep = EPISODES.find((e) => e.id === 'contact');
-
+  const { no, season } = SCENES.contact;
+  const resume = useResume();
   return (
-    <section id="contact" className="episode tone-red preview">
-      <div className="episode-inner">
-        <div className="episode-spine reveal" aria-hidden="true">
-          <span className="vertical">次回予告</span>
-          <span className="vertical small">{ep.no}</span>
-        </div>
-        <div>
-          <p className="eyebrow reveal" style={{ opacity: 0.7 }}>
-            Next episode · {ep.label}
-          </p>
-          <h2 className="preview-title reveal" style={{ marginTop: 14 }}>
-            「{ep.arc}」
-          </h2>
-          <div className="preview-lines reveal">
-            <p className="preview-line">
-              <span className="who">You</span>
-              <span>So, are you open to work?</span>
-            </p>
-            <p className="preview-line">
-              <span className="who">Dev</span>
-              <span>Internships, collaborations, interesting problems. I reply to everything.</span>
-            </p>
-            <p className="preview-line">
-              <span className="who">You</span>
-              <span>Everything?</span>
-            </p>
-            <p className="preview-line">
-              <span className="who">Dev</span>
-              <span>I don&apos;t know everything. I just answer my email.</span>
-            </p>
-          </div>
-          <a href={`mailto:${PROFILE.email}`} className="preview-mail reveal">
-            {PROFILE.email}
+    <Scene id="contact" season="finale" no={no} label={season} art={false}>
+      <div className="finale">
+        <p className="scene-tag mono reveal">
+          <span>Scene {no}</span>
+          <span>{season}</span>
+        </p>
+        <h2 className="finale-title reveal">
+          Next episode:
+          <br />
+          <em>we build something.</em>
+        </h2>
+        <p className="finale-lede reveal">
+          {PROFILE.availability}. I reply to every email, usually within a day.
+        </p>
+        <a href={`mailto:${PROFILE.email}`} className="finale-mail reveal">
+          {PROFILE.email}
+        </a>
+        <div className="finale-actions reveal">
+          <a href={`mailto:${PROFILE.email}`} className="btn btn--lg btn--paper">
+            <MailIcon /> Email me
           </a>
-          <div className="preview-links reveal">
-            {SOCIALS.map((s) => (
-              <a key={s.label} href={s.href} target="_blank" rel="noreferrer" className="btn btn--sm">
-                {s.label} ↗
-              </a>
-            ))}
-            <a href={PROFILE.phoneHref} className="btn btn--sm">
-              {PROFILE.phone}
+          {resume && (
+            <a href={resume} className="btn btn--lg btn--ghost-light" target="_blank" rel="noreferrer">
+              <FileIcon /> Résumé
             </a>
-          </div>
-          <p className="status reveal">Available for opportunities</p>
+          )}
+          {SOCIALS.map((s) => (
+            <a key={s.label} href={s.href} target="_blank" rel="noreferrer" className="link-arrow link-arrow--light">
+              {s.label} <ArrowIcon />
+            </a>
+          ))}
+          <a href={PROFILE.phoneHref} className="link-arrow link-arrow--light">
+            {PROFILE.phone}
+          </a>
         </div>
       </div>
-    </section>
+    </Scene>
   );
 }

@@ -1,4 +1,4 @@
-import { CATEGORY_STYLE, DEFAULT_CATEGORY_STYLE } from '../data/content';
+import { CATEGORY_SEASON } from '../data/content';
 // content lives at the project root `content/` folder — from `src/lib` we need to go up two levels
 const modules = import.meta.glob('../../content/blog/**/*.mdx', { eager: true });
 
@@ -68,8 +68,8 @@ export function getAdjacentPosts(categorySlug, slug) {
   };
 }
 
-export function categoryStyle(categorySlug) {
-  return CATEGORY_STYLE[categorySlug] || DEFAULT_CATEGORY_STYLE;
+export function seasonFor(categorySlug) {
+  return CATEGORY_SEASON[categorySlug] || 'spring';
 }
 
 export function formatDate(date) {

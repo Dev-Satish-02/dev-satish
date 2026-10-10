@@ -1,54 +1,66 @@
-import { PROFILE, SOCIALS } from '../data/content';
-import { PowerLines } from './Scenery';
+import { lazy, Suspense } from 'react';
+import Scene from './Scene';
+import { PROFILE, SCENES, SOCIALS } from '../data/content';
+import useResume from '../hooks/useResume';
+import { ArrowIcon, FileIcon, MailIcon } from './Icons';
+
+const HeroStage = lazy(() => import('../three/HeroStage'));
 
 export default function Hero() {
-  const github = SOCIALS.find((s) => s.label === 'GitHub');
-  const [first, ...rest] = PROFILE.name.split(' ');
+  const resume = useResume();
+  const { no, season } = SCENES.hero;
 
   return (
-    <section id="hero" className="hero">
-      <div className="hero-text">
-        <PowerLines className="hero-scenery" />
-        <div className="hero-episode reveal">
-          <span className="chapter">第零話</span>
-          <span className="arc">「かいはつモノガタリ」</span>
+    <Scene id="about" season="spring" no={no} label={season} className="hero">
+      <div className="hero-grid">
+        <div className="hero-copy">
+          <p className="scene-tag mono hero-in" style={{ '--i': 0 }}>
+            <span>Scene {no}</span>
+            <span>{season}</span>
+          </p>
+          <h1 className="hero-name hero-in" style={{ '--i': 1 }}>
+            Dev <em>Satish</em>
+          </h1>
+          <p className="hero-role hero-in" style={{ '--i': 2 }}>
+            {PROFILE.title}
+          </p>
+          <p className="hero-summary hero-in" style={{ '--i': 3 }}>
+            {PROFILE.summary}
+          </p>
+          <ul className="hero-facts hero-in" style={{ '--i': 4 }}>
+            {PROFILE.facts.map((f) => (
+              <li key={f.label}>
+                <strong>{f.value}</strong> {f.label}
+              </li>
+            ))}
+          </ul>
+          <p className="hero-status hero-in" style={{ '--i': 5 }}>
+            <span className="dot" aria-hidden="true" />
+            {PROFILE.availability} · {PROFILE.location}
+          </p>
+          <div className="hero-cta hero-in" style={{ '--i': 6 }}>
+            <a href={`mailto:${PROFILE.email}`} className="btn btn--lg">
+              <MailIcon /> Email me
+            </a>
+            {resume && (
+              <a href={resume} className="btn btn--lg btn--ghost" target="_blank" rel="noreferrer">
+                <FileIcon /> Résumé
+              </a>
+            )}
+            {SOCIALS.slice(0, 2).map((s) => (
+              <a key={s.label} href={s.href} target="_blank" rel="noreferrer" className="link-arrow">
+                {s.label} <ArrowIcon />
+              </a>
+            ))}
+          </div>
         </div>
-        <h1 className="hero-name reveal">
-          {first}
-          <br />
-          <span className="red">{rest.join(' ')}</span>
-        </h1>
-        <p className="hero-kana reveal">{PROFILE.kana}</p>
-        <p className="hero-role reveal">{PROFILE.title}.</p>
-        <p className="hero-intro reveal">{PROFILE.intro}</p>
-        <div className="hero-actions reveal">
-          <a href="#contact" className="btn">
-            Get in touch
-          </a>
-          <a href={github.href} target="_blank" rel="noreferrer" className="btn btn--ghost">
-            GitHub ↗
-          </a>
-        </div>
-        <span className="scroll-cue">Scroll · 下へ</span>
+        <Suspense fallback={<div className="hero-stage" />}>
+          <HeroStage className="hero-stage" />
+        </Suspense>
       </div>
-
-      <div className="hero-plate">
-        <span className="hero-plate-kanji vertical" aria-hidden="true">
-          開発物語
-        </span>
-        <figure className="portrait" tabIndex={0}>
-          <img src={`${import.meta.env.BASE_URL}${PROFILE.portrait}`} alt={`Pixel-art portrait of ${PROFILE.name}`} />
-          <figcaption className="portrait-caption">
-            <span>No. 001</span>
-            <span className="tilt-hint">hover · 首傾げ</span>
-          </figcaption>
-        </figure>
-        <div className="hero-plate-meta">
-          {PROFILE.location}
-          <br />
-          Status · building
-        </div>
-      </div>
-    </section>
+      <a href="#experience" className="scroll-cue mono" aria-label="Scroll to experience">
+        <span /> Scroll
+      </a>
+    </Scene>
   );
 }

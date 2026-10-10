@@ -1,45 +1,36 @@
-import { EDUCATION, SKILL_CATEGORIES } from '../data/content';
-import Episode from './Episode';
+import Scene from './Scene';
+import { EDUCATION, SCENES, SKILL_GROUPS } from '../data/content';
 
-const SEALS = ['工', '生'];
-
+// Winter. Snow on the shrine steps; skills and education on frosted panels.
 export default function Skills() {
+  const { no, season } = SCENES.skills;
   return (
-    <Episode id="skills">
-      <div className="edu reveal">
-        {EDUCATION.map((item, i) => (
-          <div key={item.degree} className="edu-item">
-            <div className="edu-seal" aria-hidden="true">
-              {SEALS[i] || '学'}
-            </div>
-            <div>
-              <div className="eyebrow" style={{ color: 'var(--muted)' }}>
-                {item.school}
-              </div>
-              <h3 className="edu-degree">{item.degree}</h3>
-              <p className="edu-meta">
-                {item.date} · {item.note}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="skill-wall">
-        {SKILL_CATEGORIES.map((group) => (
-          <div key={group.title} className="reveal">
-            <div className="skill-group-head">
-              <span className="skill-group-kanji">{group.kanji}</span>
-              <span className="skill-group-title">{group.title}</span>
-            </div>
+    <Scene id="skills" season="winter" no={no} label={season} title="Skills & education">
+      <div className="frost-grid">
+        <section className="frost frost--wide reveal" aria-labelledby="edu-title">
+          <h3 id="edu-title" className="frost-title mono">Education</h3>
+          <ul className="edu">
+            {EDUCATION.map((e) => (
+              <li key={e.degree}>
+                <strong>{e.degree}</strong>
+                <span>
+                  {e.school} · {e.date}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+        {SKILL_GROUPS.map((g) => (
+          <section key={g.title} className="frost reveal" aria-label={g.title}>
+            <h3 className="frost-title mono">{g.title}</h3>
             <ul className="skill-list">
-              {group.tags.map((tag) => (
-                <li key={tag}>{tag}</li>
+              {g.items.map((s) => (
+                <li key={s}>{s}</li>
               ))}
             </ul>
-          </div>
+          </section>
         ))}
       </div>
-    </Episode>
+    </Scene>
   );
 }

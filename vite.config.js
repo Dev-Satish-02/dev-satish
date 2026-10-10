@@ -9,6 +9,8 @@ export default defineConfig({
   base: '/dev-satish/',
   // remark-gfm: tables, strikethrough; remark-mdx-images: `![](./img.png)` next to the post just works
   plugins: [mdx({ remarkPlugins: [remarkGfm, remarkMdxImages] }), react(), tailwindcss()],
+  // three.js + three-vrm live in their own lazily-loaded chunk (~210 KB gzipped)
+  build: { chunkSizeWarningLimit: 900 },
 });
 
 
