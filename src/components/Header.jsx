@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { NAV_LINKS, PROFILE } from '../data/content';
-import { motionPref, setMotion, useStore } from '../lib/store';
 import useResume from '../hooks/useResume';
-import { FileIcon, MotionIcon } from './Icons';
+import { FileIcon } from './Icons';
 
 function NavItem({ item, className, onClick }) {
   const to = item.to || { pathname: '/', hash: `#${item.hash}` };
@@ -17,7 +16,8 @@ function NavItem({ item, className, onClick }) {
 export function Wordmark({ small }) {
   return (
     <span className={`wordmark${small ? ' wordmark--small' : ''}`}>
-      DEVOGATARI<i aria-hidden="true" />
+      {PROFILE.name}
+      <i aria-hidden="true" />
     </span>
   );
 }
@@ -25,7 +25,6 @@ export function Wordmark({ small }) {
 export default function Header() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
-  const motion = useStore(motionPref);
   const resume = useResume();
 
   useEffect(() => setOpen(false), [location]);
@@ -33,15 +32,20 @@ export default function Header() {
     document.documentElement.classList.toggle('menu-open', open);
   }, [open]);
 
-  const toggleMotion = () => setMotion(motion === 'on' ? 'off' : 'on');
+  const skipToMain = (e) => {
+    e.preventDefault();
+    const main = document.getElementById('main');
+    main?.setAttribute('tabindex', '-1');
+    main?.focus();
+  };
 
   return (
     <>
-      <a href="#main" className="skip-link">
+      <a href="#main" className="skip-link" onClick={skipToMain}>
         Skip to content
       </a>
       <header className={`site-header${open ? ' is-open' : ''}`}>
-        <Link to="/" className="brand" aria-label="Devogatari, Dev Satish's portfolio, home">
+        <Link to="/" className="brand" aria-label={`${PROFILE.name}, home`}>
           <Wordmark />
         </Link>
         <nav className="nav" aria-label="Main">
@@ -54,23 +58,13 @@ export default function Header() {
           ))}
         </nav>
         <div className="header-actions">
-          <button
-            type="button"
-            className="icon-btn"
-            onClick={toggleMotion}
-            aria-pressed={motion === 'on'}
-            title={motion === 'on' ? 'Turn off animations' : 'Turn on animations'}
-          >
-            <MotionIcon on={motion === 'on'} />
-            <span className="sr-only">Animations {motion === 'on' ? 'on' : 'off'}</span>
-          </button>
           {resume && (
             <a href={resume} className="btn btn--ghost btn--sm hide-sm" target="_blank" rel="noreferrer">
               <FileIcon /> Résumé
             </a>
           )}
           <a href={`mailto:${PROFILE.email}`} className="btn btn--sm hide-sm">
-            Hire me
+            Email me
           </a>
           <button
             type="button"

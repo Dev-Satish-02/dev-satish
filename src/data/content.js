@@ -2,20 +2,21 @@
 
 export const PROFILE = {
   name: 'Dev Satish',
-  title: 'Full Stack Engineer & AI Builder',
+  title: 'Product · Strategy · Engineering',
   summary:
-    'I build ML pipelines, trading systems and full-stack products. Four internships across fintech, industrial ML and web, while studying Mechanical Engineering and Biological Sciences at BITS Pilani.',
+    'I take problems from idea to launch: a campus app that reached 2,000+ students in its first week, a developer tool with 500+ weekly downloads, and four internships across fintech, manufacturing and software.',
+  education: 'Dual degree at BITS Pilani: Mechanical Engineering + Biological Sciences.',
   location: 'BITS Pilani, Rajasthan, India',
-  availability: 'Open to internships & full-time roles',
+  availability: 'Open to product, consulting, analytics and tech roles',
   email: 'devsatish08@gmail.com',
   phone: '+91 75068 57789',
   phoneHref: 'tel:+917506857789',
   // Drop your PDF at public/resume.pdf. The buttons stay hidden until the file exists.
   resume: 'resume.pdf',
   facts: [
+    { value: '2,000+', label: 'users in week one' },
+    { value: '500+', label: 'weekly downloads' },
     { value: '4', label: 'internships' },
-    { value: '500+', label: 'weekly npm downloads' },
-    { value: '2', label: 'degrees in progress' },
   ],
 };
 
@@ -60,8 +61,8 @@ export const EXPERIENCE = [
     date: 'Jul 2025 – Nov 2025',
     domain: 'Fintech',
     bullets: [
-      'Engineered dividend-based trading algorithms enabling systematic portfolio rebalancing.',
-      'Architected financial data pipelines on Redis and AWS S3, reducing latency for high-frequency analysis.',
+      'Built dividend-based trading strategies that rebalance portfolios systematically.',
+      'Designed the data pipeline (Redis, AWS S3) behind high-frequency analysis, cutting its latency.',
     ],
     tags: ['Python', 'Redis', 'AWS S3'],
   },
@@ -69,21 +70,21 @@ export const EXPERIENCE = [
     role: 'Machine Learning Intern',
     company: 'Aditya Birla Group',
     date: 'May 2025 – Jul 2025',
-    domain: 'Industrial ML',
+    domain: 'Manufacturing',
     bullets: [
-      'Deployed a corrosion-detection model trained on 4,000+ images for real-time defect identification from camera feeds.',
-      'Built a TensorFlow.js app for pipe detection and predictive fouling analysis.',
+      'Deployed a corrosion-detection model, trained on 4,000+ images, that flags pipe defects from live camera feeds.',
+      'Built a browser app for pipe detection and predictive fouling analysis.',
     ],
-    tags: ['TensorFlow.js', 'Python', 'OpenCV', 'Selenium'],
+    tags: ['TensorFlow.js', 'Python', 'OpenCV'],
   },
   {
     role: 'Web Development Intern',
     company: 'GPLAN',
     date: 'Jan 2025 – Mar 2025',
-    domain: 'Architecture tooling',
+    domain: 'Architecture software',
     bullets: [
-      'Engineered an architectural layout tool using graph theory.',
-      'Built interactive React + D3.js interfaces for real-time layout visualisation, with Redux Toolkit for global state.',
+      'Built an architectural layout tool that generates floor plans using graph theory.',
+      'Designed its interactive interface for real-time layout visualisation.',
     ],
     tags: ['React', 'D3.js', 'Redux'],
   },
@@ -91,10 +92,10 @@ export const EXPERIENCE = [
     role: 'Software Development Intern',
     company: 'Anitum',
     date: 'Dec 2024 – Jan 2025',
-    domain: 'ERP & computer vision',
+    domain: 'Business software',
     bullets: [
-      'Delivered production ERP systems for education and manufacturing clients using Flask and SQLite.',
-      'Implemented computer-vision pipelines integrated into client dashboards via Chart.js.',
+      'Delivered ERP systems for education and manufacturing clients.',
+      'Added computer-vision features to client dashboards.',
     ],
     tags: ['Flask', 'SQLite', 'Chart.js'],
   },
@@ -103,34 +104,34 @@ export const EXPERIENCE = [
 // Links set to null are hidden. Fill them in when you have them.
 export const PROJECTS = [
   {
-    name: 'Readmebot',
-    kind: 'Developer tool · CLI',
-    blurb: 'A Node.js CLI that reads your codebase and writes the README with GPT-4. Sub-second startup.',
-    metric: '500+ downloads / week',
-    stack: ['Node.js', 'OpenAI', 'CLI'],
-    links: [{ label: 'npm', href: 'https://www.npmjs.com/package/readmebot' }],
-  },
-  {
     name: 'BITS Mess Portal',
-    kind: 'Web app',
-    blurb: 'Menus, ratings and feedback for the BITS Pilani mess, built for the whole campus.',
+    kind: 'Campus product',
+    blurb: 'Menus, ratings and feedback for the BITS Pilani mess, launched to the whole campus.',
     metric: '2,000+ users in 7 days',
     stack: ['React', 'REST API'],
     links: [],
   },
   {
+    name: 'Readmebot',
+    kind: 'Developer tool',
+    blurb: 'A command-line tool that reads a codebase and writes its README with GPT-4, in under a second.',
+    metric: '500+ downloads / week',
+    stack: ['Node.js', 'OpenAI'],
+    links: [{ label: 'npm', href: 'https://www.npmjs.com/package/readmebot' }],
+  },
+  {
     name: 'Yearbook Portal',
-    kind: 'Full-stack web app',
-    blurb: 'A PERN-stack yearbook for a graduating class: profiles, messages and memories in one place.',
+    kind: 'Community product',
+    blurb: 'An online yearbook for a graduating class: profiles, messages and memories in one place.',
     metric: 'Live',
     stack: ['PostgreSQL', 'Express', 'React', 'Node.js'],
     links: [],
   },
   {
     name: 'Nirmaan NGO',
-    kind: 'Website',
+    kind: 'Non-profit website',
     blurb: 'Digital outreach site for Nirmaan, a student-run NGO.',
-    metric: 'Deployed on GoDaddy',
+    metric: 'Shipped to production',
     stack: ['Angular', 'TypeScript', 'Tailwind'],
     links: [],
   },
@@ -141,10 +142,11 @@ export const EDUCATION = [
   { degree: 'M.Sc. Biological Sciences', school: 'BITS Pilani', date: 'Aug 2023 – Present · Dual degree' },
 ];
 
+// Edit freely: the first group comes from what you've written about and shipped.
 export const SKILL_GROUPS = [
-  { title: 'Languages', items: ['Python', 'JavaScript', 'TypeScript', 'C', 'C++', 'Java', 'HTML', 'CSS', 'Lua'] },
-  { title: 'Frameworks & ML', items: ['React', 'Next.js', 'Angular', 'Node.js', 'Express', 'Flask', 'PyTorch', 'OpenCV', 'D3.js'] },
-  { title: 'Data & Cloud', items: ['PostgreSQL', 'MySQL', 'SQLite', 'Redis', 'AWS S3', 'DigitalOcean', 'Firebase'] },
+  { title: 'Product & strategy', items: ['Product launches', 'Roadmapping', 'Go-to-market planning', 'Launch metrics', 'Writing'] },
+  { title: 'Data & analysis', items: ['Python', 'SQL (PostgreSQL, MySQL)', 'Machine learning', 'Data visualisation (D3.js, Chart.js)'] },
+  { title: 'Engineering', items: ['JavaScript / TypeScript', 'React', 'Node.js', 'Flask', 'AWS', 'C / C++', 'Java'] },
   { title: 'Certifications', items: ['Machine Learning Specialization (Stanford, DeepLearning.AI)', 'AWS DevOps'] },
 ];
 

@@ -3,10 +3,10 @@ import { SpringScene, SummerScene, AutumnScene, WinterScene } from './scenes/Sce
 import { introDone, stageProgress, useFullMotion } from '../lib/store';
 import { PROFILE } from '../data/content';
 
-// The cold open. Plays on every load and can be skipped at any moment.
+// The cold open. Plays once when the site is opened, and can be skipped at any moment.
 // Every card holds ≥ 350 ms so the cuts stay under 3 flashes a second (WCAG 2.3.1).
 
-const WORD = 'DEVOGATARI';
+const WORD = PROFILE.name.toUpperCase();
 
 const FULL = [
   { id: 'open', ms: 1000 },
@@ -18,6 +18,7 @@ const FULL = [
   { id: 'season', ms: 520, Scene: SummerScene, name: 'Summer', ink: '#ffffff' },
   { id: 'season', ms: 520, Scene: AutumnScene, name: 'Autumn', ink: '#fff1dc' },
   { id: 'season', ms: 520, Scene: WinterScene, name: 'Winter', ink: '#ffffff' },
+  { id: 'train', ms: 1600 },
   { id: 'title', ms: 2000 },
   { id: 'scene', ms: 400, flash: 0 },
   { id: 'scene', ms: 400, flash: 1 },
@@ -33,13 +34,33 @@ const CALM = [
 
 const MAX_WAIT = 3200; // how long SCENE 001 keeps flashing while the model finishes loading
 
+// A commuter train sliding through the summer crossing.
+function Train() {
+  const cars = [0, 1, 2, 3];
+  return (
+    <svg className="ld-train" viewBox="0 0 1600 220" aria-hidden="true">
+      {cars.map((c) => (
+        <g key={c} transform={`translate(${c * 400} 0)`}>
+          <rect x="6" y="20" width="388" height="170" rx={c === 3 ? 60 : 8} fill="#0b1a3a" />
+          <rect x="6" y="150" width="388" height="10" fill="#f5c400" />
+          {[30, 120, 210, 300].map((x) => (
+            <rect key={x} x={x} y="50" width="70" height="60" fill="#a6dbf8" />
+          ))}
+          <circle cx="80" cy="200" r="18" fill="#05060a" />
+          <circle cx="320" cy="200" r="18" fill="#05060a" />
+        </g>
+      ))}
+    </svg>
+  );
+}
+
 function Card({ step, index }) {
   switch (step.id) {
     case 'open':
       return (
         <div className="ld-card tone-ink">
           <div className="ld-line" />
-          <div className="ld-corner ld-tl mono">Devogatari</div>
+          <div className="ld-corner ld-tl mono">Scene 000</div>
         </div>
       );
     case 'cut':
@@ -60,13 +81,20 @@ function Card({ step, index }) {
         </div>
       );
     }
+    case 'train':
+      return (
+        <div className="ld-card ld-season">
+          <SummerScene className="ld-season-art" />
+          <Train />
+        </div>
+      );
     case 'title':
       return (
         <div className={`ld-card tone-ink ld-title${step.calm ? ' is-calm' : ''}`}>
           <div className="ld-word" aria-label={WORD}>
             {WORD.split('').map((ch, i) => (
               <span key={i} style={{ animationDelay: `${120 + i * 70}ms` }}>
-                {ch}
+                {ch === ' ' ? '\u00a0' : ch}
               </span>
             ))}
             <i className="ld-seal">物語</i>

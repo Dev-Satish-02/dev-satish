@@ -24,8 +24,6 @@
   --autumn-cream: #fff1dc;
   --winter: #14214b;
   --winter-ice: #9fb3e6;
-  --rain: #11141c;
-  --lamp: #f6d77a;
   --go: #1fae5b;
 
   --serif: 'Shippori Mincho B1', 'Hiragino Mincho ProN', Georgia, serif;
@@ -286,19 +284,6 @@ html.intro-done .site-header {
   align-items: center;
   gap: 10px;
 }
-.icon-btn {
-  width: 38px;
-  height: 38px;
-  display: inline-grid;
-  place-items: center;
-  background: transparent;
-  border: 1.5px solid rgba(23, 17, 26, 0.25);
-  color: var(--ink);
-  cursor: pointer;
-}
-.icon-btn:hover {
-  border-color: var(--ink);
-}
 .menu-btn {
   display: none;
   height: 38px;
@@ -422,7 +407,7 @@ html.intro-done .site-header {
 .scene--summer,
 .scene--autumn,
 .scene--winter,
-.scene--rain {
+.scene--ink {
   color: #fff;
 }
 .scene--summer {
@@ -435,16 +420,15 @@ html.intro-done .site-header {
 .scene--winter {
   background: #0a1230;
 }
-.scene--rain {
-  background: var(--rain);
+.scene--ink {
+  background: var(--ink);
 }
 .scene--finale {
   background: var(--red);
   color: #fff;
 }
 .scene--summer .scene-head,
-.scene--winter .scene-head,
-.scene--rain .scene-head {
+.scene--winter .scene-head {
   text-shadow: 0 2px 24px rgba(0, 0, 0, 0.25);
 }
 
@@ -453,8 +437,8 @@ html.intro-done .site-header {
   background: var(--spring-sky);
 }
 .hero .scene-body {
-  min-height: 100vh;
-  min-height: 100svh;
+  min-height: min(100vh, 980px);
+  min-height: min(100svh, 980px);
   display: flex;
   align-items: center;
   padding-top: calc(var(--header) + 40px);
@@ -538,21 +522,6 @@ html.intro-done .site-header {
   align-items: center;
   gap: 12px 20px;
 }
-.hero-stage {
-  position: relative;
-  height: min(80vh, 760px);
-  width: 100%;
-  outline: none;
-}
-.hero-stage canvas {
-  width: 100% !important;
-  height: 100% !important;
-}
-.hero-stage:focus-visible {
-  outline: 2px dashed var(--ink);
-  outline-offset: -8px;
-}
-
 /* the hero builds in as the loader dissolves */
 .hero-in {
   opacity: 0;
@@ -605,9 +574,8 @@ html.intro-done .hero-in {
   .hero .scene-body {
     display: block;
   }
-  .hero-stage {
-    height: 62svh;
-    margin-top: 12px;
+  .portal {
+    margin: 12px auto 0;
   }
   .scroll-cue {
     display: none;
@@ -648,15 +616,6 @@ html.intro-done .hero-in {
   border-radius: 50%;
   background: #ff2b3f;
   box-shadow: 0 0 0 6px var(--summer-navy);
-  animation: lamp 1.2s steps(1) infinite;
-}
-.stop:nth-child(even) .stop-light {
-  animation-delay: 0.6s;
-}
-@keyframes lamp {
-  50% {
-    background: #4a0d18;
-  }
 }
 .job {
   background: #fff;
@@ -859,69 +818,6 @@ html.intro-done .hero-in {
   }
 }
 
-/* ── writing (interlude · rain) ─────────────────────────────── */
-.post-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
-  gap: 20px;
-}
-.season-spring {
-  --c: var(--spring);
-}
-.season-summer {
-  --c: var(--summer);
-}
-.season-autumn {
-  --c: var(--autumn);
-}
-.season-winter {
-  --c: var(--winter);
-}
-.post-card {
-  display: flex;
-  flex-direction: column;
-  background: var(--paper);
-  color: var(--ink);
-  text-decoration: none;
-  transition: transform 0.25s var(--ease), box-shadow 0.25s;
-}
-.post-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 10px 10px 0 var(--c);
-}
-.post-card-band {
-  height: 64px;
-  background: var(--c);
-  color: #fff;
-  display: flex;
-  align-items: flex-end;
-  padding: 10px 18px;
-  font-size: 12px;
-  letter-spacing: 0.2em;
-}
-.post-card-body {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 18px 18px 22px;
-}
-.post-card-meta {
-  font-size: 11.5px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.post-card-title {
-  font-family: var(--serif);
-  font-weight: 800;
-  font-size: 22px;
-  line-height: 1.2;
-}
-.post-card-summary {
-  font-size: 14.5px;
-  color: var(--ink-soft);
-}
-
 /* ── contact (Scene 005 · Next episode) ─────────────────────── */
 .finale {
   max-width: 980px;
@@ -1018,256 +914,6 @@ html.intro-done .hero-in {
   color: rgba(246, 241, 231, 0.6);
 }
 
-/* ── blog pages ─────────────────────────────────────────────── */
-.page-head .scene-body {
-  padding-top: calc(var(--header) + clamp(64px, 9vw, 120px));
-  padding-bottom: clamp(56px, 7vw, 88px);
-}
-.page-head .scene-head {
-  margin-bottom: 28px;
-}
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.filter {
-  display: inline-flex;
-  gap: 8px;
-  align-items: center;
-  padding: 9px 14px;
-  font-size: 14px;
-  font-weight: 500;
-  text-decoration: none;
-  border: 1.5px solid rgba(255, 255, 255, 0.5);
-}
-.filter span {
-  font: 12px var(--mono);
-  opacity: 0.7;
-}
-.filter:hover,
-.filter.is-active {
-  background: var(--paper);
-  color: var(--ink);
-  border-color: var(--paper);
-}
-.paper-section {
-  position: relative;
-  z-index: 2;
-  background: var(--paper);
-  padding: clamp(48px, 7vw, 96px) var(--gutter) clamp(64px, 9vw, 120px);
-}
-.paper-inner {
-  max-width: 1240px;
-  margin: 0 auto;
-}
-.post-grid--list .post-card {
-  border: 1px solid rgba(23, 17, 26, 0.12);
-}
-.empty {
-  font-family: var(--serif);
-  font-size: 22px;
-}
-
-.post-head-inner {
-  max-width: 860px;
-}
-.back-link {
-  font-size: 12px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  text-decoration: none;
-  opacity: 0.85;
-}
-.back-link:hover {
-  opacity: 1;
-  text-decoration: underline;
-}
-.post-title {
-  margin-top: 18px;
-  font-family: var(--serif);
-  font-weight: 800;
-  font-size: clamp(40px, 6.4vw, 84px);
-  line-height: 1.02;
-}
-.post-summary {
-  margin-top: 18px;
-  max-width: 640px;
-  font-size: clamp(16px, 1.6vw, 19px);
-  opacity: 0.88;
-}
-.post-meta {
-  margin-top: 22px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 18px;
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  opacity: 0.8;
-}
-.post-head .post-head-inner {
-  border-left: 6px solid var(--c);
-  padding-left: clamp(16px, 2.5vw, 28px);
-}
-
-.prose {
-  max-width: 720px;
-  margin: 0 auto;
-  font-size: 18px;
-  line-height: 1.8;
-  color: var(--ink-soft);
-}
-.prose > * + * {
-  margin-top: 1.1em;
-}
-.prose h1 {
-  display: none; /* the header already carries the title */
-}
-.prose h2 {
-  margin-top: 2em;
-  font-family: var(--serif);
-  font-weight: 800;
-  font-size: 30px;
-  line-height: 1.25;
-  color: var(--ink);
-}
-.prose h3 {
-  margin-top: 1.6em;
-  font-family: var(--serif);
-  font-weight: 800;
-  font-size: 22px;
-  color: var(--ink);
-}
-.prose ul,
-.prose ol {
-  padding-left: 1.3em;
-}
-.prose ul {
-  list-style: square;
-}
-.prose ol {
-  list-style: decimal;
-}
-.prose li::marker {
-  color: var(--red);
-}
-.prose strong {
-  color: var(--ink);
-}
-.prose a {
-  color: var(--red);
-  text-underline-offset: 3px;
-}
-.prose code {
-  font-family: var(--mono);
-  font-size: 0.85em;
-  background: var(--paper-2);
-  padding: 1px 6px;
-}
-.prose pre {
-  background: var(--ink);
-  color: var(--paper);
-  padding: 20px;
-  overflow-x: auto;
-  font-size: 14px;
-}
-.prose pre code {
-  background: none;
-  padding: 0;
-}
-.prose blockquote {
-  margin: 2em 0;
-  padding: 24px 28px;
-  background: var(--red);
-  color: #fff;
-  font-family: var(--serif);
-  font-weight: 700;
-  font-size: 22px;
-  line-height: 1.5;
-}
-.prose img {
-  width: 100%;
-  margin: 2em 0;
-}
-.prose .table-wrap {
-  overflow-x: auto;
-  margin: 2em 0;
-}
-.prose table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 15px;
-  line-height: 1.5;
-}
-.prose th {
-  background: var(--ink);
-  color: var(--paper);
-  text-align: left;
-  padding: 10px 14px;
-  font: 600 12px var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-.prose td {
-  padding: 12px 14px;
-  border-bottom: 1px solid rgba(23, 17, 26, 0.12);
-  vertical-align: top;
-}
-.post-end {
-  margin-top: 64px !important;
-  text-align: center;
-  font-family: var(--serif);
-  font-weight: 800;
-  font-size: 22px;
-  letter-spacing: 0.4em;
-  text-transform: uppercase;
-  color: var(--red);
-}
-.post-nav {
-  max-width: 720px;
-  margin: 48px auto 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-.post-nav a {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 18px 20px;
-  border: 1.5px solid var(--ink);
-  text-decoration: none;
-  transition: background 0.15s, color 0.15s;
-}
-.post-nav a:hover {
-  background: var(--ink);
-  color: var(--paper);
-}
-.post-nav span {
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  opacity: 0.7;
-}
-.post-nav strong {
-  font-family: var(--serif);
-  font-size: 18px;
-  line-height: 1.3;
-}
-.post-nav-next {
-  text-align: right;
-  grid-column: 2;
-}
-@media (max-width: 600px) {
-  .post-nav {
-    grid-template-columns: 1fr;
-  }
-  .post-nav-next {
-    grid-column: auto;
-  }
-}
-
 /* ── reveal on scroll ───────────────────────────────────────── */
 .reveal {
   opacity: 0;
@@ -1279,26 +925,9 @@ html.intro-done .hero-in {
   transform: none;
 }
 
-/* ── weather + cursor layers ────────────────────────────────── */
-.weather {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  pointer-events: none;
-}
 html.custom-cursor,
 html.custom-cursor * {
   cursor: none !important;
-}
-.cursor-trail {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1100;
-  pointer-events: none;
 }
 .cursor-dot,
 .cursor-ring {
@@ -1340,81 +969,6 @@ html.custom-cursor * {
   height: 30px;
   margin: -15px 0 0 -15px;
 }
-.cursor-label {
-  font: 600 9px var(--mono);
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: #fff;
-}
-
-/* ── scene cuts between seasons ─────────────────────────────── */
-.cut {
-  position: fixed;
-  inset: 0;
-  z-index: 800;
-  display: grid;
-  place-items: center;
-  pointer-events: none;
-  text-align: center;
-  color: #fff;
-}
-.cut--step1 {
-  background: var(--ink);
-}
-.cut--summer.cut--step0 {
-  background: var(--summer);
-}
-.cut--autumn.cut--step0 {
-  background: var(--autumn);
-}
-.cut--winter.cut--step0 {
-  background: var(--winter);
-}
-.cut--rain.cut--step0 {
-  background: var(--rain);
-}
-.cut--finale.cut--step0,
-.cut--spring.cut--step0 {
-  background: var(--red);
-}
-.cut-text {
-  font-family: var(--serif);
-  font-weight: 800;
-  font-size: clamp(110px, 22vw, 320px);
-  line-height: 0.9;
-}
-.cut-text small {
-  display: block;
-  font-family: var(--mono);
-  font-weight: 500;
-  font-size: 13px;
-  letter-spacing: 0.4em;
-  text-transform: uppercase;
-  margin-bottom: 18px;
-}
-.cut-label {
-  font-size: clamp(56px, 12vw, 180px);
-  color: var(--red);
-}
-
-.route-flash {
-  position: fixed;
-  inset: 0;
-  z-index: 850;
-  pointer-events: none;
-  background: var(--ink);
-  animation: route-cut 0.42s linear forwards;
-}
-@keyframes route-cut {
-  0%,
-  70% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
 /* ── loader ─────────────────────────────────────────────────── */
 .loader {
   position: fixed;
@@ -1536,6 +1090,22 @@ html.custom-cursor * {
   font-weight: 800;
   font-size: clamp(72px, 15vw, 230px);
   line-height: 0.9;
+}
+.ld-train {
+  position: absolute;
+  left: 0;
+  bottom: 9%;
+  width: 190vw;
+  height: auto;
+  animation: ld-train 1.6s cubic-bezier(0.45, 0, 0.55, 1) forwards;
+}
+@keyframes ld-train {
+  from {
+    transform: translateX(-190vw);
+  }
+  to {
+    transform: translateX(100vw);
+  }
 }
 .ld-title {
   align-content: center;
@@ -1699,12 +1269,10 @@ html.reduce-motion .hero-in {
   transition: none;
 }
 html.reduce-motion .xing-light,
-html.reduce-motion .stop-light,
 html.reduce-motion .scroll-cue span {
   animation: none;
 }
-html.reduce-motion .pane,
-html.reduce-motion .post-card {
+html.reduce-motion .pane {
   transition: none;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -1728,5 +1296,341 @@ html.reduce-motion .post-card {
   }
   .hero-name {
     font-size: clamp(56px, 17vw, 84px);
+  }
+}
+
+/* ── hero portal & petals ──────────────────────────────────── */
+.petals {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+.portal {
+  position: relative;
+  width: min(100%, 420px);
+  aspect-ratio: 4 / 5;
+  max-width: 100%;
+  margin-left: auto;
+  border: 2px solid var(--ink);
+}
+.portal-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.portal-stage canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+.portal:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 4px;
+}
+
+/* ── writing: episode title cards ───────────────────────────── */
+.season-spring {
+  --c: var(--spring);
+}
+.season-summer {
+  --c: var(--summer);
+}
+.season-autumn {
+  --c: var(--autumn);
+}
+.season-winter {
+  --c: var(--winter);
+}
+.tcard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 18px;
+}
+.tcard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 28px;
+  min-height: 300px;
+  padding: 22px;
+  background: var(--c);
+  color: #fff;
+  border: 2px solid var(--c);
+  text-decoration: none;
+}
+.tcard.season-autumn {
+  color: var(--ink);
+}
+/* the cut: no easing, the card simply becomes the black card with red type */
+.tcard:hover,
+.tcard:focus-visible {
+  background: var(--ink);
+  border-color: var(--red);
+  color: var(--red);
+  outline: none;
+}
+.tcard-top,
+.tcard-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 11.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.tcard-title {
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: clamp(26px, 2.6vw, 34px);
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+/* full-bleed title card heading the blog pages */
+.title-card {
+  background: var(--c, var(--red));
+  color: #fff;
+  padding: calc(var(--header) + clamp(56px, 8vw, 110px)) var(--gutter) clamp(48px, 6vw, 80px);
+}
+.title-card--ink {
+  --c: var(--ink);
+}
+.title-card.season-autumn {
+  color: var(--ink);
+}
+.title-card-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+.title-card-title {
+  margin-top: 16px;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: clamp(56px, 10vw, 140px);
+  line-height: 0.95;
+  text-wrap: balance;
+}
+.title-card-title--post {
+  font-size: clamp(40px, 6.4vw, 88px);
+  line-height: 1.02;
+  max-width: 16em;
+}
+.title-card-lede {
+  margin-top: 18px;
+  max-width: 620px;
+  font-size: clamp(16px, 1.6vw, 19px);
+  opacity: 0.9;
+}
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 28px;
+}
+.filter {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 9px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  border: 1.5px solid currentColor;
+}
+.filter span {
+  font: 12px var(--mono);
+  opacity: 0.75;
+}
+.filter:hover,
+.filter.is-active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+.back-link {
+  text-decoration: none;
+}
+.back-link:hover {
+  text-decoration: underline;
+}
+.post-meta {
+  margin-top: 22px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+.paper-section {
+  position: relative;
+  z-index: 2;
+  background: var(--paper);
+  padding: clamp(48px, 7vw, 96px) var(--gutter) clamp(64px, 9vw, 120px);
+}
+.paper-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+.empty {
+  font-family: var(--serif);
+  font-size: 22px;
+}
+
+/* post body */
+.prose {
+  max-width: 720px;
+  margin: 0 auto;
+  font-size: 18px;
+  line-height: 1.8;
+  color: var(--ink-soft);
+}
+.prose > * + * {
+  margin-top: 1.1em;
+}
+.prose h1 {
+  display: none; /* the title card already carries the title */
+}
+.prose h2 {
+  margin-top: 2em;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 30px;
+  line-height: 1.25;
+  color: var(--ink);
+}
+.prose h3 {
+  margin-top: 1.6em;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 22px;
+  color: var(--ink);
+}
+.prose ul,
+.prose ol {
+  padding-left: 1.3em;
+}
+.prose ul {
+  list-style: square;
+}
+.prose ol {
+  list-style: decimal;
+}
+.prose li::marker {
+  color: var(--red);
+}
+.prose strong {
+  color: var(--ink);
+}
+.prose a {
+  color: var(--red);
+  text-underline-offset: 3px;
+}
+.prose code {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  background: var(--paper-2);
+  padding: 1px 6px;
+}
+.prose pre {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 20px;
+  overflow-x: auto;
+  font-size: 14px;
+}
+.prose pre code {
+  background: none;
+  padding: 0;
+}
+.prose blockquote {
+  margin: 2em 0;
+  padding: 24px 28px;
+  background: var(--red);
+  color: #fff;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1.5;
+}
+.prose img {
+  width: 100%;
+  margin: 2em 0;
+}
+.prose .table-wrap {
+  overflow-x: auto;
+  margin: 2em 0;
+}
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.prose th {
+  background: var(--ink);
+  color: var(--paper);
+  text-align: left;
+  padding: 10px 14px;
+  font: 600 12px var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.prose td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(23, 17, 26, 0.12);
+  vertical-align: top;
+}
+.post-end {
+  margin-top: 64px !important;
+  text-align: center;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 24px;
+  color: var(--red);
+}
+.post-nav {
+  max-width: 720px;
+  margin: 48px auto 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.post-nav a {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 20px;
+  border: 1.5px solid var(--ink);
+  text-decoration: none;
+}
+.post-nav a:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+.post-nav span {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.post-nav strong {
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.3;
+}
+.post-nav-next {
+  text-align: right;
+  grid-column: 2;
+}
+@media (max-width: 600px) {
+  .post-nav {
+    grid-template-columns: 1fr;
+  }
+  .post-nav-next {
+    grid-column: auto;
   }
 }

@@ -350,50 +350,9 @@ export function WinterScene({ className, align = 'xMidYMid' }) {
   );
 }
 
-/* ── RAIN: an empty street at night, one lamp, one sign ── */
-export function RainScene({ className, align = 'xMidYMid' }) {
-  const id = useId();
-  const cone = `${id}-cone`;
-  return (
-    <Svg className={className} align={align}>
-      <defs>
-        <linearGradient id={cone} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#f6d77a" stopOpacity="0.55" />
-          <stop offset="1" stopColor="#f6d77a" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <rect width="1600" height="1000" fill="#11141c" />
-      <g fill="#1a1f2b">
-        <rect x="0" y="300" width="260" height="560" />
-        <rect x="270" y="420" width="180" height="440" />
-        <rect x="1240" y="260" width="200" height="600" />
-        <rect x="1450" y="380" width="150" height="480" />
-      </g>
-      <g fill="#f3c969">
-        {[[40, 360], [120, 440], [200, 360], [300, 480], [1280, 320], [1360, 420], [1500, 440]].map(([x, y]) => (
-          <rect key={`${x}-${y}`} x={x} y={y} width="28" height="38" opacity="0.8" />
-        ))}
-      </g>
-      <rect x="0" y="860" width="1600" height="140" fill="#0b0d13" />
-      {/* lamp */}
-      <polygon points="1010,250 1090,250 1260,860 840,860" fill={`url(#${cone})`} />
-      <ellipse cx="1050" cy="880" rx="230" ry="26" fill="#f6d77a" opacity="0.25" />
-      <rect x="1044" y="240" width="12" height="630" fill="#05060a" />
-      <rect x="1000" y="228" width="100" height="18" fill="#05060a" />
-      <rect x="1014" y="246" width="72" height="8" fill="#f6d77a" />
-      <rect x="1040" y="880" width="20" height="120" fill="#f6d77a" opacity="0.18" />
-      {/* sign */}
-      <rect x="1395" y="560" width="10" height="310" fill="#05060a" />
-      <circle cx="1400" cy="540" r="54" fill="#c8102e" />
-      <rect x="1360" y="532" width="80" height="16" fill="#f2ede3" />
-    </Svg>
-  );
-}
-
 export const SCENE_BY_SEASON = {
   spring: SpringScene,
   summer: SummerScene,
   autumn: AutumnScene,
   winter: WinterScene,
-  rain: RainScene,
 };

@@ -1,19 +1,19 @@
 # 3D model guide
 
-The hero (Scene 001 · Spring) has a Three.js stage. It loads the first of these files that exists:
+The hero (Scene 001 · Spring) has a rectangular **portal**: a frame over the sun. When a model exists, a live 3D rendering plays inside that frame. The site looks for these files, in order:
 
 1. `public/models/hero.vrm`
 2. `public/models/hero.glb`
 
-If neither exists, a cel-shaded stand-in bust is drawn in code. Drop your file in, run `npm run dev`, and it appears. No code changes are needed.
+If neither exists, the portal stays an empty frame and **Three.js is never downloaded**, so the site stays light. Drop your file in, run `npm run dev`, and it appears. No code changes are needed.
 
-Settings live in `MODEL` in `src/data/content.js`.
+Settings live in `MODEL` in `src/data/content.js`. The portal's size and shape are `.portal` in `src/index.css` (4:5, up to 420px wide).
 
 ---
 
 ## What fits the theme: ideas
 
-The scene behind the model is a pink sky, a big crimson sun and a black staircase climbing into it. Whatever you build stands **in front of that sun**, so a strong silhouette reads best. Think of the series' figures against a red sunset.
+The portal sits over a big crimson sun on a pink sky, with a black staircase climbing past it. The rendering is transparent, so the sun shows through behind your model: a strong silhouette reads best. Think of the series' figures against a red sunset.
 
 | # | Idea | Why it fits | Effort | Format |
 |---|------|-------------|--------|--------|
@@ -88,6 +88,6 @@ npm run dev
 - Hover the model: the head should tilt.
 - Move the mouse around: it should follow.
 - The intro's flashing "SCENE 001" card holds until the model has loaded (up to ~3 s extra), so a heavy file makes the intro feel stuck. Keep it small.
-- If something's wrong, the browser console shows `[stage] could not load models/hero.glb …` and the stand-in is used instead.
+- If something's wrong, the browser console shows `[stage] could not load …/models/hero.glb` and the portal stays empty.
 
 Then deploy as usual: `npm run deploy-build`, commit, push.
