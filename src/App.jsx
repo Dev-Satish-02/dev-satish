@@ -4,7 +4,6 @@ import Home from './pages/Home';
 import Blog from './pages/Blog';
 import Post from './pages/Post';
 import Header from './components/Header';
-import Footer from './components/Footer';
 import Loader from './components/Loader';
 import Cursor from './components/Cursor';
 import { introDone, useFullMotion, useStore } from './lib/store';
@@ -44,7 +43,6 @@ export default function App() {
         <Route path="/blog/:category/:slug" element={<Post />} />
         <Route path="*" element={<Home />} />
       </Routes>
-      <Footer />
       <Cursor />
     </Router>
   );

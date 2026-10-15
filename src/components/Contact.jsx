@@ -19,9 +19,6 @@ export default function Contact() {
           <br />
           <em>we build something.</em>
         </h2>
-        <p className="finale-lede reveal">
-          {PROFILE.availability}. I reply to every email, usually within a day.
-        </p>
         <a href={`mailto:${PROFILE.email}`} className="finale-mail reveal">
           {PROFILE.email}
         </a>
