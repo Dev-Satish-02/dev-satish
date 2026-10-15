@@ -84,7 +84,7 @@ function Card({ step, index }) {
     case 'train':
       return (
         <div className="ld-card ld-season">
-          <SummerScene className="ld-season-art" />
+          <SummerScene className="ld-season-art" signalling />
           <Train />
         </div>
       );
@@ -118,7 +118,6 @@ function Card({ step, index }) {
     case 'handoff':
       return (
         <div className="ld-card ld-handoff">
-          <SpringScene className="ld-season-art" />
           <div className="ld-handoff-text">
             <small>Scene 001</small>
             Spring

@@ -601,9 +601,6 @@ html.intro-done .hero-in {
   .hero .scene-body {
     display: block;
   }
-  .portal {
-    margin: 12px auto 0;
-  }
   .scroll-cue {
     display: none;
   }
@@ -711,9 +708,14 @@ html.intro-done .hero-in {
 }
 
 .xing-light {
+  opacity: 0.18;
+}
+/* the crossing only signals while a train is coming */
+.is-signalling .xing-light {
+  opacity: 1;
   animation: lamp-svg 1.2s steps(1) infinite;
 }
-.xing-b {
+.is-signalling .xing-b {
   animation-delay: 0.6s;
 }
 @keyframes lamp-svg {
@@ -1268,7 +1270,55 @@ html.reduce-motion .pane {
   }
 }
 
-/* ── hero portal & petals ──────────────────────────────────── */
+/* ── hero: the spiral staircase fall ───────────────────────── */
+/* the section is tall; its first screen pins while scrolling drives the fall */
+.stair-hero {
+  position: relative;
+  height: 340vh;
+  background: var(--summer);
+}
+.stair-hero.is-still {
+  height: 100vh;
+  height: 100svh;
+}
+.stair-pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  background: #e2d9c9;
+}
+.stair-canvas {
+  position: absolute;
+  inset: 0;
+}
+.stair-canvas canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+.stair-wash {
+  position: absolute;
+  inset: 0;
+  background: var(--summer);
+  opacity: 0;
+  pointer-events: none;
+}
+.stair-copy {
+  position: absolute;
+  left: var(--gutter);
+  top: calc(var(--header) + clamp(28px, 6vh, 64px));
+  z-index: 2;
+  max-width: min(560px, calc(100% - 2 * var(--gutter)));
+  padding: clamp(20px, 3vw, 32px);
+  background: rgba(246, 241, 231, 0.95);
+  box-shadow: 10px 10px 0 var(--red);
+}
+.stair-copy .hero-name {
+  font-size: clamp(56px, 8vw, 116px);
+}
+
+/* ── hero petals (blossom fallback) ───────────────────────── */
 .petals {
   position: absolute;
   inset: 0;
@@ -1277,28 +1327,6 @@ html.reduce-motion .pane {
   z-index: 1;
   pointer-events: none;
 }
-.portal {
-  position: relative;
-  width: min(100%, 420px);
-  aspect-ratio: 4 / 5;
-  max-width: 100%;
-  margin-left: auto;
-  border: 2px solid var(--ink);
-}
-.portal-stage {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
-.portal-stage canvas {
-  width: 100% !important;
-  height: 100% !important;
-}
-.portal:focus-visible {
-  outline: 2px solid var(--red);
-  outline-offset: 4px;
-}
-
 /* ── writing: episode title cards ───────────────────────────── */
 .season-spring {
   --c: var(--spring);

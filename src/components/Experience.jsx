@@ -12,6 +12,7 @@ export default function Experience() {
       label={season}
       title="Experience"
       lede="Four internships across fintech, industrial machine learning and web tooling."
+      artProps={{ live: true }}
     >
       <ol className="track">
         {EXPERIENCE.map((job) => (

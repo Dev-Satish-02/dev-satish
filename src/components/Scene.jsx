@@ -1,7 +1,7 @@
 import { SCENE_BY_SEASON } from './scenes/Scenes';
 
 // A full-bleed section whose season illustration stays pinned while its content scrolls over it.
-export default function Scene({ id, season, no, label, title, lede, align, className = '', children, art = true, backdrop }) {
+export default function Scene({ id, season, no, label, title, lede, align, className = '', children, art = true, backdrop, artProps }) {
   const Art = SCENE_BY_SEASON[season];
   return (
     <section
@@ -15,7 +15,7 @@ export default function Scene({ id, season, no, label, title, lede, align, class
       {art && Art && (
         <div className="scene-bg" aria-hidden="true">
           <div className="scene-bg-pin">
-            <Art className="scene-art" align={align} />
+            <Art className="scene-art" align={align} {...artProps} />
           </div>
         </div>
       )}

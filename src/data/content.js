@@ -18,17 +18,6 @@ export const SOCIALS = [
   { label: 'Twitter', href: 'https://twitter.com/devtech08' },
 ];
 
-// The 3D model on the hero. The first file that exists is used; otherwise a stand-in
-// figure is drawn in code. See MODEL_GUIDE.md for the format.
-export const MODEL = {
-  candidates: ['models/hero.vrm', 'models/hero.glb'],
-  height: 1.75, // the model is scaled so its bounding box is this tall (scene units ≈ metres)
-  headNode: 'Head', // glTF only: node that tilts and looks at the cursor
-  idleClip: 'Idle', // glTF only: animation clip to loop, if present
-  toon: true, // glTF only: convert materials to cel shading with outlines
-  frame: 'full', // 'full' body in view, or 'upper' (waist up)
-};
-
 // One scene per season, the way the series runs from spring break to the next spring.
 export const SCENES = {
   hero: { no: '001', season: 'Spring' },

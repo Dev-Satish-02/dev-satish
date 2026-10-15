@@ -1,9 +1,10 @@
 import Scene from './Scene';
-import Portal from './Portal';
 import Petals from './Petals';
 import { PROFILE, SCENES } from '../data/content';
 
-export default function Hero() {
+// The cherry-blossom hero: used when a device can't run the 3D staircase, and kept so we
+// can switch back to it.
+export default function HeroBlossom() {
   const { no, season } = SCENES.hero;
 
   return (
@@ -23,9 +24,6 @@ export default function Hero() {
           <p className="hero-summary hero-in" style={{ '--i': 3 }}>
             {PROFILE.summary}
           </p>
-        </div>
-        <div className="hero-in" style={{ '--i': 3 }}>
-          <Portal />
         </div>
       </div>
     </Scene>

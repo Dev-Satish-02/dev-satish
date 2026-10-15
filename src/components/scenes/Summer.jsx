@@ -1,14 +1,73 @@
-import { useId } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import { Pole, Svg } from './common';
+import { fullMotion } from '../../lib/store';
+
+const clamp = (x) => Math.min(1, Math.max(0, x));
+const ease = (t) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
+
+// A four-car commuter train, drawn facing right.
+function Train() {
+  return (
+    <g>
+      {[0, 1, 2, 3].map((c) => (
+        <g key={c} transform={`translate(${c * 392} 0)`}>
+          <rect x="0" y="724" width="384" height="164" rx={c === 3 ? 0 : 6} fill="#0b1a3a" />
+          {c === 3 && <path d="M330 724 H384 Q 420 724 420 790 V888 H330 Z" fill="#0b1a3a" />}
+          <rect x="0" y="842" width={c === 3 ? 420 : 384} height="10" fill="#f5c400" />
+          {[24, 112, 200, 288].map((x) => (
+            <rect key={x} x={x} y="752" width="64" height="58" fill="#a6dbf8" />
+          ))}
+          {c === 3 && <rect x="372" y="752" width="40" height="50" fill="#a6dbf8" />}
+          <rect x="174" y="752" width="6" height="110" fill="#081329" />
+          <circle cx="70" cy="896" r="14" fill="#05060a" />
+          <circle cx="314" cy="896" r="14" fill="#05060a" />
+        </g>
+      ))}
+    </g>
+  );
+}
 
 /* ── SUMMER: cobalt sky, cumulus, power lines and a railway crossing ── */
-export function SummerScene({ className, align = 'xMidYMid' }) {
+// `live`: tied to scroll, the crossing starts signalling as the section arrives and a
+// train passes through. `signalling`: lamps alternate regardless (used by the intro).
+export function SummerScene({ className, align = 'xMidYMid', live = false, signalling = false }) {
   const id = useId();
+  const root = useRef(null);
+  const train = useRef(null);
+
+  useEffect(() => {
+    if (!live || !fullMotion()) return undefined;
+    const g = root.current;
+    const section = g.closest('section');
+    let goal = -1800;
+    let x = -1800;
+    let raf;
+    const onScroll = () => {
+      const r = section.getBoundingClientRect();
+      const q = clamp((window.innerHeight - r.top) / (r.height + window.innerHeight));
+      g.classList.toggle('is-signalling', q > 0.18 && q < 0.82);
+      goal = -1800 + ease(clamp((q - 0.3) / 0.42)) * 3500;
+    };
+    const loop = () => {
+      x += (goal - x) * 0.14;
+      train.current.setAttribute('transform', `translate(${x.toFixed(1)} 0)`);
+      raf = requestAnimationFrame(loop);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    raf = requestAnimationFrame(loop);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('scroll', onScroll);
+    };
+  }, [live]);
+
   const sky = `${id}-sky`;
   const stripe = `${id}-stripe`;
   const navy = '#0b1a3a';
   return (
     <Svg className={className} align={align}>
+      <g ref={root} className={signalling ? 'is-signalling' : undefined}>
       <defs>
         <linearGradient id={sky} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#0f47c2" />
@@ -39,6 +98,14 @@ export function SummerScene({ className, align = 'xMidYMid' }) {
         <rect x="0" y="860" width="700" height="140" />
         <rect x="1150" y="720" width="450" height="280" />
       </g>
+      {/* the line the train runs on, behind the crossing */}
+      <rect x="0" y="908" width="1600" height="6" fill="#0b1a3a" />
+      <rect x="0" y="914" width="1600" height="16" fill="#5f7fb0" />
+      {live && (
+        <g ref={train} transform="translate(-1800 0)">
+          <Train />
+        </g>
+      )}
       {/* wires */}
       <g stroke={navy} strokeWidth="3" fill="none">
         <path d="M-20 140 Q 180 230 300 136" />
@@ -74,6 +141,7 @@ export function SummerScene({ className, align = 'xMidYMid' }) {
         <circle className="xing-light xing-b" cx="1414" cy="560" r="28" fill="#ff2b3f" />
         <rect x="900" y="742" width="460" height="22" fill={`url(#${stripe})`} />
         <rect x="1330" y="732" width="40" height="42" fill={navy} />
+      </g>
       </g>
     </Svg>
   );
