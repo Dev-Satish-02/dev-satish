@@ -24,7 +24,7 @@ export default function Scene({ id, season, no, label, title, lede, align, class
         {title && (
           <header className="scene-head reveal">
             <p className="scene-tag mono">
-              <span>Scene {no}</span>
+              {no && no !== '—' && <span>Scene {no}</span>}
               <span>{label}</span>
             </p>
             <h2 id={`${id}-title`} className="scene-title">

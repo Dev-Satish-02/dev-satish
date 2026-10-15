@@ -3,21 +3,13 @@
 export const PROFILE = {
   name: 'Dev Satish',
   title: 'Product · Strategy · Engineering',
-  summary:
-    'I take problems from idea to launch: a campus app that reached 2,000+ students in its first week, a developer tool with 500+ weekly downloads, and four internships across fintech, manufacturing and software.',
-  education: 'Dual degree at BITS Pilani: Mechanical Engineering + Biological Sciences.',
+  summary: 'Studying at BITS Pilani. I like turning problems into things people use.',
   location: 'BITS Pilani, Rajasthan, India',
-  availability: 'Open to product, consulting, analytics and tech roles',
   email: 'devsatish08@gmail.com',
   phone: '+91 75068 57789',
   phoneHref: 'tel:+917506857789',
-  // Drop your PDF at public/resume.pdf. The buttons stay hidden until the file exists.
+  // Drop your PDF at public/resume.pdf. The contact section's résumé button stays hidden until it exists.
   resume: 'resume.pdf',
-  facts: [
-    { value: '2,000+', label: 'users in week one' },
-    { value: '500+', label: 'weekly downloads' },
-    { value: '4', label: 'internships' },
-  ],
 };
 
 export const SOCIALS = [

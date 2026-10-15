@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { NAV_LINKS, PROFILE } from '../data/content';
-import useResume from '../hooks/useResume';
-import { FileIcon } from './Icons';
 
 function NavItem({ item, className, onClick }) {
   const to = item.to || { pathname: '/', hash: `#${item.hash}` };
@@ -13,10 +11,10 @@ function NavItem({ item, className, onClick }) {
   );
 }
 
-export function Wordmark({ small }) {
+export function Wordmark() {
   return (
-    <span className={`wordmark${small ? ' wordmark--small' : ''}`}>
-      {PROFILE.name}
+    <span className="wordmark">
+      Monogatari
       <i aria-hidden="true" />
     </span>
   );
@@ -25,7 +23,6 @@ export function Wordmark({ small }) {
 export default function Header() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
-  const resume = useResume();
 
   useEffect(() => setOpen(false), [location]);
   useEffect(() => {
@@ -45,7 +42,7 @@ export default function Header() {
         Skip to content
       </a>
       <header className={`site-header${open ? ' is-open' : ''}`}>
-        <Link to="/" className="brand" aria-label={`${PROFILE.name}, home`}>
+        <Link to="/" className="brand" aria-label={`${PROFILE.name}'s portfolio, home`}>
           <Wordmark />
         </Link>
         <nav className="nav" aria-label="Main">
@@ -58,14 +55,6 @@ export default function Header() {
           ))}
         </nav>
         <div className="header-actions">
-          {resume && (
-            <a href={resume} className="btn btn--ghost btn--sm hide-sm" target="_blank" rel="noreferrer">
-              <FileIcon /> Résumé
-            </a>
-          )}
-          <a href={`mailto:${PROFILE.email}`} className="btn btn--sm hide-sm">
-            Email me
-          </a>
           <button
             type="button"
             className="menu-btn"
@@ -81,16 +70,6 @@ export default function Header() {
         {NAV_LINKS.map((item) => (
           <NavItem key={item.label} item={item} className="mobile-link" onClick={() => setOpen(false)} />
         ))}
-        <div className="mobile-actions">
-          <a href={`mailto:${PROFILE.email}`} className="btn">
-            Email me
-          </a>
-          {resume && (
-            <a href={resume} className="btn btn--ghost" target="_blank" rel="noreferrer">
-              Résumé
-            </a>
-          )}
-        </div>
       </div>
     </>
   );

@@ -7,7 +7,7 @@ export default function Writing() {
   const all = getAllPosts();
   const posts = all.slice(0, 3);
   return (
-    <Scene id="blog" season="ink" label="Interlude" title="Writing" lede="Notes on product, strategy and the books I read.">
+    <Scene id="blog" season="night" no="—" label="Interlude" title="Writing" lede="Notes on product, strategy and the books I read.">
       <div className="tcard-grid">
         {posts.map((post, i) => (
           <TitleCard key={`${post.categorySlug}/${post.slug}`} post={post} chapter={all.length - i} />
