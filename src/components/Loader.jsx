@@ -101,7 +101,7 @@ function Card({ step, index }) {
           </div>
           <div className="ld-rule" />
           <div className="ld-sub">
-            {PROFILE.title}
+            {PROFILE.name} · {PROFILE.title}
           </div>
           <div className="ld-corner ld-bl mono">A portfolio in four seasons</div>
         </div>

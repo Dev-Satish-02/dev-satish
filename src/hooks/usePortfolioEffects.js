@@ -23,25 +23,21 @@ export function useScrollReveal(key) {
 
 export function useActiveNav() {
   useEffect(() => {
-    const sections = [...document.querySelectorAll('main > section[id]')];
+    const sections = document.querySelectorAll('section[id]');
     const links = () => document.querySelectorAll('.nav-link[data-hash]');
-    // the active section is the last one whose top has passed the middle of the screen,
-    // so the seams between sections keep the one just scrolled through
-    let raf = 0;
-    const update = () => {
-      raf = 0;
-      const mid = window.innerHeight / 2;
-      const current = sections.filter((s) => s.getBoundingClientRect().top <= mid).pop();
-      links().forEach((l) => l.classList.toggle('is-active', l.dataset.hash === current?.id));
-    };
-    const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(update);
-    };
-    update();
-    window.addEventListener('scroll', onScroll, { passive: true });
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            links().forEach((l) => l.classList.toggle('is-active', l.dataset.hash === entry.target.id));
+          }
+        });
+      },
+      { rootMargin: '-45% 0px -50% 0px' }
+    );
+    sections.forEach((s) => io.observe(s));
     return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('scroll', onScroll);
+      io.disconnect();
       links().forEach((l) => l.classList.remove('is-active'));
     };
   }, []);

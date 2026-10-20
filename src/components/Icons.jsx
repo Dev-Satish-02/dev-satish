@@ -13,6 +13,11 @@ export const FileIcon = () => (
     <path d="M14 3v4h4M9 13h6M9 17h6" />
   </svg>
 );
+export const ArrowIcon = () => (
+  <svg {...base}>
+    <path d="M7 17 17 7M8 7h9v9" />
+  </svg>
+);
 export const MotionIcon = ({ on }) => (
   <svg {...base}>
     <circle cx="12" cy="12" r="8" />
