@@ -31,7 +31,7 @@ const SKY = new THREE.Color('#0f47c2');
 
 const STEPS_PER_TURN = 56;
 const RISE = 0.1;
-const TURNS = 7;
+const TURNS = 11;
 const TURN_H = STEPS_PER_TURN * RISE;
 const STEP_COUNT = STEPS_PER_TURN * TURNS;
 const HEIGHT = TURN_H * TURNS;
@@ -42,6 +42,11 @@ const R_IN = 2.05;
 const BLOCK = 0.16; // each step is a solid block this deep
 const BAYS = 11; // fins around the wall
 const RAIL_H = 0.95;
+// the camera only ever travels the middle of the tower: the stair runs on for two full
+// turns above where it starts and below where it stops, so neither end is ever in view
+const MARGIN = 2 * TURN_H;
+const CAM_TOP = HEIGHT - MARGIN;
+const CAM_BOTTOM = MARGIN;
 
 // one sun, high on one side; light travels down and across the well
 const SUN_DIR = new THREE.Vector3(0.62, -1, 0.18).normalize();
@@ -221,10 +226,10 @@ export function createStaircase(container, { onReady, onFrame } = {}) {
   scene.add(new THREE.HemisphereLight('#fff4d8', '#b08a3a', 0.95));
   const sun = new THREE.DirectionalLight(PALETTE.sun, 2.3);
   sun.target.position.set(0, HEIGHT / 2, 0);
-  sun.position.copy(sun.target.position).addScaledVector(SUN_DIR, -50);
+  sun.position.copy(sun.target.position).addScaledVector(SUN_DIR, -70);
   sun.castShadow = true;
   sun.shadow.mapSize.set(small ? 1024 : 2048, small ? 1024 : 2048);
-  Object.assign(sun.shadow.camera, { left: -16, right: 16, top: 22, bottom: -22, near: 1, far: 110 });
+  Object.assign(sun.shadow.camera, { left: -26, right: 26, top: 36, bottom: -36, near: 1, far: 150 });
   sun.shadow.bias = -0.0005;
   sun.shadow.normalBias = 0.03;
   sun.shadow.radius = 4;
@@ -310,7 +315,7 @@ export function createStaircase(container, { onReady, onFrame } = {}) {
   instanced.push(posts);
 
   /* the curtain wall: bays of four tall panes, glowing with daylight */
-  const wallH = HEIGHT + 24;
+  const wallH = HEIGHT + 16;
   const bayTex = keep(bayTexture());
   bayTex.repeat.set(BAYS, wallH / 3.2);
   const wall = new THREE.Mesh(
@@ -326,7 +331,7 @@ export function createStaircase(container, { onReady, onFrame } = {}) {
       })
     )
   );
-  wall.position.y = HEIGHT / 2 - 10;
+  wall.position.y = HEIGHT / 2;
   wall.receiveShadow = true;
   scene.add(wall);
 
@@ -375,7 +380,7 @@ export function createStaircase(container, { onReady, onFrame } = {}) {
     // start at the sunlit wall, run across and down the well
     const entry = new THREE.Vector3(-SUN_DIR.x, 0, -SUN_DIR.z).normalize().multiplyScalar(R_WALL - 0.3);
     entry.addScaledVector(across, (i - 2) * 0.55);
-    entry.y = HEIGHT - 3 - i * 5.5;
+    entry.y = CAM_TOP - 3 - i * 5.5;
     shaft.position.copy(entry).addScaledVector(SUN_DIR, 5);
     shafts.push(shaft);
     scene.add(shaft);
@@ -423,8 +428,8 @@ export function createStaircase(container, { onReady, onFrame } = {}) {
 
   function place(p, t) {
     const fall = 0.28 * p + 0.72 * p * p; // gravity: slow at first, then faster
-    const top = HEIGHT + 2.6;
-    const bottom = HEIGHT * 0.12; // the camera stops well above the last step, inside the haze
+    const top = CAM_TOP;
+    const bottom = CAM_BOTTOM;
     const y = top - (top - bottom) * fall;
     const yaw = 0.6 + p * Math.PI * 2 * 2;
     const lean = 0.5 + 0.7 * smoothstep(0, 0.35, p); // swings outward so the walls and rail read from the side
