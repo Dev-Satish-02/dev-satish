@@ -1287,7 +1287,16 @@ html.reduce-motion .pane {
   height: 100vh;
   height: 100svh;
   overflow: hidden;
-  background: #e2d9c9;
+  background: #b98a24;
+}
+/* a warm vignette pulls the eye down the well */
+.stair-pin::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(ellipse 75% 70% at 50% 50%, transparent 55%, rgba(74, 50, 8, 0.38) 100%);
 }
 .stair-canvas {
   position: absolute;
@@ -1300,6 +1309,7 @@ html.reduce-motion .pane {
 .stair-wash {
   position: absolute;
   inset: 0;
+  z-index: 2; /* above the vignette, so the landing blue is perfectly flat */
   background: var(--summer);
   opacity: 0;
   pointer-events: none;
@@ -1308,11 +1318,11 @@ html.reduce-motion .pane {
   position: absolute;
   left: var(--gutter);
   top: calc(var(--header) + clamp(28px, 6vh, 64px));
-  z-index: 2;
+  z-index: 3;
   max-width: min(560px, calc(100% - 2 * var(--gutter)));
   padding: clamp(20px, 3vw, 32px);
-  background: rgba(246, 241, 231, 0.95);
-  box-shadow: 10px 10px 0 var(--red);
+  background: rgba(255, 249, 235, 0.94);
+  box-shadow: 10px 10px 0 #7a5a16;
 }
 .stair-copy .hero-name {
   font-size: clamp(56px, 8vw, 116px);
