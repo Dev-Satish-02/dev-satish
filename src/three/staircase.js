@@ -6,200 +6,120 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
 /* The hero: the golden spiral stairwell from Bakemonogatari's first episode.
 
-   Looking straight down a glass tower. A continuous spiral of fine, tightly packed
-   treads hugs a curtain wall of small sunlit panes; a bronze handrail on dense
-   balusters runs along the open inner edge. Sun pours in at an angle, so every flight
-   throws a diagonal shadow on the flights below, and shafts of light cross the well.
-   At the bottom, an ornate medallion glows. Scroll progress (0..1) drops the camera
-   down the well, spinning and accelerating, until it washes into the summer blue
-   that the Experience section begins with. */
+   Looking straight down a glass tower. Solid steps climb a curtain wall of tall
+   panes, four to a bay, each bay held by a bronze fin with bolted fittings. A glass
+   balustrade with a bronze handrail runs along the open edge. The sun comes from one
+   side only, high up, so every flight throws its shadow across the next and a few
+   soft shafts cross the well in parallel. There is no floor: the well sinks into a
+   warm haze. Scroll progress (0..1) drops the camera down it, spinning and
+   accelerating, until the haze washes into the summer blue that the Experience
+   section begins with. */
 
 const PALETTE = {
-  tread: '#e3b23c', // honey gold
-  nosing: '#7a5a16', // bronze line at each step edge
-  highlight: '#ffe8a3',
-  fascia: '#a87a1d', // deep ochre
-  soffit: '#8c6514',
-  rail: '#4f3f12', // bronze
-  baluster: '#5e4c17',
-  mullion: '#b8902e',
-  glassHi: '#fffdf3',
-  glassLo: '#ffe9a6',
-  haze: '#b98a24',
-  medallion: '#f6e2bd',
-  medallionLine: '#9c6f22',
-  sun: '#fff1c8',
+  step: '#d4a23a', // honey gold
+  nosing: '#6e5214', // the bronze line along each step's edge
+  rail: '#5a4513', // bronze
+  post: '#4a3910',
+  glassRail: '#e6c25e', // tinted balustrade glass
+  glassEdge: '#fff1c2',
+  fin: '#b4882c',
+  pane: '#fff6dc',
+  haze: '#dcbd72',
+  sun: '#fff0c8',
 };
+const SKY = new THREE.Color('#0f47c2');
 
-const TURNS = 9;
-const TURN_H = 3.4;
-const STEPS_PER_TURN = 64;
-const HEIGHT = TURNS * TURN_H;
+const STEPS_PER_TURN = 56;
+const RISE = 0.1;
+const TURNS = 7;
+const TURN_H = STEPS_PER_TURN * RISE;
+const STEP_COUNT = STEPS_PER_TURN * TURNS;
+const HEIGHT = TURN_H * TURNS;
+const D_ANGLE = (Math.PI * 2) / STEPS_PER_TURN;
 const R_WALL = 3.3;
-const R_OUT = 3.27;
+const R_OUT = 3.24;
 const R_IN = 2.05;
-const TREAD_DEPTH = 0.22; // thickness of each flight, tread to soffit
-const SUN_DIR = new THREE.Vector3(0.48, -1, 0.3).normalize();
+const BLOCK = 0.16; // each step is a solid block this deep
+const BAYS = 11; // fins around the wall
+const RAIL_H = 0.95;
+
+// one sun, high on one side; light travels down and across the well
+const SUN_DIR = new THREE.Vector3(0.62, -1, 0.18).normalize();
 
 const smoothstep = (a, b, x) => {
   const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
   return t * t * (3 - 2 * t);
 };
 
-function canvasTexture(w, h, draw, { repeat = false, srgb = true } = {}) {
+function canvasTexture(w, h, draw) {
   const c = document.createElement('canvas');
   c.width = w;
   c.height = h;
   draw(c.getContext('2d'), w, h);
   const tex = new THREE.CanvasTexture(c);
-  if (srgb) tex.colorSpace = THREE.SRGBColorSpace;
+  tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 8;
-  if (repeat) {
-    tex.wrapS = THREE.RepeatWrapping;
-    tex.wrapT = THREE.RepeatWrapping;
-  }
   return tex;
 }
 
-/* one tread, repeated along the spiral: gold, lit edge, bronze nosing line */
-function treadTexture() {
-  return canvasTexture(
-    64,
-    128,
-    (g, w, h) => {
-      const grad = g.createLinearGradient(0, 0, w, 0);
-      grad.addColorStop(0, '#d9a535');
-      grad.addColorStop(0.7, PALETTE.tread);
-      grad.addColorStop(0.86, PALETTE.highlight);
-      grad.addColorStop(0.9, PALETTE.nosing);
-      grad.addColorStop(1, PALETTE.nosing);
-      g.fillStyle = grad;
-      g.fillRect(0, 0, w, h);
-      // worn darker band along the wall side and a lighter walking line
-      g.fillStyle = 'rgba(122, 90, 22, 0.25)';
-      g.fillRect(0, h - 14, w, 14);
-      g.fillStyle = 'rgba(255, 240, 190, 0.18)';
-      g.fillRect(0, h * 0.35, w, h * 0.2);
-    },
-    { repeat: true }
-  );
-}
-
-/* the glass curtain wall: small panes in a fine bronze grid, no gaps */
-function glassTexture() {
-  const cols = 8;
-  const rows = 10;
-  return canvasTexture(
-    512,
-    512,
-    (g, w, h) => {
-      g.fillStyle = PALETTE.mullion;
-      g.fillRect(0, 0, w, h);
-      const pw = w / cols;
-      const ph = h / rows;
-      for (let r = 0; r < rows; r += 1) {
-        for (let c = 0; c < cols; c += 1) {
-          const x = c * pw + 3;
-          const y = r * ph + 3;
-          const grad = g.createLinearGradient(0, y, 0, y + ph - 6);
-          const dim = (r * 7 + c * 3) % 11 === 0 ? 0.88 : 1;
-          grad.addColorStop(0, PALETTE.glassHi);
-          grad.addColorStop(1, PALETTE.glassLo);
-          g.globalAlpha = dim;
-          g.fillStyle = grad;
-          g.fillRect(x, y, pw - 6, ph - 6);
-          g.globalAlpha = 1;
-        }
+/* One bay of the curtain wall: four tall panes between thin mullions, a thin transom
+   across the middle, and the bronze fin on the left edge with its bolted fittings. */
+function bayTexture() {
+  const tex = canvasTexture(1024, 1024, (g, w, h) => {
+    const fin = 70;
+    g.fillStyle = '#d7b46a';
+    g.fillRect(0, 0, w, h);
+    const paneW = (w - fin) / 4;
+    for (let r = 0; r < 2; r += 1) {
+      for (let c = 0; c < 4; c += 1) {
+        const x = fin + c * paneW + 4;
+        const y = r * (h / 2) + 6;
+        const ph = h / 2 - 12;
+        const grad = g.createLinearGradient(x, y, x + paneW, y + ph);
+        grad.addColorStop(0, '#fffdf6');
+        grad.addColorStop(0.6, PALETTE.pane);
+        grad.addColorStop(1, '#fbecc2');
+        g.fillStyle = grad;
+        g.fillRect(x, y, paneW - 8, ph);
       }
-      // heavier transoms every few rows, as in a real curtain wall
-      g.fillStyle = '#9d7a22';
-      for (let r = 0; r <= rows; r += 5) g.fillRect(0, r * ph - 3, w, 6);
-    },
-    { repeat: true }
-  );
-}
-
-/* the ornate floor at the bottom of the well: octagon, star, wheel */
-function medallionTexture() {
-  return canvasTexture(1024, 1024, (g, w) => {
-    const c = w / 2;
-    const ring = (r, width, color) => {
-      g.beginPath();
-      g.arc(c, c, r, 0, Math.PI * 2);
-      g.lineWidth = width;
-      g.strokeStyle = color;
-      g.stroke();
-    };
-    const poly = (n, r, rot, width, color, fill) => {
-      g.beginPath();
-      for (let i = 0; i <= n; i += 1) {
-        const a = rot + (i / n) * Math.PI * 2;
-        g.lineTo(c + Math.cos(a) * r, c + Math.sin(a) * r);
-      }
-      if (fill) {
-        g.fillStyle = fill;
-        g.fill();
-      }
-      g.lineWidth = width;
-      g.strokeStyle = color;
-      g.stroke();
-    };
-    const grad = g.createRadialGradient(c, c, 40, c, c, c);
-    grad.addColorStop(0, '#fff6e2');
-    grad.addColorStop(0.7, PALETTE.medallion);
-    grad.addColorStop(1, '#e3c48a');
-    g.fillStyle = grad;
-    g.fillRect(0, 0, w, w);
-    const L = PALETTE.medallionLine;
-    ring(500, 16, L);
-    ring(470, 4, L);
-    poly(8, 440, Math.PI / 8, 8, L, '#f3d9a8');
-    poly(4, 420, 0, 6, L);
-    poly(4, 420, Math.PI / 4, 6, L);
-    ring(300, 6, L);
-    // the wheel: spokes and a hub
-    for (let i = 0; i < 24; i += 1) {
-      const a = (i / 24) * Math.PI * 2;
-      g.beginPath();
-      g.moveTo(c + Math.cos(a) * 120, c + Math.sin(a) * 120);
-      g.lineTo(c + Math.cos(a) * 290, c + Math.sin(a) * 290);
-      g.lineWidth = i % 3 === 0 ? 6 : 2.5;
-      g.strokeStyle = L;
-      g.stroke();
     }
-    ring(210, 3, L);
-    ring(120, 8, L);
-    ring(60, 14, L);
-    // small squares at the octagon's corners
-    for (let i = 0; i < 8; i += 1) {
-      const a = Math.PI / 8 + (i / 8) * Math.PI * 2;
-      const x = c + Math.cos(a) * 440;
-      const y = c + Math.sin(a) * 440;
-      g.save();
-      g.translate(x, y);
-      g.rotate(a);
-      g.fillStyle = '#e8c27a';
-      g.fillRect(-22, -22, 44, 44);
+    // the fin and its point fixings, two per pane height
+    const finGrad = g.createLinearGradient(0, 0, fin, 0);
+    finGrad.addColorStop(0, '#8d6a1f');
+    finGrad.addColorStop(0.5, PALETTE.fin);
+    finGrad.addColorStop(1, '#9a7524');
+    g.fillStyle = finGrad;
+    g.fillRect(0, 0, fin, h);
+    for (let i = 0; i < 4; i += 1) {
+      const y = (i + 0.5) * (h / 4);
+      g.fillStyle = '#e4c67c';
+      g.beginPath();
+      g.arc(fin + 6, y, 12, 0, Math.PI * 2);
+      g.fill();
       g.lineWidth = 4;
-      g.strokeStyle = L;
-      g.strokeRect(-22, -22, 44, 44);
-      g.restore();
+      g.strokeStyle = PALETTE.nosing;
+      g.stroke();
     }
+    // the transom
+    g.fillStyle = '#b8913c';
+    g.fillRect(fin, h / 2 - 6, w - fin, 12);
   });
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  return tex;
 }
 
 function softDot() {
   return canvasTexture(64, 64, (g) => {
     const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
-    grad.addColorStop(0, 'rgba(255,255,255,1)');
-    grad.addColorStop(0.35, 'rgba(255,245,215,0.6)');
+    grad.addColorStop(0, 'rgba(255,255,255,0.9)');
     grad.addColorStop(1, 'rgba(255,240,200,0)');
     g.fillStyle = grad;
     g.fillRect(0, 0, 64, 64);
   });
 }
 
-/* a shaft of light: bright core, soft edges, fading at both ends */
+/* a shaft of light: soft across its width, fading at both ends */
 function shaftTexture() {
   return canvasTexture(128, 512, (g, w, h) => {
     const across = g.createLinearGradient(0, 0, w, 0);
@@ -211,32 +131,43 @@ function shaftTexture() {
     g.globalCompositeOperation = 'destination-in';
     const along = g.createLinearGradient(0, 0, 0, h);
     along.addColorStop(0, 'rgba(0,0,0,0)');
-    along.addColorStop(0.25, 'rgba(0,0,0,1)');
-    along.addColorStop(0.75, 'rgba(0,0,0,1)');
+    along.addColorStop(0.2, 'rgba(0,0,0,1)');
+    along.addColorStop(0.65, 'rgba(0,0,0,0.6)');
     along.addColorStop(1, 'rgba(0,0,0,0)');
     g.fillStyle = along;
     g.fillRect(0, 0, w, h);
   });
 }
 
-/* a helical strip between two radii; `drop` lowers it below the tread surface */
-function helixStrip(rA, rB, drop, segments, vertical = false) {
+/* a solid wedge-shaped step, its top at y = 0, spanning angle 0..span */
+function stepGeometry(span) {
+  const shape = new THREE.Shape();
+  const n = 4;
+  for (let i = 0; i <= n; i += 1) {
+    const a = (i / n) * span;
+    const p = [Math.cos(a) * R_OUT, -Math.sin(a) * R_OUT];
+    if (i === 0) shape.moveTo(...p);
+    else shape.lineTo(...p);
+  }
+  for (let i = n; i >= 0; i -= 1) {
+    const a = (i / n) * span;
+    shape.lineTo(Math.cos(a) * R_IN, -Math.sin(a) * R_IN);
+  }
+  const geo = new THREE.ExtrudeGeometry(shape, { depth: BLOCK, bevelEnabled: false });
+  geo.rotateX(-Math.PI / 2); // extrude upward; shape y becomes -z, so angles run the right way
+  geo.translate(0, -BLOCK, 0);
+  return geo;
+}
+
+/* a vertical helical band along the open edge, from `low` to `high` above the treads */
+function balustradeGeometry(radius, low, high, segments) {
   const pos = [];
-  const uv = [];
   const idx = [];
   for (let i = 0; i <= segments; i += 1) {
     const t = i / segments;
     const a = t * TURNS * Math.PI * 2;
     const y = HEIGHT - t * HEIGHT;
-    const u = t * TURNS * STEPS_PER_TURN;
-    const cos = Math.cos(a);
-    const sin = Math.sin(a);
-    if (vertical) {
-      pos.push(cos * rA, y, sin * rA, cos * rA, y - drop, sin * rA);
-    } else {
-      pos.push(cos * rA, y - drop, sin * rA, cos * rB, y - drop, sin * rB);
-    }
-    uv.push(u, 0, u, 1);
+    pos.push(Math.cos(a) * radius, y + low, Math.sin(a) * radius, Math.cos(a) * radius, y + high, Math.sin(a) * radius);
     if (i < segments) {
       const k = i * 2;
       idx.push(k, k + 1, k + 2, k + 1, k + 3, k + 2);
@@ -244,7 +175,6 @@ function helixStrip(rA, rB, drop, segments, vertical = false) {
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-  geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
   geo.setIndex(idx);
   geo.computeVertexNormals();
   return geo;
@@ -269,7 +199,7 @@ export function createStaircase(container, { onReady, onFrame } = {}) {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, small ? 1.5 : 1.75));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  renderer.toneMappingExposure = 1.0;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap;
   container.appendChild(renderer.domElement);
@@ -277,118 +207,162 @@ export function createStaircase(container, { onReady, onFrame } = {}) {
   const scene = new THREE.Scene();
   const haze = new THREE.Color(PALETTE.haze);
   scene.background = haze.clone();
-  scene.fog = new THREE.FogExp2(haze.clone(), 0.034);
-  const camera = new THREE.PerspectiveCamera(78, 1, 0.05, 120);
+  scene.fog = new THREE.FogExp2(haze.clone(), 0.04);
+  const camera = new THREE.PerspectiveCamera(76, 1, 0.05, 120);
 
   const disposables = [];
   const keep = (x) => {
     disposables.push(x);
     return x;
   };
+  const instanced = [];
 
-  /* light: warm fill, and one low sun that throws diagonal shadows down the well */
-  scene.add(new THREE.HemisphereLight('#fff3d0', '#7a5a16', 0.75));
-  scene.add(new THREE.AmbientLight('#ffe2a0', 0.25));
-  const sun = new THREE.DirectionalLight(PALETTE.sun, 3.2);
+  /* light: a soft warm fill, and one sun from one side */
+  scene.add(new THREE.HemisphereLight('#fff4d8', '#b08a3a', 0.95));
+  const sun = new THREE.DirectionalLight(PALETTE.sun, 2.3);
   sun.target.position.set(0, HEIGHT / 2, 0);
-  sun.position.copy(sun.target.position).addScaledVector(SUN_DIR, -45);
+  sun.position.copy(sun.target.position).addScaledVector(SUN_DIR, -50);
   sun.castShadow = true;
   sun.shadow.mapSize.set(small ? 1024 : 2048, small ? 1024 : 2048);
-  Object.assign(sun.shadow.camera, { left: -15, right: 15, top: 15, bottom: -15, near: 1, far: 95 });
-  sun.shadow.bias = -0.0006;
-  sun.shadow.normalBias = 0.02;
-  sun.shadow.radius = 3;
+  Object.assign(sun.shadow.camera, { left: -16, right: 16, top: 22, bottom: -22, near: 1, far: 110 });
+  sun.shadow.bias = -0.0005;
+  sun.shadow.normalBias = 0.03;
+  sun.shadow.radius = 4;
   scene.add(sun, sun.target);
 
-  /* the stair: treads, the inner fascia, the underside */
-  const segments = TURNS * 160;
-  const treadTex = keep(treadTexture());
-  const treads = new THREE.Mesh(
-    keep(helixStrip(R_IN, R_OUT, 0, segments)),
-    keep(new THREE.MeshStandardMaterial({ map: treadTex, roughness: 0.72, metalness: 0.05, side: THREE.DoubleSide }))
-  );
-  const fascia = new THREE.Mesh(
-    keep(helixStrip(R_IN, R_IN, TREAD_DEPTH, segments, true)),
-    keep(new THREE.MeshStandardMaterial({ color: PALETTE.fascia, roughness: 0.6, side: THREE.DoubleSide }))
-  );
-  const soffit = new THREE.Mesh(
-    keep(helixStrip(R_IN, R_OUT, TREAD_DEPTH, segments)),
-    keep(new THREE.MeshStandardMaterial({ color: PALETTE.soffit, roughness: 0.8, side: THREE.DoubleSide }))
-  );
-  [treads, fascia, soffit].forEach((m) => {
-    m.castShadow = true;
-    m.receiveShadow = true;
-    scene.add(m);
-  });
-
-  /* the railing: a bronze rail on dense balusters along the open edge */
-  const railR = R_IN + 0.04;
-  const rail = new THREE.Mesh(
-    keep(new THREE.TubeGeometry(new Helix(railR, 0.9), TURNS * 96, 0.032, 8, false)),
-    keep(new THREE.MeshStandardMaterial({ color: PALETTE.rail, roughness: 0.35, metalness: 0.6 }))
-  );
-  rail.castShadow = true;
-  scene.add(rail);
-  const balusterCount = TURNS * STEPS_PER_TURN;
-  const balusters = new THREE.InstancedMesh(
-    keep(new THREE.BoxGeometry(0.014, 0.9, 0.014)),
-    keep(new THREE.MeshStandardMaterial({ color: PALETTE.baluster, roughness: 0.5, metalness: 0.4 })),
-    balusterCount
-  );
+  /* the steps: solid blocks, each with a bronze line along its edge */
   const dummy = new THREE.Object3D();
-  for (let i = 0; i < balusterCount; i += 1) {
-    const t = i / balusterCount;
-    const a = t * TURNS * Math.PI * 2;
-    dummy.position.set(Math.cos(a) * railR, HEIGHT - t * HEIGHT + 0.45, Math.sin(a) * railR);
+  const steps = new THREE.InstancedMesh(
+    keep(stepGeometry(D_ANGLE * 1.01)),
+    keep(new THREE.MeshStandardMaterial({ color: PALETTE.step, roughness: 0.72, metalness: 0.05 })),
+    STEP_COUNT
+  );
+  const nosing = new THREE.InstancedMesh(
+    keep(new THREE.BoxGeometry(R_OUT - R_IN, 0.012, 0.022)),
+    keep(new THREE.MeshStandardMaterial({ color: PALETTE.nosing, roughness: 0.5 })),
+    STEP_COUNT
+  );
+  const mid = (R_IN + R_OUT) / 2;
+  for (let i = 0; i < STEP_COUNT; i += 1) {
+    const a = i * D_ANGLE;
+    const y = HEIGHT - i * RISE;
+    dummy.position.set(0, y, 0);
+    dummy.rotation.set(0, -a, 0);
     dummy.updateMatrix();
-    balusters.setMatrixAt(i, dummy.matrix);
+    steps.setMatrixAt(i, dummy.matrix);
+    const na = a + D_ANGLE * 0.98; // the leading edge, where the next step drops away
+    dummy.position.set(Math.cos(na) * mid, y + 0.006, Math.sin(na) * mid);
+    dummy.rotation.set(0, -na, 0);
+    dummy.updateMatrix();
+    nosing.setMatrixAt(i, dummy.matrix);
   }
-  balusters.castShadow = true;
-  scene.add(balusters);
+  steps.castShadow = true;
+  steps.receiveShadow = true;
+  nosing.receiveShadow = true;
+  scene.add(steps, nosing);
+  instanced.push(steps, nosing);
 
-  /* the glass curtain wall, glowing with daylight but still taking shadow */
-  const glassTex = keep(glassTexture());
-  const wallH = HEIGHT + 12;
-  glassTex.repeat.set(16, wallH / 2.4);
-  const wall = new THREE.Mesh(
-    keep(new THREE.CylinderGeometry(R_WALL, R_WALL, wallH, 128, 1, true)),
+  /* the balustrade: tinted glass, a bright top edge, a bronze handrail, a few posts */
+  const railR = R_IN + 0.04;
+  const balSegs = TURNS * 160;
+  const glass = new THREE.Mesh(
+    keep(balustradeGeometry(railR, 0.05, RAIL_H - 0.08, balSegs)),
     keep(
       new THREE.MeshStandardMaterial({
-        map: glassTex,
-        emissive: '#fff0c4',
-        emissiveMap: glassTex,
-        emissiveIntensity: 0.5,
+        color: PALETTE.glassRail,
+        transparent: true,
+        opacity: 0.26,
+        roughness: 0.15,
+        metalness: 0.1,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+      })
+    )
+  );
+  scene.add(glass);
+  const edge = new THREE.Mesh(
+    keep(new THREE.TubeGeometry(new Helix(railR, RAIL_H - 0.08), TURNS * 96, 0.008, 4, false)),
+    keep(new THREE.MeshBasicMaterial({ color: PALETTE.glassEdge }))
+  );
+  const rail = new THREE.Mesh(
+    keep(new THREE.TubeGeometry(new Helix(railR, RAIL_H), TURNS * 96, 0.034, 8, false)),
+    keep(new THREE.MeshStandardMaterial({ color: PALETTE.rail, roughness: 0.35, metalness: 0.55 }))
+  );
+  rail.castShadow = true;
+  scene.add(edge, rail);
+  const POSTS_PER_TURN = 7;
+  const postCount = TURNS * POSTS_PER_TURN;
+  const posts = new THREE.InstancedMesh(
+    keep(new THREE.BoxGeometry(0.03, RAIL_H, 0.03)),
+    keep(new THREE.MeshStandardMaterial({ color: PALETTE.post, roughness: 0.4, metalness: 0.5 })),
+    postCount
+  );
+  for (let i = 0; i < postCount; i += 1) {
+    const t = i / postCount;
+    const a = t * TURNS * Math.PI * 2;
+    dummy.position.set(Math.cos(a) * (railR - 0.02), HEIGHT - t * HEIGHT + RAIL_H / 2, Math.sin(a) * (railR - 0.02));
+    dummy.rotation.set(0, 0, 0);
+    dummy.updateMatrix();
+    posts.setMatrixAt(i, dummy.matrix);
+  }
+  posts.castShadow = true;
+  scene.add(posts);
+  instanced.push(posts);
+
+  /* the curtain wall: bays of four tall panes, glowing with daylight */
+  const wallH = HEIGHT + 24;
+  const bayTex = keep(bayTexture());
+  bayTex.repeat.set(BAYS, wallH / 3.2);
+  const wall = new THREE.Mesh(
+    keep(new THREE.CylinderGeometry(R_WALL, R_WALL, wallH, 176, 1, true)),
+    keep(
+      new THREE.MeshStandardMaterial({
+        map: bayTex,
+        emissive: '#fff0c8',
+        emissiveMap: bayTex,
+        emissiveIntensity: 0.62,
         roughness: 0.9,
         side: THREE.BackSide,
       })
     )
   );
-  wall.position.y = HEIGHT / 2 - 3;
+  wall.position.y = HEIGHT / 2 - 10;
   wall.receiveShadow = true;
   scene.add(wall);
 
-  /* the medallion floor at the bottom */
-  const floor = new THREE.Mesh(
-    keep(new THREE.CircleGeometry(R_WALL, 96)),
-    // tinted down so the ornament reads instead of blooming out
-    keep(new THREE.MeshBasicMaterial({ map: keep(medallionTexture()), color: '#c9a160', fog: false }))
+  // the fins stand proud of the glass, so they catch the light and read from the side
+  const fins = new THREE.InstancedMesh(
+    keep(new THREE.BoxGeometry(0.1, wallH, 0.045)),
+    // lit a little from within, so the side facing away from the sun reads as bronze, not black
+    keep(new THREE.MeshStandardMaterial({ color: '#d1a94f', emissive: '#7a5a18', emissiveIntensity: 0.55, roughness: 0.5, metalness: 0.3 })),
+    BAYS
   );
-  floor.rotation.x = -Math.PI / 2;
-  floor.position.y = -1.2;
-  scene.add(floor);
+  for (let i = 0; i < BAYS; i += 1) {
+    // CylinderGeometry places u along θ at (sin θ, cos θ); centre each fin on its painted stripe
+    const theta = ((i + 35 / 1024) / BAYS) * Math.PI * 2;
+    const r = R_WALL - 0.06;
+    dummy.position.set(Math.sin(theta) * r, wall.position.y, Math.cos(theta) * r);
+    dummy.rotation.set(0, theta, 0);
+    dummy.updateMatrix();
+    fins.setMatrixAt(i, dummy.matrix);
+  }
+  fins.castShadow = true;
+  scene.add(fins);
+  instanced.push(fins);
 
-  /* shafts of sun crossing the well, along the sun's direction */
+  /* a few soft shafts of sun, all parallel, entering from the sunny side */
   const shaftTex = keep(shaftTexture());
   const shaftGeo = keep(new THREE.PlaneGeometry(1, 1));
-  const up = new THREE.Vector3(0, 1, 0);
+  const shaftQuat = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), SUN_DIR.clone().negate());
+  const across = new THREE.Vector3(-SUN_DIR.z, 0, SUN_DIR.x).normalize();
   const shafts = [];
-  for (let i = 0; i < 9; i += 1) {
+  for (let i = 0; i < 5; i += 1) {
     const mat = keep(
       new THREE.MeshBasicMaterial({
         map: shaftTex,
         color: PALETTE.sun,
         transparent: true,
-        opacity: 0.16 + (i % 3) * 0.05,
+        opacity: 0.08,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
         side: THREE.DoubleSide,
@@ -396,22 +370,24 @@ export function createStaircase(container, { onReady, onFrame } = {}) {
       })
     );
     const shaft = new THREE.Mesh(shaftGeo, mat);
-    shaft.scale.set(0.5 + (i % 4) * 0.35, 9 + (i % 3) * 3, 1);
-    shaft.quaternion.setFromUnitVectors(up, SUN_DIR.clone().negate());
-    shaft.rotateY((i * Math.PI) / 4.5);
-    const a = i * 2.1;
-    shaft.position.set(Math.cos(a) * 0.9, HEIGHT - 6 - i * ((HEIGHT - 4) / 9), Math.sin(a) * 0.9);
+    shaft.quaternion.copy(shaftQuat);
+    shaft.scale.set(0.9 + (i % 2) * 0.7, 10, 1);
+    // start at the sunlit wall, run across and down the well
+    const entry = new THREE.Vector3(-SUN_DIR.x, 0, -SUN_DIR.z).normalize().multiplyScalar(R_WALL - 0.3);
+    entry.addScaledVector(across, (i - 2) * 0.55);
+    entry.y = HEIGHT - 3 - i * 5.5;
+    shaft.position.copy(entry).addScaledVector(SUN_DIR, 5);
     shafts.push(shaft);
     scene.add(shaft);
   }
 
-  /* dust hanging in the light; it streams upward as you fall */
-  const DUST = small ? 380 : 700;
+  /* a little dust in the light, which streams upward as you fall */
+  const DUST = small ? 160 : 260;
   const dustPos = new Float32Array(DUST * 3);
   for (let i = 0; i < DUST; i += 1) {
-    const r = Math.sqrt(Math.random()) * (R_IN - 0.15);
+    const r = Math.sqrt(Math.random()) * (R_IN - 0.3);
     const a = Math.random() * Math.PI * 2;
-    dustPos.set([Math.cos(a) * r, -1 + Math.random() * (HEIGHT + 3), Math.sin(a) * r], i * 3);
+    dustPos.set([Math.cos(a) * r, -4 + Math.random() * (HEIGHT + 6), Math.sin(a) * r], i * 3);
   }
   const dustGeo = keep(new THREE.BufferGeometry());
   dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
@@ -420,26 +396,26 @@ export function createStaircase(container, { onReady, onFrame } = {}) {
     keep(
       new THREE.PointsMaterial({
         map: keep(softDot()),
-        color: '#fff0c0',
-        size: 0.06,
+        color: '#fff2cc',
+        size: 0.035,
         transparent: true,
-        opacity: 0.85,
+        opacity: 0.5,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
-        fog: false,
       })
     )
   );
   scene.add(dust);
 
-  /* bloom: the sunlit glass should glow */
+  /* a gentle bloom on the glass only */
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
-  const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.55, 0.65, 0.8);
+  const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.28, 0.5, 0.88);
   composer.addPass(bloom);
   composer.addPass(new OutputPass());
 
   const target = new THREE.Vector3();
+  const tint = new THREE.Color();
   let progress = 0;
   let goal = 0;
   let dirty = true;
@@ -447,23 +423,28 @@ export function createStaircase(container, { onReady, onFrame } = {}) {
 
   function place(p, t) {
     const fall = 0.28 * p + 0.72 * p * p; // gravity: slow at first, then faster
-    const top = HEIGHT + 2.4;
-    const bottom = 0.4;
+    const top = HEIGHT + 2.6;
+    const bottom = HEIGHT * 0.12; // the camera stops well above the last step, inside the haze
     const y = top - (top - bottom) * fall;
-    const yaw = 0.6 + p * Math.PI * 2 * 2.2;
-    // at rest the view leans a little off-axis, like the reference frame; the fall swings it round
-    const lean = 0.55 + 0.5 * smoothstep(0, 0.3, p);
-    const roll = Math.sin(p * Math.PI * 5) * 0.12 * p;
+    const yaw = 0.6 + p * Math.PI * 2 * 2;
+    const lean = 0.5 + 0.7 * smoothstep(0, 0.35, p); // swings outward so the walls and rail read from the side
+    const roll = Math.sin(p * Math.PI * 5) * 0.1 * p;
     const drift = 0.18 * p;
     camera.position.set(Math.sin(p * 9) * drift, y, Math.cos(p * 7) * drift);
     target.set(Math.cos(yaw) * lean, y - 5, Math.sin(yaw) * lean);
     camera.up.set(Math.cos(yaw + Math.PI / 2 + roll), 0, Math.sin(yaw + Math.PI / 2 + roll));
     camera.lookAt(target);
-    camera.fov = 76 + 16 * smoothstep(0.08, 0.7, p);
+    camera.fov = 74 + 14 * smoothstep(0.08, 0.7, p);
     camera.updateProjectionMatrix();
-    // the light breathes a touch, so the still frame is never quite frozen
+    // the haze thickens and cools toward the summer blue on the way down
+    const k = smoothstep(0.55, 1, p);
+    tint.copy(haze).lerp(SKY, k * 0.85);
+    scene.background.copy(tint);
+    scene.fog.color.copy(tint);
+    scene.fog.density = 0.04 + 0.05 * k;
+    // the light breathes a little, so the still frame is never quite frozen
     shafts.forEach((s, i) => {
-      s.material.opacity = 0.14 + (i % 3) * 0.05 + Math.sin(t * 0.0006 + i) * 0.03;
+      s.material.opacity = 0.07 + Math.sin(t * 0.0005 + i * 1.7) * 0.02;
     });
   }
 
@@ -502,8 +483,8 @@ export function createStaircase(container, { onReady, onFrame } = {}) {
       progress = goal;
       dirty = true;
     }
-    // a slow re-render (~12 fps) keeps the light shafts breathing while at rest
-    if (!dirty && now - lastAmbient < 80) return;
+    // at rest, re-render slowly (~10 fps) so the light keeps breathing
+    if (!dirty && now - lastAmbient < 100) return;
     lastAmbient = now;
     dirty = false;
     place(progress, now);
@@ -524,7 +505,7 @@ export function createStaircase(container, { onReady, onFrame } = {}) {
       cancelAnimationFrame(raf);
       ro.disconnect();
       io.disconnect();
-      balusters.dispose();
+      instanced.forEach((m) => m.dispose());
       disposables.forEach((d) => d.dispose());
       composer.dispose();
       renderer.dispose();
