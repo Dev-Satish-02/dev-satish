@@ -47,6 +47,8 @@ const RAIL_H = 0.95;
 const MARGIN = 2 * TURN_H;
 const CAM_TOP = HEIGHT - MARGIN;
 const CAM_BOTTOM = MARGIN;
+// the opening frame: the nearest flight sweeps in from the bottom-left
+const YAW0 = 0.6 + Math.PI;
 
 // one sun, high on one side; light travels down and across the well
 const SUN_DIR = new THREE.Vector3(0.62, -1, 0.18).normalize();
@@ -412,6 +414,37 @@ export function createStaircase(container, { onReady, onFrame } = {}) {
   );
   scene.add(dust);
 
+  /* loose pages and books hanging in the well: they rush up past you as you fall */
+  const papers = new THREE.InstancedMesh(
+    keep(new THREE.PlaneGeometry(0.15, 0.21)),
+    keep(new THREE.MeshStandardMaterial({ roughness: 0.85, side: THREE.DoubleSide })),
+    small ? 70 : 110
+  );
+  const books = new THREE.InstancedMesh(
+    keep(new THREE.BoxGeometry(0.17, 0.045, 0.24)),
+    keep(new THREE.MeshStandardMaterial({ roughness: 0.6 })),
+    small ? 18 : 30
+  );
+  const PAGE_TONES = ['#fffaf0', '#f6ead0', '#fbf3e1', '#efe0bd'];
+  const COVERS = ['#7d1f22', '#24345e', '#2f4a33', '#a46c1c', '#5a3a1e'];
+  const tone = new THREE.Color();
+  const scatter = (mesh, colors) => {
+    for (let i = 0; i < mesh.count; i += 1) {
+      const r = 0.45 + Math.random() * (R_IN - 0.75); // kept off the camera's path down the middle
+      const a = Math.random() * Math.PI * 2;
+      dummy.position.set(Math.cos(a) * r, CAM_BOTTOM - 3 + Math.random() * (CAM_TOP - CAM_BOTTOM), Math.sin(a) * r);
+      dummy.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+      dummy.updateMatrix();
+      mesh.setMatrixAt(i, dummy.matrix);
+      mesh.setColorAt(i, tone.set(colors[(Math.random() * colors.length) | 0]));
+    }
+    mesh.castShadow = true;
+    scene.add(mesh);
+    instanced.push(mesh);
+  };
+  scatter(papers, PAGE_TONES);
+  scatter(books, COVERS);
+
   /* a gentle bloom on the glass only */
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
@@ -431,7 +464,7 @@ export function createStaircase(container, { onReady, onFrame } = {}) {
     const top = CAM_TOP;
     const bottom = CAM_BOTTOM;
     const y = top - (top - bottom) * fall;
-    const yaw = 0.6 + p * Math.PI * 2 * 2;
+    const yaw = YAW0 + p * Math.PI * 2 * 2;
     const lean = 0.5 + 0.7 * smoothstep(0, 0.35, p); // swings outward so the walls and rail read from the side
     const roll = Math.sin(p * Math.PI * 5) * 0.1 * p;
     const drift = 0.18 * p;

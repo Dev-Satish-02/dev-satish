@@ -1,7 +1,7 @@
 import { SpringScene } from './Spring';
 import { SummerScene } from './Summer';
 import { AutumnScene } from './Autumn';
-import { WinterScene } from './Winter';
+import { WinterScene } from './Bamboo';
 import { NightScene } from './Night';
 
 export { SpringScene, SummerScene, AutumnScene, WinterScene, NightScene };

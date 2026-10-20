@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import HeroBlossom from './HeroBlossom';
-import { PROFILE, SCENES } from '../data/content';
+import { PROFILE } from '../data/content';
 import { stageProgress, useFullMotion } from '../lib/store';
 
 const smoothstep = (a, b, x) => {
@@ -17,7 +17,6 @@ export default function StaircaseHero() {
   const copy = useRef(null);
   const wash = useRef(null);
   const [failed, setFailed] = useState(false);
-  const { no, season } = SCENES.hero;
 
   useEffect(() => {
     let stair;
@@ -72,12 +71,8 @@ export default function StaircaseHero() {
         <div ref={holder} className="stair-canvas" aria-hidden="true" />
         <div ref={wash} className="stair-wash" aria-hidden="true" />
         <div ref={copy} className="stair-copy">
-          <p className="scene-tag mono hero-in" style={{ '--i': 0 }}>
-            <span>Scene {no}</span>
-            <span>{season}</span>
-          </p>
           <h1 id="about-title" className="hero-name hero-in" style={{ '--i': 1 }}>
-            Dev <em>Satish</em>
+            {PROFILE.name}
           </h1>
           <p className="hero-role hero-in" style={{ '--i': 2 }}>
             {PROFILE.title}

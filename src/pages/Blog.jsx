@@ -21,8 +21,6 @@ export default function Blog() {
       <Scene
         id="writing"
         season="night"
-        no="—"
-        label={selected ? selected.category : 'Interlude'}
         title="Writing"
         lede="Notes on product, strategy and the books I read."
         className="page-head"

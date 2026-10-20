@@ -73,5 +73,5 @@ export function seasonFor(categorySlug) {
 }
 
 export function formatDate(date) {
-  return new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
+  return new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 }

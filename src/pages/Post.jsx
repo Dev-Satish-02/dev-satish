@@ -14,10 +14,6 @@ export default function Post() {
       <main id="main">
         <section className="title-card title-card--ink">
           <div className="title-card-inner">
-            <p className="scene-tag mono">
-              <span>Interlude</span>
-              <span>Missing chapter</span>
-            </p>
             <h1 className="title-card-title">This chapter doesn&apos;t exist.</h1>
             <Link to="/blog" className="btn btn--paper" style={{ marginTop: 28 }}>
               All writing
@@ -36,19 +32,14 @@ export default function Post() {
     <main id="main">
       <section className={`title-card season-${seasonFor(post.categorySlug)}`}>
         <div className="title-card-inner">
-          <p className="scene-tag mono">
-            <Link to={`/blog/${post.categorySlug}`} className="back-link">
-              ← {post.category}
-            </Link>
-            <span>Chapter {String(chapter).padStart(2, '0')}</span>
+          <p className="title-card-kicker">
+            Chapter {chapter} of <Link to="/blog">the writing</Link>, filed under{' '}
+            <Link to={`/blog/${post.categorySlug}`}>{post.category.toLowerCase()}</Link>
           </p>
           <h1 className="title-card-title title-card-title--post">{post.title}</h1>
           {post.summary && <p className="title-card-lede">{post.summary}</p>}
-          <p className="post-meta mono">
+          <p className="post-meta">
             <time>{formatDate(post.date)}</time>
-            {post.tags.map((t) => (
-              <span key={t}>#{t}</span>
-            ))}
           </p>
         </div>
       </section>
@@ -62,14 +53,14 @@ export default function Post() {
         <nav className="post-nav" aria-label="More writing">
           {older ? (
             <Link to={`/blog/${older.categorySlug}/${older.slug}`}>
-              <span className="mono">← Previous chapter</span>
+              <span>Previous chapter</span>
               <strong>{older.title}</strong>
             </Link>
           ) : (
             <span />
           )}
           <Link to={newer ? `/blog/${newer.categorySlug}/${newer.slug}` : '/blog'} className="post-nav-next">
-            <span className="mono">{newer ? 'Next chapter →' : 'All writing →'}</span>
+            <span>{newer ? 'Next chapter' : 'All writing'}</span>
             <strong>{newer ? newer.title : 'Writing'}</strong>
           </Link>
         </nav>

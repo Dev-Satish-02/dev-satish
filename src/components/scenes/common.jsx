@@ -151,3 +151,86 @@ export function Streaks({ items, fill, opacity = 1 }) {
     </g>
   );
 }
+
+/* ── depth kit ─────────────────────────────────────────────── */
+
+// A parallax plane: `d` is how far it travels as its section scrolls (0 = fixed sky,
+// 1 = nearest foreground). The section sets --sp on the scene; see Scene.jsx.
+export function Layer({ d, children, ...rest }) {
+  return (
+    <g className="pl" style={{ '--d': d }} {...rest}>
+      {children}
+    </g>
+  );
+}
+
+// Gradient shorthand: stops as [offset, colour, opacity?]
+export function Linear({ id, stops, x1 = 0, y1 = 0, x2 = 0, y2 = 1 }) {
+  return (
+    <linearGradient id={id} x1={x1} y1={y1} x2={x2} y2={y2}>
+      {stops.map(([o, c, a = 1]) => (
+        <stop key={o} offset={o} stopColor={c} stopOpacity={a} />
+      ))}
+    </linearGradient>
+  );
+}
+
+export function Radial({ id, stops, cx = 0.5, cy = 0.5, r = 0.5 }) {
+  return (
+    <radialGradient id={id} cx={cx} cy={cy} r={r}>
+      {stops.map(([o, c, a = 1]) => (
+        <stop key={o} offset={o} stopColor={c} stopOpacity={a} />
+      ))}
+    </radialGradient>
+  );
+}
+
+// Soft three-tone cloud: a shadowed base, a mid body and a sunlit crown.
+export function Cloud({ x, y, s = 1, base, mid, top }) {
+  const puffs = [
+    [-120, 10, 60],
+    [-60, -20, 78],
+    [10, -40, 92],
+    [90, -18, 74],
+    [150, 12, 56],
+  ];
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s} ${s * 0.62})`}>
+      <ellipse cx="10" cy="30" rx="230" ry="34" fill={base} />
+      {puffs.map(([px, py, r]) => (
+        <circle key={px} cx={px} cy={py + 8} r={r} fill={base} />
+      ))}
+      {puffs.map(([px, py, r]) => (
+        <circle key={`m${px}`} cx={px - 6} cy={py} r={r * 0.92} fill={mid} />
+      ))}
+      {puffs.map(([px, py, r]) => (
+        <circle key={`t${px}`} cx={px - 14} cy={py - r * 0.35} r={r * 0.55} fill={top} />
+      ))}
+    </g>
+  );
+}
+
+// A lattice pylon drawn as fine line-art, the way the series draws overhead structures.
+export function Pylon({ x, top, base, w = 46, stroke, width = 1.4, opacity = 0.75 }) {
+  const lines = [];
+  const h = base - top;
+  const half = (yy) => w / 2 + ((yy - top) / h) * (w * 0.45);
+  for (let yy = top; yy < base; yy += 46) {
+    const y2 = Math.min(base, yy + 46);
+    lines.push([x - half(yy), yy, x + half(y2), y2], [x + half(yy), yy, x - half(y2), y2], [x - half(y2), y2, x + half(y2), y2]);
+  }
+  return (
+    <g stroke={stroke} strokeWidth={width} opacity={opacity} fill="none">
+      <line x1={x - half(top)} y1={top} x2={x - half(base)} y2={base} />
+      <line x1={x + half(top)} y1={top} x2={x + half(base)} y2={base} />
+      {lines.map(([a, b, c, d], i) => (
+        <line key={i} x1={a} y1={b} x2={c} y2={d} />
+      ))}
+      <line x1={x - w * 1.6} y1={top + 18} x2={x + w * 1.6} y2={top + 18} />
+      <line x1={x - w * 1.2} y1={top + 52} x2={x + w * 1.2} y2={top + 52} />
+      {[-1.6, -0.8, 0.8, 1.6].map((k) => (
+        <line key={k} x1={x + w * k} y1={top + 18} x2={x + w * k} y2={top + 34} />
+      ))}
+    </g>
+  );
+}

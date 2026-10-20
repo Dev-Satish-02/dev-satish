@@ -2,7 +2,7 @@
 
 export const PROFILE = {
   name: 'Dev Satish',
-  title: 'Product · Strategy · Engineering',
+  title: 'Product, strategy and engineering',
   summary: 'Studying at BITS Pilani. I like turning problems into things people use.',
   location: 'BITS Pilani, Rajasthan, India',
   email: 'devsatish08@gmail.com',
@@ -17,15 +17,6 @@ export const SOCIALS = [
   { label: 'LinkedIn', href: 'https://linkedin.com/in/dev-satish' },
   { label: 'Twitter', href: 'https://twitter.com/devtech08' },
 ];
-
-// One scene per season, the way the series runs from spring break to the next spring.
-export const SCENES = {
-  hero: { no: '001', season: 'Spring' },
-  experience: { no: '002', season: 'Summer' },
-  projects: { no: '003', season: 'Autumn' },
-  skills: { no: '004', season: 'Winter' },
-  contact: { no: '005', season: 'Next episode' },
-};
 
 export const NAV_LINKS = [
   { hash: 'experience', label: 'Experience' },
@@ -120,7 +111,7 @@ export const PROJECTS = [
 
 export const EDUCATION = [
   { degree: 'B.E. Mechanical Engineering', school: 'BITS Pilani', date: 'Aug 2023 – Present' },
-  { degree: 'M.Sc. Biological Sciences', school: 'BITS Pilani', date: 'Aug 2023 – Present · Dual degree' },
+  { degree: 'M.Sc. Biological Sciences', school: 'BITS Pilani', date: 'Aug 2023 – Present', note: 'Dual degree' },
 ];
 
 // Edit freely: the first group comes from what you've written about and shipped.
