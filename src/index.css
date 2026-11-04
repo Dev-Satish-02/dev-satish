@@ -363,6 +363,63 @@ html.intro-done .site-header {
   height: 100%;
 }
 /* a little paper grain over every scene so they read as one set of paintings */
+/* ── the home page's stage: one fixed backdrop the seasons dissolve across ── */
+.stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  pointer-events: none;
+}
+.stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.09;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.stage-act,
+.stage-tint,
+.stage-blue {
+  position: absolute;
+  inset: 0;
+}
+.stage-act {
+  --out: 0;
+  --land: 1;
+}
+/* the light of the season to come, laid over the one that is leaving */
+.stage-tint {
+  opacity: calc(var(--out) * var(--k, 0));
+  background: var(--tint, transparent);
+}
+.stage-act--summer {
+  /* settles up into place as the fall lands */
+  transform: translateY(calc((1 - var(--land)) * 50px)) scale(calc(1.06 - 0.06 * var(--land)));
+  transform-origin: 50% 100%;
+}
+.stage-act--summer .stage-tint {
+  --tint: linear-gradient(to bottom, #5b2246, #e8682c 70%, #ffb35c);
+  --k: 0.55;
+}
+.stage-act--autumn .stage-tint {
+  --tint: linear-gradient(to bottom, #c9d6ee, #f2f5fb);
+  --k: 0.6;
+}
+.stage-act--winter .stage-tint {
+  --tint: #05070f;
+  --k: 0.6;
+}
+.stage-blue {
+  background: var(--summer);
+}
+.scene.is-staged {
+  background: transparent;
+}
+
 .scene-bg-pin::after {
   content: '';
   position: absolute;
@@ -900,45 +957,24 @@ html.custom-cursor,
 html.custom-cursor * {
   cursor: none !important;
 }
-.cursor-dot,
 .cursor-ring {
   position: fixed;
   left: 0;
   top: 0;
   z-index: 1101;
   pointer-events: none;
-}
-.cursor-dot {
-  width: 9px;
-  height: 9px;
-  margin: -4.5px 0 0 -4.5px;
-  background: var(--red);
-  outline: 1.5px solid #fff;
-}
-.cursor-ring {
-  width: 38px;
-  height: 38px;
-  margin: -19px 0 0 -19px;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
   border-radius: 50%;
   border: 1.5px solid #fff;
   mix-blend-mode: difference;
-  display: grid;
-  place-items: center;
-  transition: width 0.2s var(--ease), height 0.2s var(--ease), margin 0.2s var(--ease), background 0.2s;
+  transition: width 0.2s var(--ease), height 0.2s var(--ease), margin 0.2s var(--ease);
 }
 .cursor-ring.is-hover {
-  width: 64px;
-  height: 64px;
-  margin: -32px 0 0 -32px;
-  background: var(--red);
-  border-color: var(--red);
-  mix-blend-mode: normal;
-  opacity: 0.9;
-}
-.cursor-ring.is-down {
-  width: 30px;
-  height: 30px;
-  margin: -15px 0 0 -15px;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
 }
 /* ── loader ─────────────────────────────────────────────────── */
 .loader {

@@ -1,12 +1,15 @@
+import { useContext } from 'react';
 import { SCENE_BY_SEASON } from './scenes/Scenes';
+import { StageContext } from './SceneStage';
 
 // A full-bleed section whose season illustration stays pinned while its content scrolls over it.
 export default function Scene({ id, season, no, label, title, lede, align, className = '', children, art = true, backdrop, artProps }) {
-  const Art = SCENE_BY_SEASON[season];
+  const staged = useContext(StageContext)?.includes(season);
+  const Art = staged ? null : SCENE_BY_SEASON[season];
   return (
     <section
       id={id}
-      className={`scene scene--${season} ${className}`}
+      className={`scene scene--${season}${staged ? ' is-staged' : ''} ${className}`}
       data-season={season}
       data-scene-no={no}
       data-scene-label={label}

@@ -30,7 +30,7 @@ function Train() {
 /* ── SUMMER: cobalt sky, cumulus, power lines and a railway crossing ── */
 // `live`: tied to scroll, the crossing starts signalling as the section arrives and a
 // train passes through. `signalling`: lamps alternate regardless (used by the intro).
-export function SummerScene({ className, align = 'xMidYMid', live = false, signalling = false }) {
+export function SummerScene({ className, align = 'xMidYMid', live = false, signalling = false, sectionId }) {
   const id = useId();
   const root = useRef(null);
   const train = useRef(null);
@@ -38,7 +38,9 @@ export function SummerScene({ className, align = 'xMidYMid', live = false, signa
   useEffect(() => {
     if (!live || !fullMotion()) return undefined;
     const g = root.current;
-    const section = g.closest('section');
+    // on the home page's stage the scene sits outside its section, so it is named
+    const section = sectionId ? document.getElementById(sectionId) : g.closest('section');
+    if (!section) return undefined;
     let goal = -1800;
     let x = -1800;
     let raf;
@@ -60,7 +62,7 @@ export function SummerScene({ className, align = 'xMidYMid', live = false, signa
       cancelAnimationFrame(raf);
       window.removeEventListener('scroll', onScroll);
     };
-  }, [live]);
+  }, [live, sectionId]);
 
   const sky = `${id}-sky`;
   const stripe = `${id}-stripe`;
