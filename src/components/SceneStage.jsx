@@ -14,6 +14,8 @@ const ACTS = [
   { set: 'autumn', section: 'projects', cut: '#c9844b' },
   { set: 'winter', section: 'skills', cut: '#dfe6ef' },
   { set: 'night', section: 'blog', cut: '#5c2418' },
+  // the end card: the library thickens into its red, so the card arrives out of its own colour
+  { set: null, section: 'contact', cut: '#d21f3c' },
 ];
 
 // the line runs in time order, first internship to latest
@@ -25,9 +27,20 @@ const smooth = (a, b, x) => {
   return t * t * (3 - 2 * t);
 };
 
+// the running stage, for the sections that talk to it directly
+let live = null;
+
 // Writing asks the library to bring a volume forward
 export function chooseVolume(i) {
-  window.dispatchEvent(new CustomEvent('episodes:choose', { detail: i }));
+  live?.choose(i);
+}
+// and which volume is under the pointer
+export function pickVolume(x, y) {
+  return live ? live.pick(x, y) : -1;
+}
+// Projects moves the camera to the pile of chairs by a case
+export function openCase(i) {
+  live?.setCase(i);
 }
 
 /* The fixed stage behind the episodes: one WebGL canvas (src/three/episodes.js) and a flat
@@ -70,6 +83,11 @@ export default function SceneStage() {
           colour = ACTS[active + 1].cut;
           haze = smooth(0, 0.5, next);
           alpha = smooth(0.32, 0.5, next);
+        } else if (!ACTS[active].set) {
+          // the end card: held at its red
+          colour = ACTS[active].cut;
+          alpha = 1;
+          haze = 1;
         } else {
           // arriving: clear out of this set's colour
           colour = ACTS[active].cut;
@@ -85,6 +103,11 @@ export default function SceneStage() {
       if (!stage) return;
       const r = rects[active];
       const act = ACTS[active];
+      // past the last set: the frame is the end card's red, and nothing needs drawing
+      if (!act.set) {
+        stage.setActive(false);
+        return;
+      }
       let p;
       if (still) p = 0.5;
       else if (act.pinned) p = clamp(-r.top / Math.max(1, r.height - vh));
@@ -93,17 +116,15 @@ export default function SceneStage() {
       stage.setView(act.set, p);
       stage.setHaze(colour, haze);
       // build the next set ahead of its cut, so the switch never stalls
-      if (ACTS[active + 1]) stage.prepare(ACTS[active + 1].set);
+      if (ACTS[active + 1]?.set) stage.prepare(ACTS[active + 1].set);
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
     };
-    const onChoose = (e) => stage?.choose(e.detail);
 
     update();
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
-    window.addEventListener('episodes:choose', onChoose);
 
     import('../three/episodes')
       .then(({ createEpisodes }) => {
@@ -118,6 +139,7 @@ export default function SceneStage() {
           posts,
         });
         stage.setStill(still);
+        live = stage;
         update();
       })
       .catch((err) => {
@@ -129,7 +151,7 @@ export default function SceneStage() {
       cancelAnimationFrame(raf);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
-      window.removeEventListener('episodes:choose', onChoose);
+      if (live === stage) live = null;
       stage?.dispose();
     };
   }, []);

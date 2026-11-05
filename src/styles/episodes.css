@@ -83,16 +83,9 @@
 .ep [class*='ep-card'] {
   transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
 }
-.ep .ep-card:not(.is-in):not(.line-card):not(.case-card),
-.case:not(.is-in) .case-card {
+.ep .ep-card:not(.is-in):not(.line-card) {
   opacity: 0;
   transform: translateY(32px);
-}
-.case-no {
-  transition: opacity 1s var(--ease);
-}
-.case:not(.is-in) .case-no {
-  opacity: 0;
 }
 
 /* ── SCENE 002 · Summer: the line at Iogi ─────────────────────── */
@@ -197,32 +190,31 @@
   background: var(--ink);
 }
 
-/* ── SCENE 003 · Autumn: case files in the cram school ─────────── */
+/* ── SCENE 003 · Autumn: the cram school, among the chairs ──────── */
 .ep-cases {
-  padding: clamp(110px, 16vh, 180px) 0 clamp(60px, 10vh, 120px);
+  padding: clamp(110px, 16vh, 180px) 0 0;
 }
-.cases {
-  margin-top: clamp(40px, 8vh, 96px);
-}
-.case {
+/* one project at a time, set straight over the scene: no card, a shade behind the type */
+.case-view {
   position: relative;
   display: flex;
-  align-items: center;
-  min-height: 92vh;
-  padding: 6vh var(--gutter);
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  margin-top: clamp(40px, 8vh, 96px);
+  padding: calc(var(--header) + 24px) var(--gutter) clamp(96px, 14vh, 140px);
+  color: #fff8ec;
+  background: linear-gradient(90deg, rgba(26, 12, 4, 0.72) 0%, rgba(26, 12, 4, 0.45) 38%, rgba(26, 12, 4, 0) 62%);
+  outline: none;
 }
-.case--right {
-  justify-content: flex-end;
-}
-/* the case number, cut in the staircase's gold */
 .case-no {
   position: absolute;
-  top: 50%;
   right: var(--gutter);
-  transform: translateY(-50%);
+  bottom: clamp(72px, 12vh, 120px);
   font-family: var(--serif);
   font-weight: 800;
-  font-size: clamp(170px, 28vw, 440px);
+  font-size: clamp(150px, 24vw, 380px);
   line-height: 0.8;
   letter-spacing: -0.04em;
   color: transparent;
@@ -231,56 +223,91 @@
   pointer-events: none;
   user-select: none;
 }
-.case--right .case-no {
-  right: auto;
-  left: var(--gutter);
+.case-text {
+  position: relative;
+  max-width: 560px;
+  text-shadow: 0 2px 18px rgba(20, 8, 2, 0.6);
+  /* each case arrives as a cut, the way a shot changes */
+  animation: ep-cut 0.35s steps(1) both;
 }
-.case-card {
-  max-width: min(540px, calc(100% - 2 * var(--gutter)));
+.case-text .scene-tag {
+  color: #fff8ec;
 }
 .case-name {
-  margin-top: 16px;
+  margin-top: 14px;
   font-family: var(--serif);
   font-weight: 800;
-  font-size: clamp(40px, 5vw, 72px);
-  line-height: 0.92;
+  font-size: clamp(46px, 6.4vw, 104px);
+  line-height: 0.9;
   letter-spacing: -0.02em;
+}
+.case-text .ep-role {
+  text-shadow: none;
+}
+.case-blurb {
+  margin-top: 18px;
+  max-width: 34em;
+  font-size: clamp(16px, 1.5vw, 18.5px);
+  line-height: 1.55;
+}
+.case-line {
+  margin-top: 10px;
+  font-size: 15.5px;
+}
+.case-line .mono {
+  margin-right: 10px;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ep-gold);
+}
+.case-line a {
+  font-weight: 700;
+  color: #fff8ec;
+  text-decoration-color: var(--ep-gold);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
 }
 .case-shot {
   margin-top: 18px;
+  max-width: 480px;
+  box-shadow: 10px 10px 0 var(--ep-shadow);
 }
 .case-shot img {
   display: block;
   width: 100%;
   height: auto;
 }
-.case-facts {
-  margin-top: 18px;
-  border-top: 2px solid var(--ep-bronze);
+.case-nav {
+  position: absolute;
+  left: var(--gutter);
+  bottom: clamp(32px, 6vh, 56px);
+  display: flex;
+  align-items: center;
+  gap: 18px;
 }
-.case-facts > div {
-  display: grid;
-  grid-template-columns: 96px minmax(0, 1fr);
-  gap: 14px;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(110, 82, 20, 0.25);
-}
-.case-facts dt {
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding-top: 3px;
-}
-.case-facts dd {
-  font-size: 15.5px;
-}
-.case-facts a {
-  font-weight: 700;
+.case-nav button {
+  padding: 10px 16px;
+  background: var(--ep-paper);
   color: var(--ink);
-  text-decoration-color: var(--ep-gold);
-  text-decoration-thickness: 2px;
-  text-underline-offset: 4px;
+  border: 0;
+  font: 600 14px var(--sans);
+  cursor: pointer;
+  box-shadow: 5px 5px 0 var(--ep-shadow);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.case-nav button:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 3px 3px 0 var(--ep-shadow);
+}
+.case-nav button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+.case-count {
+  font-size: 12.5px;
+  letter-spacing: 0.16em;
+  color: #fff8ec;
 }
 
 /* ── SCENE 004 · Winter: the classroom ────────────────────────── */
@@ -480,6 +507,77 @@
   text-underline-offset: 5px;
 }
 
+/* the home page's shelf: the volumes are in the scene; this zone gives the pointer room */
+.shelf-zone {
+  position: relative;
+  min-height: 130vh;
+}
+.ep-library.is-pointing,
+.ep-library.is-pointing .shelf-zone {
+  cursor: pointer;
+}
+/* the keyboard's way to the same volumes: hidden until focused */
+.shelf-index {
+  position: absolute;
+  left: var(--gutter);
+  bottom: 120px;
+}
+.shelf-index a {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.shelf-index a:focus-visible {
+  position: static;
+  display: inline-block;
+  width: auto;
+  height: auto;
+  clip: auto;
+  padding: 8px 12px;
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+}
+.shelf-zone .shelf-more {
+  position: absolute;
+  left: var(--gutter);
+  bottom: 64px;
+  color: #f6ecd4;
+}
+/* the name of the volume under the pointer, set like a caption */
+.spine-label {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  max-width: 360px;
+  pointer-events: none;
+}
+.spine-label-vol {
+  align-self: flex-start;
+  padding: 4px 10px;
+  background: var(--ink);
+  color: #f6ecd4;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.spine-label-title {
+  padding: 8px 12px 10px;
+  background: var(--ep-paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 19px;
+  line-height: 1.2;
+  box-shadow: 6px 6px 0 var(--ep-shadow);
+}
+
 /* the blog pages: the same library, held still behind the cards */
 .library-page {
   position: relative;
@@ -528,7 +626,8 @@
   min-height: 100vh;
   min-height: 100svh;
   padding: clamp(110px, 18vh, 200px) var(--gutter) clamp(80px, 14vh, 160px);
-  background: var(--red);
+  /* its top edge is clear: the stage has already gone to this red behind it */
+  background: linear-gradient(to bottom, rgba(210, 31, 60, 0) 0, var(--red) 55vh);
   color: #fff;
 }
 .finale-card {
@@ -599,19 +698,13 @@
 
 /* ── responsive ─────────────────────────────────────────────── */
 @media (max-width: 860px) {
-  .case,
-  .case--right {
-    justify-content: flex-start;
-    min-height: 0;
-    padding: 12vh var(--gutter);
+  .case-view {
+    background: linear-gradient(180deg, rgba(26, 12, 4, 0.2) 0%, rgba(26, 12, 4, 0.7) 45%, rgba(26, 12, 4, 0.75) 100%);
   }
-  .case-no,
-  .case--right .case-no {
-    top: 4vh;
-    right: var(--gutter);
-    left: auto;
-    transform: none;
-    font-size: 38vw;
+  .case-no {
+    top: calc(var(--header) + 8px);
+    bottom: auto;
+    font-size: 34vw;
   }
   .school {
     grid-template-columns: 1fr;
@@ -645,7 +738,7 @@
 
 /* ── reduced motion: everything simply present ───────────────── */
 html.reduce-motion .ep .ep-card,
-html.reduce-motion .case-no,
+html.reduce-motion .case-text,
 html.reduce-motion .finale-line > span,
 html.reduce-motion .is-riding .stop {
   opacity: 1 !important;

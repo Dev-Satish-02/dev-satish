@@ -48,15 +48,20 @@ and the scene, and the real place it was modelled on.
     open" (開かずの踏切) until the Iogi Tunnel was built.
 - **The train** (Japanese Wikipedia, 西武2000系): the Seibu 2000 series, the line's yellow
   four-door 20 m commuter trains (黄色い電車), which have run mainly on the Shinjuku Line.
-- **What is built:**
-  - Two side platforms with canopies, three tracks on ballast and sleepers, and catenary portals
-    with contact and messenger wires.
-  - A footbridge whose window band glows like the stairwell's panes.
-  - A level crossing at the platform end, with crossbucks, alternating lamps and barrier arms.
-  - Low-rise houses fading into summer haze.
-  - A six-car yellow train running left to right as you scroll.
-- **The internships** are the station-name signs on the far platform. The camera walks the
-  platform from one sign to the next, and the hero-style card beside it gives each one's details.
+- **What is built:** the crossing itself, framed the way the series frames its crossings, from
+  low in the road with the machine up against the sky.
+  - **The machine:** a striped pole with a bell on top, the crossbuck, two red lamps on black
+    discs under hoods that alternate, a direction indicator lit toward the train's way, and the
+    barrier box with its striped arm that drops across the road.
+  - **Around it:** a home signal down the line, catenary masts and girders, utility poles with
+    transformers, and long sagging wires crossing the sky.
+  - **The line and road:** a double track on ballast and sleepers with rubber crossing panels,
+    stop lines, fences along the line, low houses kept back so the sky stays open, and
+    flat-bottomed summer clouds.
+  - **The train:** a six-car yellow 2000 series runs through left to right while the crossing
+    is closed.
+- **The internships** are told in the hero's card beside the machine, one stop at a time as you
+  scroll.
 
 ### Autumn: Projects, "the cram school"
 
@@ -72,11 +77,14 @@ and the scene, and the real place it was modelled on.
 - **What is built:**
   - A grid of tall concrete cylinders with slit windows, deep beams and floor slabs spanning
     between them, some of them missing, as in a ruin.
-  - School desks scattered and stacked on the floor where the camera walks.
-  - A low six-o'clock sun throwing the cylinders' long shadows, amber haze, and a pale Fuji in the
-    distance.
-- **Each project** is a case file: a hero-style card with the case number and the result in the
-  black role box.
+  - The floor given over to **chairs**, the series' recurring image: towers of school chairs
+    stacked seat to seat, every other one upside down and leaning as they rise, with heaps
+    thrown together at their feet, fallen chairs between, and a far bank stacked to the beams.
+  - A low six-o'clock sun throwing the cylinders' long shadows, amber haze, and a pale Fuji in
+    the distance.
+- **Each project** stands by one pile and is set straight over the scene, with no card: the case
+  number cut in gold, the name in display serif, and the result in the black role box.
+  Previous and Next, or the arrow keys, move the camera to the next pile and cut to its project.
 
 ### Winter: Skills & education, "the classroom"
 
@@ -87,13 +95,19 @@ and the scene, and the real place it was modelled on.
   are shut in a classroom missing from the school's plans. An on-screen caption dates the event
   to Thursday, July 15th, around 6 p.m. Reviewers note the set is reframed as a cell, a courtroom
   and a vessel, with its colours shifting with the mood.
-- **What is built:**
-  - A classroom drawn deeper than life, the way Shaft stretches its rooms.
-  - Desks and chairs in rows, a full wall of tall windows whose frames throw long shadows across
-    the desks, a blackboard and fluorescent fittings.
-  - A cold, low winter sun and pale blue-white haze.
-- **Skills** are written on the blackboard under the four headings, and repeated in a readable
-  card. **Education** is a ruled record card.
+- **What is built:** a complete classroom.
+  - Six rows of desks with steel frames, book boxes and bag hooks, each chair standing behind
+    its desk on its own legs, some pulled out.
+  - The dais and lectern, a framed blackboard with chalk tray, chalk and erasers, a clock above
+    it, a speaker and a notice board.
+  - Lockers and a small board at the back, and sliding doors and transom windows on the corridor
+    side.
+  - Aluminium sashes four to a bay with gathered curtains, twin-tube fluorescent fittings in a
+    tiled ceiling, and a wainscot.
+  - A low winter sun through the sashes laying their frames across the desks, snow outside, and
+    the school's other wing across the yard.
+- **Skills** are chalked on the board, each heading and line fitted to its own column. They are
+  repeated, readable, in the hero-style card, with the education as a ruled record card.
 
 ### Interlude: Writing, "the library"
 
@@ -106,14 +120,16 @@ and the scene, and the real place it was modelled on.
 - **What is built:**
   - A single aisle of floor-to-ceiling shelves receding to one point, filled with thousands of
     individual spines in oxblood, black, bronze and cream.
-  - A tall window at the far end with low sun, shafts down the aisle, and lamps glowing in the
-    haze.
-- **Each post** is one of the books on the shelf. Choosing it in the catalogue card lights that
-  spine and draws it forward.
+  - A tall window at the far end with low sun, shafts down the aisle, and lamps that light it.
+- **The posts are books** on the right-hand shelf at eye height, with titles on their spines.
+  Pointing at one draws it out and captions it beside the pointer, and clicking opens the post.
+  There are no cards; keyboard users get the same volumes as links, shown when focused.
 
 ### Next episode: Contact
 
-- The flat red card, in the series' telop manner, using the hero's scene tag and serif.
+- The flat red card, in the series' telop manner, using the hero's scene tag and serif. The
+  library's haze thickens into this red before the card arrives, and the card's own top edge is
+  clear, so the interlude runs into the end card without a hard edge.
 
 ## Cuts between seasons
 

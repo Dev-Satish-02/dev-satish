@@ -1,18 +1,54 @@
-import { Link } from 'react-router-dom';
-import Catalogue from './Catalogue';
-import { chooseVolume } from './SceneStage';
-import { getAllPosts } from '../lib/blog';
+import { useLayoutEffect, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { chooseVolume, pickVolume } from './SceneStage';
+import { formatDate, getAllPosts } from '../lib/blog';
 import { useReveal } from '../hooks/useReveal';
 
-/* The interlude, in the library. The posts are four of the spines on the shelf behind; the
-   catalogue card lists them, and choosing one brings its spine forward. */
+/* The interlude, in the library. The posts are the four volumes on the right-hand shelf,
+   their titles on the spines. Pointing at one draws it out and names it; choosing it opens
+   the post. Keyboard users get the same volumes as a list of links. */
 export default function Writing() {
   const all = getAllPosts();
+  const posts = all.slice(0, 4);
   const open = useReveal();
-  const card = useReveal();
-  const volumeOf = (post) => all.length - all.indexOf(post);
+  const navigate = useNavigate();
+  const [hover, setHover] = useState(-1);
+  const label = useRef(null);
+  const pointer = useRef([0, 0]);
+  const href = (post) => `/blog/${post.categorySlug}/${post.slug}`;
+  const placeLabel = () => {
+    const [x, y] = pointer.current;
+    if (label.current) label.current.style.transform = `translate(${x + 18}px, ${y + 14}px)`;
+  };
+  // the caption mounts with the first volume pointed at; put it by the pointer straight away
+  useLayoutEffect(placeLabel, [hover]);
+
+  const onMove = (e) => {
+    const onText = e.target instanceof Element && e.target.closest('.ep-card, a, button');
+    const i = onText ? -1 : pickVolume(e.clientX, e.clientY);
+    pointer.current = [e.clientX, e.clientY];
+    placeLabel();
+    if (i !== hover) {
+      setHover(i);
+      chooseVolume(i);
+    }
+  };
+  const leave = () => {
+    setHover(-1);
+    chooseVolume(-1);
+  };
+
   return (
-    <section id="blog" className="ep ep-library" aria-labelledby="blog-title">
+    <section
+      id="blog"
+      className={`ep ep-library${hover >= 0 ? ' is-pointing' : ''}`}
+      aria-labelledby="blog-title"
+      onPointerMove={onMove}
+      onPointerLeave={leave}
+      onClick={() => {
+        if (hover >= 0) navigate(href(posts[hover]));
+      }}
+    >
       <div ref={open} className="ep-card ep-open">
         <p className="scene-tag mono">
           <span>Interlude</span>
@@ -21,18 +57,32 @@ export default function Writing() {
         <h2 id="blog-title" className="ep-title">
           Writing
         </h2>
-        <p className="ep-summary">Notes on product, strategy and the books I read.</p>
+        <p className="ep-summary">Notes on product, strategy and the books I read. Take a volume from the shelf to read it.</p>
       </div>
-      <div ref={card} className="ep-card shelf-card">
-        <p className="scene-tag mono">
-          <span>Catalogue</span>
-          <span>{all.length} volumes</span>
-        </p>
-        <Catalogue posts={all.slice(0, 4)} volumeOf={volumeOf} onChoose={chooseVolume} />
+
+      <div className="shelf-zone">
+        <ol className="shelf-index" aria-label="Volumes on the shelf">
+          {posts.map((post, i) => (
+            <li key={href(post)}>
+              <Link to={href(post)} onFocus={() => chooseVolume(i)} onBlur={() => chooseVolume(-1)}>
+                Vol. {all.length - i}: {post.title}
+              </Link>
+            </li>
+          ))}
+        </ol>
         <Link to="/blog" className="shelf-more mono">
           The whole catalogue
         </Link>
       </div>
+
+      {hover >= 0 && (
+        <div ref={label} className="spine-label" aria-hidden="true">
+          <span className="spine-label-vol mono">
+            Vol. {all.length - hover}, {posts[hover].category}, {formatDate(posts[hover].date)}
+          </span>
+          <span className="spine-label-title">{posts[hover].title}</span>
+        </div>
+      )}
     </section>
   );
 }
