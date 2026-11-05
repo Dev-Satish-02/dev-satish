@@ -1,46 +1,65 @@
-import Scene from './Scene';
-import { PROFILE, SCENES, SOCIALS } from '../data/content';
+import { PROFILE, SOCIALS } from '../data/content';
+import { PHOTO_CREDITS } from '../data/credits';
 import useResume from '../hooks/useResume';
-import { ArrowIcon, FileIcon, MailIcon } from './Icons';
+import { useReveal } from '../hooks/useReveal';
 
-// The finale: staged as the series' next-episode preview.
+/* The finale, staged as the next-episode card that closes each episode: a flat red field,
+   the title set as large as the screen allows, and the ways to reach me underneath. The
+   title lines rise out of their own masks as the card arrives. */
 export default function Contact() {
-  const { no, season } = SCENES.contact;
   const resume = useResume();
+  const ref = useReveal();
   return (
-    <Scene id="contact" season="finale" no={no} label={season} art={false}>
-      <div className="finale">
-        <p className="scene-tag mono reveal">
-          <span>Scene {no}</span>
-          <span>{season}</span>
-        </p>
-        <h2 className="finale-title reveal">
-          Next episode:
-          <br />
-          <em>we build something.</em>
+    <section id="contact" className="ep ep-finale" aria-labelledby="contact-title">
+      <div ref={ref} className="finale-card">
+        <p className="ep-label">Scene 005 — Next episode</p>
+        <h2 id="contact-title" className="finale-headline">
+          <span className="finale-line">
+            <span>Next episode:</span>
+          </span>
+          <span className="finale-line finale-line--ink">
+            <span>we build something.</span>
+          </span>
         </h2>
-        <a href={`mailto:${PROFILE.email}`} className="finale-mail reveal">
+        <a href={`mailto:${PROFILE.email}`} className="finale-address">
           {PROFILE.email}
         </a>
-        <div className="finale-actions reveal">
-          <a href={`mailto:${PROFILE.email}`} className="btn btn--lg btn--paper">
-            <MailIcon /> Email me
-          </a>
+        <ul className="finale-links">
           {resume && (
-            <a href={resume} className="btn btn--lg btn--ghost-light" target="_blank" rel="noreferrer">
-              <FileIcon /> Résumé
-            </a>
+            <li>
+              <a href={resume} target="_blank" rel="noreferrer">
+                Résumé
+              </a>
+            </li>
           )}
           {SOCIALS.map((s) => (
-            <a key={s.label} href={s.href} target="_blank" rel="noreferrer" className="link-arrow link-arrow--light">
-              {s.label} <ArrowIcon />
-            </a>
+            <li key={s.label}>
+              <a href={s.href} target="_blank" rel="noreferrer">
+                {s.label}
+              </a>
+            </li>
           ))}
-          <a href={PROFILE.phoneHref} className="link-arrow link-arrow--light">
-            {PROFILE.phone}
-          </a>
-        </div>
+          <li>
+            <a href={PROFILE.phoneHref}>{PROFILE.phone}</a>
+          </li>
+        </ul>
+        <p className="finale-credits">
+          Photographs:{' '}
+          {PHOTO_CREDITS.map((c, i) => (
+            <span key={c.source}>
+              {i > 0 && '; '}
+              <a href={c.source} target="_blank" rel="noreferrer">
+                {c.subject}
+              </a>{' '}
+              by {c.author},{' '}
+              <a href={c.licenseUrl} target="_blank" rel="noreferrer">
+                {c.license}
+              </a>
+            </span>
+          ))}
+          . Cropped and colour-graded for this site.
+        </p>
       </div>
-    </Scene>
+    </section>
   );
 }

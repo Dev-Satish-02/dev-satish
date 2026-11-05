@@ -1,36 +1,62 @@
-import Scene from './Scene';
-import { EDUCATION, SCENES, SKILL_GROUPS } from '../data/content';
+import { useReveal } from '../hooks/useReveal';
+import { EDUCATION, SKILL_GROUPS } from '../data/content';
 
-// Winter. Snow on the shrine steps; skills and education on frosted panels.
+/* Winter. An empty classroom after the last bell. Education is filed as the school's own
+   record, a ruled sheet; the skills are classified on the blackboard behind it. */
 export default function Skills() {
-  const { no, season } = SCENES.skills;
+  const record = useReveal();
+  const board = useReveal();
   return (
-    <Scene id="skills" season="winter" no={no} label={season} title="Skills & education">
-      <div className="frost-grid">
-        <section className="frost frost--wide reveal" aria-labelledby="edu-title">
-          <h3 id="edu-title" className="frost-title mono">Education</h3>
-          <ul className="edu">
-            {EDUCATION.map((e) => (
-              <li key={e.degree}>
-                <strong>{e.degree}</strong>
-                <span>
-                  {e.school} · {e.date}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
-        {SKILL_GROUPS.map((g) => (
-          <section key={g.title} className="frost reveal" aria-label={g.title}>
-            <h3 className="frost-title mono">{g.title}</h3>
-            <ul className="skill-list">
-              {g.items.map((s) => (
-                <li key={s}>{s}</li>
+    <section id="skills" className="ep ep-school" aria-labelledby="skills-title">
+      <header className="ep-head">
+        <p className="ep-label">Scene 004 — Winter</p>
+        <h2 id="skills-title" className="ep-title">
+          Skills &amp; education
+        </h2>
+      </header>
+      <div className="school">
+        <article ref={record} className="record" aria-labelledby="record-title">
+          <h3 id="record-title" className="record-title">
+            Academic record
+          </h3>
+          <table className="record-table">
+            <thead>
+              <tr>
+                <th scope="col">Programme</th>
+                <th scope="col">Institution</th>
+                <th scope="col">Period</th>
+              </tr>
+            </thead>
+            <tbody>
+              {EDUCATION.map((e) => (
+                <tr key={e.degree}>
+                  <th scope="row">{e.degree}</th>
+                  <td>{e.school}</td>
+                  <td>{e.date.replace(' · Dual degree', '')}</td>
+                </tr>
               ))}
-            </ul>
-          </section>
-        ))}
+            </tbody>
+          </table>
+          {EDUCATION.some((e) => e.date.includes('Dual degree')) && (
+            <p className="record-note">
+              <span className="record-stamp">Dual degree</span>
+            </p>
+          )}
+        </article>
+
+        <div ref={board} className="board" role="group" aria-label="Skills">
+          {SKILL_GROUPS.map((g) => (
+            <section key={g.title} className="board-group" aria-label={g.title}>
+              <h3 className="board-head">{g.title}</h3>
+              <ul className="board-list">
+                {g.items.map((s) => (
+                  <li key={s}>{s}</li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
       </div>
-    </Scene>
+    </section>
   );
 }

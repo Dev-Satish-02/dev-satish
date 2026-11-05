@@ -140,10 +140,6 @@ ol {
   width: 17px;
   height: 17px;
 }
-.btn--lg {
-  padding: 14px 22px;
-  font-size: 15px;
-}
 .btn--sm {
   padding: 8px 13px;
   font-size: 13px;
@@ -162,62 +158,6 @@ ol {
   border-color: var(--ink);
   color: var(--paper);
 }
-.btn--ghost-light {
-  background: transparent;
-  border-color: rgba(255, 255, 255, 0.7);
-  color: #fff;
-}
-.btn--ghost-light:hover {
-  background: #fff;
-  border-color: #fff;
-  color: var(--ink);
-}
-
-.link-arrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-weight: 600;
-  font-size: 15px;
-  text-decoration: underline;
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 4px;
-}
-.link-arrow svg {
-  width: 15px;
-  height: 15px;
-  transition: transform 0.15s;
-}
-.link-arrow:hover svg {
-  transform: translate(2px, -2px);
-}
-.link-arrow--light {
-  color: #fff;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.chips li {
-  font: 500 12px/1 var(--mono);
-  padding: 6px 9px;
-  border: 1px solid rgba(23, 17, 26, 0.22);
-}
-.chips--dark li {
-  border-color: rgba(255, 241, 220, 0.35);
-}
-
-.pill {
-  display: inline-block;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 4px 10px;
-  background: #e6efff;
-  color: var(--summer-navy);
-}
-
 /* ── wordmark & header ──────────────────────────────────────── */
 .wordmark {
   font-family: var(--serif);
@@ -362,8 +302,8 @@ html.intro-done .site-header {
   width: 100%;
   height: 100%;
 }
-/* a little paper grain over every scene so they read as one set of paintings */
-/* ── the home page's stage: one fixed backdrop the seasons dissolve across ── */
+/* ── the home page's stage: one fixed backdrop the seasons dissolve across ──
+   (photographs and grades: src/styles/episodes.css) */
 .stage {
   position: fixed;
   inset: 0;
@@ -372,46 +312,21 @@ html.intro-done .site-header {
   height: 100svh;
   overflow: hidden;
   pointer-events: none;
+  background: #0b0b10;
 }
+/* film grain over the photographs, so the four seasons read as one stock */
 .stage::after {
   content: '';
   position: absolute;
   inset: 0;
-  opacity: 0.09;
+  opacity: 0.12;
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 .stage-act,
-.stage-tint,
 .stage-blue {
   position: absolute;
   inset: 0;
-}
-.stage-act {
-  --out: 0;
-  --land: 1;
-}
-/* the light of the season to come, laid over the one that is leaving */
-.stage-tint {
-  opacity: calc(var(--out) * var(--k, 0));
-  background: var(--tint, transparent);
-}
-.stage-act--summer {
-  /* settles up into place as the fall lands */
-  transform: translateY(calc((1 - var(--land)) * 50px)) scale(calc(1.06 - 0.06 * var(--land)));
-  transform-origin: 50% 100%;
-}
-.stage-act--summer .stage-tint {
-  --tint: linear-gradient(to bottom, #5b2246, #e8682c 70%, #ffb35c);
-  --k: 0.55;
-}
-.stage-act--autumn .stage-tint {
-  --tint: linear-gradient(to bottom, #c9d6ee, #f2f5fb);
-  --k: 0.6;
-}
-.stage-act--winter .stage-tint {
-  --tint: #05070f;
-  --k: 0.6;
 }
 .stage-blue {
   background: var(--summer);
@@ -420,6 +335,7 @@ html.intro-done .site-header {
   background: transparent;
 }
 
+/* a little paper grain over every scene so they read as one set of paintings */
 .scene-bg-pin::after {
   content: '';
   position: absolute;
@@ -663,107 +579,6 @@ html.intro-done .hero-in {
   }
 }
 
-/* ── experience (Scene 002 · Summer) ────────────────────────── */
-.track {
-  position: relative;
-  max-width: 880px;
-  padding-left: 72px;
-}
-.track::before {
-  /* rails and sleepers */
-  content: '';
-  position: absolute;
-  left: 12px;
-  top: 0;
-  bottom: 0;
-  width: 30px;
-  border-left: 4px solid var(--summer-navy);
-  border-right: 4px solid var(--summer-navy);
-  background: repeating-linear-gradient(to bottom, var(--summer-navy) 0 6px, transparent 6px 24px);
-  opacity: 0.85;
-}
-.stop {
-  position: relative;
-}
-.stop + .stop {
-  margin-top: 28px;
-}
-.stop-light {
-  position: absolute;
-  left: -69px;
-  top: 30px;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: #ff2b3f;
-  box-shadow: 0 0 0 6px var(--summer-navy);
-}
-.job {
-  background: #fff;
-  color: var(--ink);
-  padding: clamp(20px, 3vw, 30px);
-  box-shadow: 12px 12px 0 rgba(11, 26, 58, 0.35);
-}
-.job-head {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 10px 20px;
-}
-.job-role {
-  font-family: var(--serif);
-  font-weight: 800;
-  font-size: clamp(22px, 2.4vw, 28px);
-  line-height: 1.15;
-}
-.job-company {
-  margin-top: 4px;
-  font-weight: 600;
-  color: var(--red);
-}
-.job-meta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-}
-.job-meta time {
-  font-size: 13px;
-  color: var(--muted);
-}
-.job-points {
-  margin: 16px 0 18px;
-  padding-left: 18px;
-  list-style: square;
-}
-.job-points li {
-  font-size: 15.5px;
-  color: var(--ink-soft);
-}
-.job-points li + li {
-  margin-top: 6px;
-}
-.job-points li::marker {
-  color: var(--red);
-}
-@media (max-width: 640px) {
-  .track {
-    padding-left: 44px;
-  }
-  .track::before {
-    left: 4px;
-    width: 22px;
-  }
-  .stop-light {
-    left: -48px;
-    width: 20px;
-    height: 20px;
-  }
-  .job-meta {
-    align-items: flex-start;
-  }
-}
-
 .xing-light {
   opacity: 0.18;
 }
@@ -779,167 +594,6 @@ html.intro-done .hero-in {
   50% {
     opacity: 0.15;
   }
-}
-
-/* ── projects (Scene 003 · Autumn) ──────────────────────────── */
-.panes {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
-  gap: 22px;
-}
-.pane {
-  position: relative;
-  padding: clamp(22px, 3vw, 32px);
-  background: rgba(30, 8, 4, 0.84);
-  border: 1px solid rgba(255, 179, 92, 0.25);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.25s var(--ease), border-color 0.25s;
-}
-.pane::before {
-  content: '';
-  position: absolute;
-  inset: -1px -1px auto -1px;
-  height: 6px;
-  background: linear-gradient(90deg, var(--autumn-glow), var(--autumn));
-}
-.pane:hover {
-  transform: translateY(-4px);
-  border-color: var(--autumn-glow);
-}
-.pane-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  opacity: 0.75;
-}
-.pane-metric {
-  margin-top: 22px;
-  font-family: var(--serif);
-  font-weight: 800;
-  font-size: clamp(24px, 2.6vw, 32px);
-  line-height: 1.1;
-  color: var(--autumn-glow);
-}
-.pane-name {
-  margin-top: 6px;
-  font-family: var(--serif);
-  font-weight: 800;
-  font-size: clamp(26px, 2.8vw, 34px);
-  line-height: 1.1;
-}
-.pane-blurb {
-  margin: 12px 0 18px;
-  font-size: 15.5px;
-  color: rgba(255, 241, 220, 0.82);
-}
-.pane-links {
-  margin-top: auto;
-  padding-top: 20px;
-  display: flex;
-  gap: 18px;
-  color: var(--autumn-glow);
-}
-
-/* ── skills (Scene 004 · Winter) ────────────────────────────── */
-.frost-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-}
-.frost {
-  padding: clamp(20px, 3vw, 28px);
-  background: rgba(10, 18, 48, 0.86);
-  border: 1px solid rgba(223, 230, 245, 0.22);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: #eef2fb;
-}
-.frost--wide {
-  grid-column: 1 / -1;
-}
-.frost-title {
-  font-size: 12px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--winter-ice);
-  margin-bottom: 16px;
-}
-.edu {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-  gap: 16px 32px;
-}
-.edu strong {
-  display: block;
-  font-family: var(--serif);
-  font-weight: 800;
-  font-size: 22px;
-  line-height: 1.2;
-}
-.edu span {
-  font-size: 14px;
-  opacity: 0.8;
-}
-.skill-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.skill-list li {
-  font-size: 14.5px;
-  font-weight: 500;
-  padding: 6px 12px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-}
-@media (max-width: 760px) {
-  .frost-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ── contact (Scene 005 · Next episode) ─────────────────────── */
-.finale {
-  max-width: 980px;
-}
-.finale-title {
-  margin-top: 18px;
-  font-family: var(--serif);
-  font-weight: 800;
-  font-size: clamp(48px, 8.4vw, 124px);
-  line-height: 0.95;
-}
-.finale-title em {
-  font-style: normal;
-  color: var(--ink);
-}
-.finale-mail {
-  display: inline-block;
-  margin-top: 32px;
-  font-family: var(--serif);
-  font-weight: 800;
-  font-size: clamp(26px, 5vw, 60px);
-  line-height: 1.15;
-  text-decoration: underline;
-  text-decoration-thickness: 3px;
-  text-underline-offset: 8px;
-  overflow-wrap: anywhere;
-}
-.finale-mail:hover {
-  color: var(--ink);
-}
-.finale-actions {
-  margin-top: 34px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 14px 22px;
 }
 
 /* ── reveal on scroll ───────────────────────────────────────── */
@@ -1373,7 +1027,7 @@ html.reduce-motion .pane {
   z-index: 1;
   pointer-events: none;
 }
-/* ── writing: episode title cards ───────────────────────────── */
+/* ── writing: the season colours the blog pages' title cards take ── */
 .season-spring {
   --c: var(--spring);
 }
@@ -1386,52 +1040,6 @@ html.reduce-motion .pane {
 .season-winter {
   --c: var(--winter);
 }
-.tcard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
-  gap: 18px;
-}
-.tcard {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 28px;
-  min-height: 300px;
-  padding: 22px;
-  background: var(--c);
-  color: #fff;
-  border: 2px solid var(--c);
-  text-decoration: none;
-}
-.tcard.season-autumn {
-  color: var(--ink);
-}
-/* the cut: no easing, the card simply becomes the black card with red type */
-.tcard:hover,
-.tcard:focus-visible {
-  background: var(--ink);
-  border-color: var(--red);
-  color: var(--red);
-  outline: none;
-}
-.tcard-top,
-.tcard-foot {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 11.5px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-.tcard-title {
-  font-family: var(--serif);
-  font-weight: 800;
-  font-size: clamp(26px, 2.6vw, 34px);
-  line-height: 1.12;
-  text-wrap: balance;
-}
-
-/* full-bleed title card heading the blog pages */
 .title-card {
   background: var(--c, var(--red));
   color: #fff;
