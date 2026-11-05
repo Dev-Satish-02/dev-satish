@@ -911,8 +911,8 @@ function buildAutumn(kit, small) {
   kit.shafts(scene, { color: '#ffc58a', dir: rig.dir, at: new THREE.Vector3(0, floorY + 4, 0), count: 6, spread: 6, length: 38, width: 2.6, opacity: 0.08 });
   kit.dust(scene, { box: new THREE.Box3(new THREE.Vector3(-9, floorY, -26), new THREE.Vector3(9, floorY + 6, 26)), count: small ? 180 : 320, size: 0.06, color: '#ffd9a8', opacity: 0.5 });
 
-  // the camera stands a few metres from the chosen pile, the pile to the right of centre
-  let aim = 0;
+  // the camera walks the colonnade with the scroll, stopping a few metres from each pile in
+  // turn (one per project), the pile to the right of centre
   const at = new THREE.Vector3();
   const goalPos = new THREE.Vector3();
   const goalLook = new THREE.Vector3();
@@ -923,16 +923,20 @@ function buildAutumn(kit, small) {
     camera,
     haze,
     density: 0.0085,
-    aim(i) {
-      aim = Math.max(0, Math.min(PILES.length - 1, i));
-    },
     place(p, t, still) {
-      const [px, pz] = PILES[aim];
-      const drift = (p - 0.5) * 1.2;
+      const n = PILES.length;
+      const seg = Math.min(n - 1e-6, p * n);
+      const i = Math.floor(seg);
+      const run = i < n - 1 ? smoothstep(0.7, 1, seg - i) : 0;
+      const [ax, az] = PILES[i];
+      const [bx, bz] = PILES[Math.min(n - 1, i + 1)];
+      const px = lerp(ax, bx, run);
+      const pz = lerp(az, bz, run);
+      const drift = (seg - i - 0.35) * 1.2 * (1 - run);
       goalPos.set(px - 4.6, floorY + 1.65, pz + 6.4 + drift);
       // the pile right of centre on a wide screen, dead centre on a tall one
       goalLook.set(camera.aspect < 1 ? px + 0.2 : px - 1.5, floorY + (camera.aspect < 1 ? 1.2 : 1.7), pz - 0.5);
-      const k = first || still ? 1 : 0.08;
+      const k = first || still ? 1 : 0.2;
       first = false;
       at.lerp(goalPos, k);
       look.lerp(goalLook, k);
@@ -1558,12 +1562,6 @@ export function createEpisodes(container, info, start = 'summer') {
     },
     choose(i) {
       get('night').choose(i);
-      dirty = true;
-      animating = true;
-    },
-    // open a project: the cram-school camera moves to that project's pile of chairs
-    setCase(i) {
-      get('autumn').aim(i);
       dirty = true;
       animating = true;
     },

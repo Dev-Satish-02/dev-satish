@@ -11,7 +11,7 @@ export const STAGED = ['summer', 'autumn', 'winter', 'night'];
 // through. The first is the staircase's own final blue, so the fall lands in the summer sky.
 const ACTS = [
   { set: 'summer', section: 'experience', cut: '#0f47c2', pinned: true },
-  { set: 'autumn', section: 'projects', cut: '#c9844b' },
+  { set: 'autumn', section: 'projects', cut: '#c9844b', pinned: true },
   { set: 'winter', section: 'skills', cut: '#dfe6ef' },
   { set: 'night', section: 'blog', cut: '#5c2418' },
   // the end card: the library thickens into its red, so the card arrives out of its own colour
@@ -38,10 +38,7 @@ export function chooseVolume(i) {
 export function pickVolume(x, y) {
   return live ? live.pick(x, y) : -1;
 }
-// Projects moves the camera to the pile of chairs by a case
-export function openCase(i) {
-  live?.setCase(i);
-}
+
 
 /* The fixed stage behind the episodes: one WebGL canvas (src/three/episodes.js) and a flat
    field of colour over it for the cuts. As the next section rises, the current set's haze

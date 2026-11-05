@@ -191,10 +191,10 @@
 }
 
 /* ── SCENE 003 · Autumn: the cram school, among the chairs ──────── */
-.ep-cases {
-  padding: clamp(110px, 16vh, 180px) 0 0;
+/* the section holds while you scroll; the camera walks from pile to pile behind the type */
+.ep-cases.is-riding {
+  height: calc(var(--cases) * 95vh + 100vh);
 }
-/* one project at a time, set straight over the scene: no card, a shade behind the type */
 .case-view {
   position: relative;
   display: flex;
@@ -202,16 +202,36 @@
   justify-content: center;
   min-height: 100vh;
   min-height: 100svh;
-  margin-top: clamp(40px, 8vh, 96px);
-  padding: calc(var(--header) + 24px) var(--gutter) clamp(96px, 14vh, 140px);
+  padding: calc(var(--header) + 24px) var(--gutter) clamp(56px, 9vh, 96px);
   color: #fff8ec;
   background: linear-gradient(90deg, rgba(26, 12, 4, 0.72) 0%, rgba(26, 12, 4, 0.45) 38%, rgba(26, 12, 4, 0) 62%);
-  outline: none;
+}
+.is-riding .case-view {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+}
+.case-head {
+  position: absolute;
+  top: calc(var(--header) + clamp(20px, 4vh, 40px));
+  left: var(--gutter);
+}
+.case-head .scene-tag {
+  color: #fff8ec;
+}
+.case-title {
+  margin-top: 8px;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: clamp(28px, 3vw, 40px);
+  line-height: 1;
+  text-shadow: 0 2px 18px rgba(20, 8, 2, 0.6);
 }
 .case-no {
   position: absolute;
   right: var(--gutter);
-  bottom: clamp(72px, 12vh, 120px);
+  bottom: clamp(56px, 10vh, 100px);
   font-family: var(--serif);
   font-weight: 800;
   font-size: clamp(150px, 24vw, 380px);
@@ -227,8 +247,13 @@
   position: relative;
   max-width: 560px;
   text-shadow: 0 2px 18px rgba(20, 8, 2, 0.6);
-  /* each case arrives as a cut, the way a shot changes */
+}
+/* each case arrives as a cut, the way a shot changes */
+.is-riding .case-text {
   animation: ep-cut 0.35s steps(1) both;
+}
+.ep-cases:not(.is-riding) .case-text + .case-text {
+  margin-top: 56px;
 }
 .case-text .scene-tag {
   color: #fff8ec;
@@ -278,36 +303,19 @@
   width: 100%;
   height: auto;
 }
-.case-nav {
+.case-dots {
   position: absolute;
   left: var(--gutter);
   bottom: clamp(32px, 6vh, 56px);
-  display: flex;
-  align-items: center;
-  gap: 18px;
 }
-.case-nav button {
-  padding: 10px 16px;
-  background: var(--ep-paper);
-  color: var(--ink);
-  border: 0;
-  font: 600 14px var(--sans);
-  cursor: pointer;
-  box-shadow: 5px 5px 0 var(--ep-shadow);
-  transition: transform 0.15s, box-shadow 0.15s;
+.case-dots li {
+  background: rgba(255, 248, 236, 0.3);
 }
-.case-nav button:hover {
-  transform: translate(2px, 2px);
-  box-shadow: 3px 3px 0 var(--ep-shadow);
+.case-dots li.is-past {
+  background: var(--ep-gold);
 }
-.case-nav button:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: 3px;
-}
-.case-count {
-  font-size: 12.5px;
-  letter-spacing: 0.16em;
-  color: #fff8ec;
+.case-dots li.is-here {
+  background: #fff8ec;
 }
 
 /* ── SCENE 004 · Winter: the classroom ────────────────────────── */
@@ -495,17 +503,6 @@
   letter-spacing: 0.06em;
   opacity: 0.8;
 }
-.shelf-more {
-  display: inline-block;
-  margin-top: 18px;
-  font-size: 12.5px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink);
-  text-decoration-color: var(--ep-gold);
-  text-decoration-thickness: 2px;
-  text-underline-offset: 5px;
-}
 
 /* the home page's shelf: the volumes are in the scene; this zone gives the pointer room */
 .shelf-zone {
@@ -540,12 +537,6 @@
   background: var(--ink);
   color: var(--paper);
   font-weight: 600;
-}
-.shelf-zone .shelf-more {
-  position: absolute;
-  left: var(--gutter);
-  bottom: 64px;
-  color: #f6ecd4;
 }
 /* the name of the volume under the pointer, set like a caption */
 .spine-label {
@@ -738,9 +729,6 @@
 
 /* ── phones: the scene first ──────────────────────────────────
    Small cards, sat low, with only what a glance needs; the set behind does the talking. */
-.case-swipe {
-  display: none;
-}
 @media (max-width: 720px) {
   .ep-card {
     max-width: min(330px, calc(100% - 2 * var(--gutter)));
@@ -815,24 +803,11 @@
   .case-line {
     font-size: 13.5px;
   }
-  .case-nav {
-    bottom: 34px;
-    gap: 10px;
+  .case-head .scene-tag {
+    font-size: 10px;
   }
-  .case-nav button {
-    padding: 8px 12px;
-    font-size: 13px;
-  }
-  .case-count {
-    display: none;
-  }
-  .case-swipe {
-    display: inline;
-    font-size: 10.5px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: #fff8ec;
-    opacity: 0.8;
+  .case-title {
+    font-size: 24px;
   }
 
   /* Skills: the record and the board, small and tight, with the lists run on */

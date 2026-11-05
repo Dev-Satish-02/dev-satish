@@ -1,106 +1,106 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PROJECTS, SCENES } from '../data/content';
-import { useReveal } from '../hooks/useReveal';
-import { openCase } from './SceneStage';
+import { useFullMotion } from '../lib/store';
 
-/* Autumn, in the cram school, among the piles of chairs. One project at a time, set straight
-   over the scene in the series' manner rather than on a card; Previous and Next (or the
-   arrow keys) move the camera to the next pile and cut to its project. */
+/* Autumn, in the cram school, among the piles of chairs. The section holds while you scroll
+   and the camera walks the colonnade from one pile to the next; each project is set straight
+   over the scene, in the series' manner, as its pile comes into view. With reduced motion the
+   projects are simply listed. */
 export default function Projects() {
   const { no, season } = SCENES.projects;
-  const open = useReveal();
-  const [i, setI] = useState(0);
-  const swipe = useRef([0, 0]);
-  const go = (n) => {
-    const next = (n + PROJECTS.length) % PROJECTS.length;
-    setI(next);
-    openCase(next);
-  };
-  const p = PROJECTS[i];
-  const num = String(i + 1).padStart(2, '0');
-  return (
-    <section id="projects" className="ep ep-cases" aria-labelledby="projects-title">
-      <div ref={open} className="ep-card ep-open">
-        <p className="scene-tag mono">
-          <span>Scene {no}</span>
-          <span>{season}</span>
-        </p>
-        <h2 id="projects-title" className="ep-title">
-          Projects
-        </h2>
-        <p className="ep-summary">Things I built and shipped.</p>
-      </div>
+  const motion = useFullMotion();
+  const section = useRef(null);
+  const [at, setAt] = useState(0);
 
-      <div
-        className="case-view"
-        role="group"
-        aria-roledescription="carousel"
-        aria-label="Projects"
-        tabIndex={-1}
-        onKeyDown={(e) => {
-          if (e.key === 'ArrowRight') go(i + 1);
-          if (e.key === 'ArrowLeft') go(i - 1);
-        }}
-        // on a phone the scene itself is the control: swipe it left or right
-        onTouchStart={(e) => {
-          swipe.current = [e.touches[0].clientX, e.touches[0].clientY];
-        }}
-        onTouchEnd={(e) => {
-          const [x0, y0] = swipe.current;
-          const dx = e.changedTouches[0].clientX - x0;
-          const dy = e.changedTouches[0].clientY - y0;
-          if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? i + 1 : i - 1);
-        }}
-      >
-        <p className="case-no" aria-hidden="true">
-          {num}
-        </p>
-        <article key={p.name} className="case-text" aria-live="polite" aria-label={`Case ${i + 1} of ${PROJECTS.length}: ${p.name}`}>
+  useEffect(() => {
+    if (!motion) return undefined;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const r = section.current.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - window.innerHeight)));
+      setAt(Math.min(PROJECTS.length - 1, Math.floor(p * PROJECTS.length)));
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('scroll', onScroll);
+    };
+  }, [motion]);
+
+  const shown = motion ? [PROJECTS[at]] : PROJECTS;
+  return (
+    <section
+      ref={section}
+      id="projects"
+      className={`ep ep-cases${motion ? ' is-riding' : ''}`}
+      style={{ '--cases': PROJECTS.length }}
+      aria-labelledby="projects-title"
+    >
+      <div className="case-view">
+        <header className="case-head">
           <p className="scene-tag mono">
-            <span>Case {num}</span>
-            <span>{p.kind}</span>
+            <span>Scene {no}</span>
+            <span>{season}</span>
           </p>
-          <h3 className="case-name">{p.name}</h3>
-          <p className="ep-role">{p.metric}</p>
-          {p.shot && (
-            <figure className="case-shot">
-              <img src={`${import.meta.env.BASE_URL}${p.shot.src}`} alt={p.shot.alt} loading="lazy" decoding="async" />
-            </figure>
-          )}
-          <p className="case-blurb">{p.blurb}</p>
-          {p.role && (
-            <p className="case-line">
-              <span className="mono">Role</span> {p.role}
-            </p>
-          )}
-          <p className="case-line">
-            <span className="mono">Built with</span> {p.stack.join(', ')}
+          <h2 id="projects-title" className="case-title">
+            Projects
+          </h2>
+        </header>
+        {motion && (
+          <p className="case-no" aria-hidden="true">
+            {String(at + 1).padStart(2, '0')}
           </p>
-          {p.links.length > 0 && (
-            <p className="case-line">
-              <span className="mono">Open</span>{' '}
-              {p.links.map((l) => (
-                <a key={l.href} href={l.href} target="_blank" rel="noreferrer">
-                  {l.label}
-                </a>
-              ))}
-            </p>
-          )}
-        </article>
-        <div className="case-nav">
-          <button type="button" onClick={() => go(i - 1)} aria-label="Previous case">
-            <span aria-hidden="true">◀</span> Previous
-          </button>
-          <span className="case-count mono" aria-hidden="true">
-            {num} / {String(PROJECTS.length).padStart(2, '0')}
-          </span>
-          <span className="case-swipe mono" aria-hidden="true">
-            Swipe the scene
-          </span>
-          <button type="button" onClick={() => go(i + 1)} aria-label="Next case">
-            Next <span aria-hidden="true">▶</span>
-          </button>
-        </div>
+        )}
+        {shown.map((p) => {
+          const i = PROJECTS.indexOf(p);
+          const num = String(i + 1).padStart(2, '0');
+          return (
+            <article key={p.name} className="case-text" aria-label={`Case ${i + 1} of ${PROJECTS.length}: ${p.name}`}>
+              <p className="scene-tag mono">
+                <span>Case {num}</span>
+                <span>{p.kind}</span>
+              </p>
+              <h3 className="case-name">{p.name}</h3>
+              <p className="ep-role">{p.metric}</p>
+              {p.shot && (
+                <figure className="case-shot">
+                  <img src={`${import.meta.env.BASE_URL}${p.shot.src}`} alt={p.shot.alt} loading="lazy" decoding="async" />
+                </figure>
+              )}
+              <p className="case-blurb">{p.blurb}</p>
+              {p.role && (
+                <p className="case-line">
+                  <span className="mono">Role</span> {p.role}
+                </p>
+              )}
+              <p className="case-line">
+                <span className="mono">Built with</span> {p.stack.join(', ')}
+              </p>
+              {p.links.length > 0 && (
+                <p className="case-line">
+                  <span className="mono">Open</span>{' '}
+                  {p.links.map((l) => (
+                    <a key={l.href} href={l.href} target="_blank" rel="noreferrer">
+                      {l.label}
+                    </a>
+                  ))}
+                </p>
+              )}
+            </article>
+          );
+        })}
+        {motion && (
+          <ol className="line-dots case-dots" aria-hidden="true">
+            {PROJECTS.map((p, i) => (
+              <li key={p.name} className={i === at ? 'is-here' : i < at ? 'is-past' : undefined} />
+            ))}
+          </ol>
+        )}
       </div>
     </section>
   );

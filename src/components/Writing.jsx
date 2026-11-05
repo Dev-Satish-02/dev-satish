@@ -73,9 +73,6 @@ export default function Writing() {
             </li>
           ))}
         </ol>
-        <Link to="/blog" className="shelf-more mono">
-          The whole catalogue
-        </Link>
       </div>
 
       {hover >= 0 && (
