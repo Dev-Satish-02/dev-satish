@@ -1,5 +1,4 @@
-import { PROFILE, SOCIALS } from '../data/content';
-import { PHOTO_CREDITS } from '../data/credits';
+import { PROFILE, SCENES, SOCIALS } from '../data/content';
 import useResume from '../hooks/useResume';
 import { useReveal } from '../hooks/useReveal';
 
@@ -7,12 +6,16 @@ import { useReveal } from '../hooks/useReveal';
    the title set as large as the screen allows, and the ways to reach me underneath. The
    title lines rise out of their own masks as the card arrives. */
 export default function Contact() {
+  const { no, season } = SCENES.contact;
   const resume = useResume();
   const ref = useReveal();
   return (
     <section id="contact" className="ep ep-finale" aria-labelledby="contact-title">
       <div ref={ref} className="finale-card">
-        <p className="ep-label">Scene 005 — Next episode</p>
+        <p className="scene-tag mono">
+          <span>Scene {no}</span>
+          <span>{season}</span>
+        </p>
         <h2 id="contact-title" className="finale-headline">
           <span className="finale-line">
             <span>Next episode:</span>
@@ -43,22 +46,6 @@ export default function Contact() {
             <a href={PROFILE.phoneHref}>{PROFILE.phone}</a>
           </li>
         </ul>
-        <p className="finale-credits">
-          Photographs:{' '}
-          {PHOTO_CREDITS.map((c, i) => (
-            <span key={c.source}>
-              {i > 0 && '; '}
-              <a href={c.source} target="_blank" rel="noreferrer">
-                {c.subject}
-              </a>{' '}
-              by {c.author},{' '}
-              <a href={c.licenseUrl} target="_blank" rel="noreferrer">
-                {c.license}
-              </a>
-            </span>
-          ))}
-          . Cropped and colour-graded for this site.
-        </p>
       </div>
     </section>
   );

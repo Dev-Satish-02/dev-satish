@@ -1,19 +1,25 @@
+import { PROJECTS, SCENES } from '../data/content';
 import { useReveal } from '../hooks/useReveal';
-import { PROJECTS } from '../data/content';
 
-/* Autumn. The projects are case files, opened one at a time in the old classroom: each gets a
-   frame of its own, with the name set large, the result in red, and the file itself laid
-   beside it. The frames alternate and shift, so no two read alike. */
+/* Autumn, in the cram school. Each project is a case file: the hero's card, set beside a
+   case number cut in the staircase's gold, alternating sides as the camera walks the floor
+   toward the low sun. */
 export default function Projects() {
+  const { no, season } = SCENES.projects;
+  const open = useReveal();
   return (
     <section id="projects" className="ep ep-cases" aria-labelledby="projects-title">
-      <header className="ep-head">
-        <p className="ep-label">Scene 003 — Autumn</p>
+      <div ref={open} className="ep-card ep-open">
+        <p className="scene-tag mono">
+          <span>Scene {no}</span>
+          <span>{season}</span>
+        </p>
         <h2 id="projects-title" className="ep-title">
           Projects
         </h2>
-        <p className="ep-lede">Four things I built and shipped, opened one file at a time.</p>
-      </header>
+        <p className="ep-role">Four case files</p>
+        <p className="ep-summary">Things I built and shipped, opened one at a time.</p>
+      </div>
       <ol className="cases">
         {PROJECTS.map((p, i) => (
           <Case key={p.name} project={p} index={i} />
@@ -27,44 +33,38 @@ function Case({ project: p, index }) {
   const ref = useReveal();
   const no = String(index + 1).padStart(2, '0');
   return (
-    <li ref={ref} className={`case case--${index % 4}`}>
+    <li ref={ref} className={`case${index % 2 ? ' case--right' : ''}`}>
       <p className="case-no" aria-hidden="true">
         {no}
       </p>
-      <div className="case-title">
-        <p className="case-kind">
-          Case {no}, {p.kind.toLowerCase()}
+      <article className="ep-card case-card">
+        <p className="scene-tag mono">
+          <span>Case {no}</span>
+          <span>{p.kind}</span>
         </p>
-        <h3 className="case-name">
-          <span>{p.name}</span>
-        </h3>
-        <p className="case-result">{p.metric}</p>
-      </div>
-      <div className="case-file">
+        <h3 className="case-name">{p.name}</h3>
+        <p className="ep-role">{p.metric}</p>
         {p.shot && (
           <figure className="case-shot">
             <img src={`${import.meta.env.BASE_URL}${p.shot.src}`} alt={p.shot.alt} loading="lazy" decoding="async" />
           </figure>
         )}
-        <dl>
-          <div>
-            <dt>What it is</dt>
-            <dd>{p.blurb}</dd>
-          </div>
+        <p className="ep-summary">{p.blurb}</p>
+        <dl className="case-facts">
           {p.role && (
             <div>
-              <dt>My role</dt>
+              <dt className="mono">Role</dt>
               <dd>{p.role}</dd>
             </div>
           )}
           <div>
-            <dt>Built with</dt>
+            <dt className="mono">Built with</dt>
             <dd>{p.stack.join(', ')}</dd>
           </div>
           {p.links.length > 0 && (
             <div>
-              <dt>Open</dt>
-              <dd className="case-links">
+              <dt className="mono">Open</dt>
+              <dd>
                 {p.links.map((l) => (
                   <a key={l.href} href={l.href} target="_blank" rel="noreferrer">
                     {l.label}
@@ -74,7 +74,7 @@ function Case({ project: p, index }) {
             </div>
           )}
         </dl>
-      </div>
+      </article>
     </li>
   );
 }

@@ -1,11 +1,11 @@
 import { Link, useParams } from 'react-router-dom';
 import Catalogue from '../components/Catalogue';
-import ScenePhoto from '../components/ScenePhoto';
+import LibraryBackdrop from '../components/LibraryBackdrop';
 import { getAllPosts, getCategories, getPostsByCategory } from '../lib/blog';
 import '../styles/episodes.css';
 
-/* The full catalogue, in the same library as the home page's Writing section: the shelves
-   behind, the category filters as shelf marks, and every volume listed. */
+/* The full catalogue, in the same library as the home page's Writing section: the aisle behind,
+   the category filters as shelf marks, and every volume on the card. */
 export default function Blog() {
   const { category } = useParams();
   const categories = getCategories();
@@ -17,17 +17,18 @@ export default function Blog() {
 
   return (
     <main id="main" className="library-page">
-      <div className="library-backdrop" aria-hidden="true">
-        <ScenePhoto name="library-stacks" eager />
-      </div>
+      <LibraryBackdrop />
       <section id="writing" className="ep ep-library ep-library--page" aria-labelledby="writing-title">
-        <header className="ep-head">
-          <p className="ep-label">Interlude</p>
+        <div className="ep-card ep-open is-in">
+          <p className="scene-tag mono">
+            <span>Interlude</span>
+            <span>The library</span>
+          </p>
           <h1 id="writing-title" className="ep-title">
             Writing
           </h1>
-          <p className="ep-lede">Notes on product, strategy and the books I read.</p>
-          <nav className="shelf-marks" aria-label="Categories">
+          <p className="ep-summary">Notes on product, strategy and the books I read.</p>
+          <nav className="shelf-marks mono" aria-label="Categories">
             <Link to="/blog" className={!category ? 'is-active' : undefined} aria-current={!category ? 'page' : undefined}>
               All <span>{all.length}</span>
             </Link>
@@ -42,9 +43,9 @@ export default function Blog() {
               </Link>
             ))}
           </nav>
-        </header>
-        <div className="library-shelf is-in">
-          {posts.length ? <Catalogue posts={posts} volumeOf={volumeOf} /> : <p className="ep-lede">Nothing on this shelf yet.</p>}
+        </div>
+        <div className="ep-card shelf-card is-in">
+          {posts.length ? <Catalogue posts={posts} volumeOf={volumeOf} /> : <p className="ep-summary">Nothing on this shelf yet.</p>}
         </div>
       </section>
     </main>

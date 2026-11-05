@@ -1,525 +1,291 @@
 /* ──────────────────────────────────────────────────────────────
-   Episodes: everything after the hero.
-   The hero (StaircaseHero, .stair-*, .hero-*) is finished and lives in index.css; nothing
-   here touches its selectors. Every rule below is scoped to a section's own classes.
+   Episodes: everything after the hero, in the hero's own language.
+   The staircase (StaircaseHero, .stair-*, .hero-*) is finished and lives in index.css; nothing
+   here touches its selectors. The sections reuse its `.scene-tag` markup as is, and copy the
+   values of its card (.stair-copy, .hero-name, .hero-role, .hero-summary) into their own
+   classes, so every section opens the way the hero does.
    ────────────────────────────────────────────────────────────── */
 
 .ep {
-  --ep-paper: #f2ede3;
-  --ep-ink: #120e11;
-  --ep-red: #ff3d52;
-  --ep-amber: #f3b23c;
+  --ep-paper: rgba(255, 249, 235, 0.94); /* the hero card's paper */
+  --ep-shadow: #7a5a16; /* the hero card's bronze offset */
+  --ep-gold: #d4a23a; /* the staircase's steps */
+  --ep-bronze: #6e5214; /* the staircase's nosing */
   position: relative;
-  color: #f7f3ec;
+  z-index: 1;
 }
 
-/* scene label, title and lede: the same set-up opens every episode */
-.ep-head {
-  width: 100%;
-  max-width: 1320px;
-  margin: 0 auto;
-  padding: 0 var(--gutter);
+/* ── the stage: one canvas, and the flat field the cuts pass through ── */
+.stage-canvas,
+.stage-field {
+  position: absolute;
+  inset: 0;
 }
-.ep-label {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.55);
-  font-family: var(--mono);
-  font-size: 12px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+.stage {
+  background: var(--stage-bg, #0f47c2);
 }
-.ep-label::before {
-  content: '';
-  width: 28px;
-  height: 2px;
-  background: var(--ep-red);
+.stage-canvas canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+.stage-field {
+  background: #0f47c2;
+}
+
+/* ── the card: the hero's card, for every section ─────────────── */
+.ep-card {
+  position: relative;
+  max-width: min(560px, calc(100% - 2 * var(--gutter)));
+  padding: clamp(20px, 3vw, 32px);
+  background: var(--ep-paper);
+  color: var(--ink);
+  box-shadow: 10px 10px 0 var(--ep-shadow);
 }
 .ep-title {
-  margin-top: 14px;
+  margin-top: 18px;
   font-family: var(--serif);
   font-weight: 800;
-  font-size: clamp(56px, 10vw, 152px);
+  font-size: clamp(48px, 6.6vw, 96px);
   line-height: 0.9;
   letter-spacing: -0.02em;
-  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.35);
 }
-.ep-lede {
+.ep-role {
+  display: inline-block;
   margin-top: 18px;
-  max-width: 34em;
-  font-size: clamp(16px, 1.5vw, 19px);
-  line-height: 1.55;
-  opacity: 0.88;
+  padding: 7px 14px;
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+  font-size: clamp(15px, 1.6vw, 18px);
+}
+.ep-summary {
+  margin-top: 18px;
+  max-width: 540px;
+  font-size: clamp(15.5px, 1.4vw, 17px);
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+/* the staircase's bronze nosing, used as the rule line inside cards */
+.ep-card hr,
+.ep-rule {
+  border: 0;
+  height: 2px;
+  background: var(--ep-bronze);
 }
 
-/* ── the stage: graded photographs behind the episodes ────────── */
-.scene-photo,
-.scene-photo img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+/* the opening card of each section sits where the hero's card sits */
+.ep-open {
+  margin-left: var(--gutter);
 }
-.scene-photo img {
-  object-fit: cover;
-  max-width: none;
-}
-.stage-frame {
-  position: absolute;
-  inset: -2.5% 0;
-  transform: translateY(calc((0.5 - var(--drift, 0)) * 4%));
-  will-change: transform;
-}
-/* each season's grade: a colour wash in the grade's own blend, and a shade that keeps type
-   readable where it sits (left and lower half) */
-.stage-grade {
-  position: absolute;
-  inset: 0;
-}
-.stage-act--summer .stage-grade {
-  background:
-    radial-gradient(ellipse 50% 42% at 82% 14%, rgba(4, 18, 48, 0.42), rgba(4, 18, 48, 0) 100%),
-    linear-gradient(100deg, rgba(4, 18, 48, 0.3) 0%, rgba(4, 18, 48, 0) 40%),
-    linear-gradient(to top, rgba(6, 12, 28, 0.55), rgba(6, 12, 28, 0) 42%);
-}
-.stage-act--autumn .stage-grade {
-  background:
-    linear-gradient(90deg, rgba(20, 6, 4, 0.8), rgba(20, 6, 4, 0.35) 55%, rgba(20, 6, 4, 0.55)),
-    linear-gradient(rgba(255, 120, 40, 0.18), rgba(120, 30, 10, 0.3));
-}
-.stage-act--winter .stage-grade {
-  background:
-    linear-gradient(90deg, rgba(8, 14, 26, 0.72), rgba(8, 14, 26, 0.4) 60%, rgba(8, 14, 26, 0.6)),
-    linear-gradient(rgba(150, 190, 255, 0.14), rgba(20, 30, 60, 0.25));
-}
-.stage-act--night .stage-grade {
-  background:
-    linear-gradient(90deg, rgba(10, 5, 4, 0.86), rgba(10, 5, 4, 0.55) 60%, rgba(10, 5, 4, 0.7)),
-    radial-gradient(ellipse 60% 50% at 70% 30%, rgba(255, 170, 80, 0.12), transparent 70%);
-}
-/* the colour grade itself is baked into each photograph (see design/ASSETS.md) */
 
-/* ── SCENE 002 · Summer: the line ─────────────────────────────── */
+/* one entrance per card: it settles in from below, the way the hero's copy arrives */
+.ep [class*='ep-card'] {
+  transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+}
+.ep .ep-card:not(.is-in):not(.line-card):not(.case-card),
+.case:not(.is-in) .case-card {
+  opacity: 0;
+  transform: translateY(32px);
+}
+.case-no {
+  transition: opacity 1s var(--ease);
+}
+.case:not(.is-in) .case-no {
+  opacity: 0;
+}
+
+/* ── SCENE 002 · Summer: the line at Iogi ─────────────────────── */
 .ep-line.is-riding {
-  height: calc(var(--stops) * 90vh + 100vh);
+  height: calc(var(--stops) * 95vh + 100vh);
 }
 .line-pin {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(10px, 1.6vh, 18px);
-  padding: calc(var(--header) + clamp(20px, 5vh, 56px)) 0 clamp(36px, 7vh, 72px);
+  padding: calc(var(--header) + clamp(28px, 6vh, 64px)) 0 clamp(40px, 8vh, 80px);
 }
 .is-riding .line-pin {
   position: sticky;
   top: 0;
   height: 100vh;
   height: 100svh;
-  overflow: hidden;
 }
-.ep-line .ep-title {
-  font-size: clamp(52px, 8vw, 128px);
+.line-card {
+  margin-left: var(--gutter);
+  max-width: min(520px, calc(100% - 2 * var(--gutter)));
 }
-/* the title takes the open sky at the top right; the crossing keeps the middle of the frame */
-.ep-line .ep-head {
-  margin-bottom: auto;
-  text-align: right;
+.line-card .ep-title {
+  font-size: clamp(44px, 5.4vw, 80px);
 }
-.ep-line .ep-label {
-  justify-content: flex-end;
+.stop {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 2px solid var(--ep-bronze);
 }
-
-/* the route map: a line, a dot per station, and the train running along it */
-.route {
-  --x: 0.125;
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(var(--stops, 4), minmax(0, 1fr));
-  width: calc(100% - 2 * var(--gutter));
-  max-width: 1320px;
-  margin: clamp(8px, 2vh, 24px) auto 0;
-  padding: 18px 0 14px;
-  /* the line-map plate */
-  background: rgba(9, 13, 24, 0.82);
-  border-top: 3px solid #1f6b4a;
+.ep-line:not(.is-riding) .stop + .stop {
+  margin-top: 32px;
 }
-.route::before {
-  content: '';
-  position: absolute;
-  top: 25px;
-  left: calc(50% / var(--stops, 4));
-  right: calc(50% / var(--stops, 4));
-  height: 3px;
-  background: rgba(255, 255, 255, 0.8);
-}
-.route-stop {
-  position: relative;
-  padding-top: 30px;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.62);
-  transition: color 0.4s;
-}
-.route-stop::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 17px;
-  height: 17px;
-  margin-left: -8.5px;
-  border-radius: 50%;
-  background: #0b1630;
-  border: 3px solid #fff;
-  transition: background 0.4s, transform 0.4s;
-}
-.route-stop.is-past::before {
-  background: #fff;
-}
-.route-stop.is-here {
-  color: #fff;
-}
-.route-stop.is-here::before {
-  background: var(--ep-red);
-  transform: scale(1.25);
-}
-.route-name {
-  display: block;
-  font-family: var(--serif);
-  font-weight: 800;
-  font-size: clamp(13px, 1.4vw, 18px);
-  line-height: 1.2;
-}
-.route-date {
-  display: block;
-  margin-top: 4px;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-}
-.route-train {
-  position: absolute;
-  top: 14px;
-  left: calc(var(--x) * 100%);
-  width: 58px;
-  height: 25px;
-  margin-left: -29px;
-  border-radius: 4px 14px 14px 4px;
-  background:
-    linear-gradient(transparent 8px, #1b2b4a 8px 14px, transparent 14px) 6px 0 / 40px 100% no-repeat,
-    linear-gradient(transparent 18px, #1f6b4a 18px 21px, transparent 21px),
-    #f4f3ee;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
-}
-.ep-line:not(.is-riding) .route-train {
-  display: none;
-}
-
-/* the platform: one station sign and its timetable board at a time */
-.platform {
-  position: relative;
-  flex: none;
-  width: calc(100% - 2 * var(--gutter));
-  max-width: 1320px;
-  margin: 0 auto;
-}
-.station {
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-  align-items: end;
-  color: var(--ep-ink);
-}
-.is-riding .station {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateX(6%);
-  transition: opacity 0.55s var(--ease), transform 0.8s var(--ease), visibility 0s 0.8s;
-}
-.is-riding .station.is-gone {
-  transform: translateX(-6%);
-}
-.is-riding .station.is-here {
-  opacity: 1;
-  visibility: visible;
-  transform: none;
-  transition: opacity 0.55s var(--ease) 0.1s, transform 0.8s var(--ease) 0.1s, visibility 0s;
-}
-.ep-line:not(.is-riding) .platform {
-  display: grid;
-  gap: 40px;
-  margin-top: 24px;
-}
-
-/* the platform sign: station name large, role beneath, the line band with its neighbours */
-.station-sign {
-  background: #fbfaf6;
-  border-top: 12px solid #283041;
-  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.35);
-}
-.station-name {
-  padding: clamp(18px, 3vh, 30px) clamp(18px, 3vw, 36px) 0;
-  font-family: var(--serif);
-  font-weight: 800;
-  font-size: clamp(34px, 4.6vw, 70px);
-  line-height: 1;
-  letter-spacing: 0.02em;
-  text-align: center;
-}
-.station-role {
-  padding: 10px clamp(18px, 3vw, 36px) clamp(16px, 2.6vh, 26px);
-  font-size: 15px;
-  letter-spacing: 0.06em;
-  text-align: center;
-  color: #4c4650;
-}
-.station-band {
+.stop-count {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
-  padding: 9px clamp(14px, 2vw, 22px);
-  background: #1f6b4a;
-  color: #fff;
-  font-size: 13px;
-  font-weight: 600;
+  gap: 12px;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
-.station-prev::before {
-  content: '◀ ';
+.stop-name {
+  margin-top: 10px;
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: clamp(30px, 3.4vw, 46px);
+  line-height: 1;
 }
-.station-next::after {
-  content: ' ▶';
+.stop .ep-role {
+  margin-top: 12px;
 }
-
-/* the departure board beside it */
-.timetable {
-  background: rgba(11, 12, 15, 0.92);
-  color: #f1ede4;
-  padding: clamp(18px, 2.6vh, 26px) clamp(18px, 2.4vw, 30px);
-  border-top: 3px solid var(--ep-amber);
+.stop-work {
+  margin-top: 14px;
+  padding-left: 18px;
+  list-style: square;
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: var(--ink-soft);
 }
-.timetable > div {
-  display: grid;
-  grid-template-columns: 76px minmax(0, 1fr);
-  gap: 16px;
-  padding: 10px 0;
+.stop-work li + li {
+  margin-top: 6px;
 }
-.timetable > div + div {
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
+.stop-work li::marker {
+  color: var(--ep-bronze);
 }
-.timetable dt {
-  font-family: var(--mono);
+.stop-tools {
+  margin-top: 12px;
+  font-size: 14.5px;
+  color: var(--ink-soft);
+}
+.stop-tools .mono {
+  margin-right: 8px;
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--ep-amber);
-  padding-top: 3px;
+  color: var(--muted);
 }
-.timetable dd {
-  font-size: 15px;
-  line-height: 1.5;
+/* the cut between stops: no slide, the card simply changes, as a shot changes */
+.is-riding .stop {
+  animation: ep-cut 0.35s steps(1) both;
 }
-.timetable li + li {
-  margin-top: 6px;
+@keyframes ep-cut {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.line-dots {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+}
+.line-dots li {
+  width: 22px;
+  height: 4px;
+  background: rgba(23, 17, 26, 0.18);
+}
+.line-dots li.is-past {
+  background: var(--ep-bronze);
+}
+.line-dots li.is-here {
+  background: var(--ink);
 }
 
-/* ── SCENE 003 · Autumn: case files ──────────────────────────── */
+/* ── SCENE 003 · Autumn: case files in the cram school ─────────── */
 .ep-cases {
-  padding: clamp(120px, 18vh, 200px) 0 clamp(80px, 12vh, 140px);
+  padding: clamp(110px, 16vh, 180px) 0 clamp(60px, 10vh, 120px);
 }
 .cases {
   margin-top: clamp(40px, 8vh, 96px);
 }
 .case {
   position: relative;
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: clamp(16px, 2vw, 28px);
-  row-gap: 28px;
-  align-items: end;
-  width: 100%;
-  max-width: 1320px;
-  min-height: 82vh;
-  margin: 0 auto;
-  padding: 8vh var(--gutter);
+  display: flex;
+  align-items: center;
+  min-height: 92vh;
+  padding: 6vh var(--gutter);
 }
+.case--right {
+  justify-content: flex-end;
+}
+/* the case number, cut in the staircase's gold */
 .case-no {
   position: absolute;
-  z-index: 0;
+  top: 50%;
+  right: var(--gutter);
+  transform: translateY(-50%);
   font-family: var(--serif);
   font-weight: 800;
-  font-size: clamp(170px, 27vw, 440px);
-  line-height: 0.78;
+  font-size: clamp(170px, 28vw, 440px);
+  line-height: 0.8;
   letter-spacing: -0.04em;
   color: transparent;
-  -webkit-text-stroke: 1.5px rgba(255, 228, 200, 0.32);
-  user-select: none;
+  -webkit-text-stroke: 2px var(--ep-gold);
+  opacity: 0.85;
   pointer-events: none;
+  user-select: none;
 }
-.case-title,
-.case-file {
-  position: relative;
-  z-index: 1;
+.case--right .case-no {
+  right: auto;
+  left: var(--gutter);
 }
-.case-kind {
-  font-family: var(--mono);
-  font-size: 12px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  opacity: 0.8;
+.case-card {
+  max-width: min(540px, calc(100% - 2 * var(--gutter)));
 }
 .case-name {
-  margin-top: 12px;
-  overflow: hidden;
-  padding-bottom: 0.06em;
+  margin-top: 16px;
   font-family: var(--serif);
   font-weight: 800;
-  font-size: clamp(46px, 7.2vw, 116px);
-  line-height: 0.95;
+  font-size: clamp(40px, 5vw, 72px);
+  line-height: 0.92;
   letter-spacing: -0.02em;
 }
-.case-name span {
-  display: inline-block;
-}
-.case-result {
-  margin-top: 18px;
-  font-family: var(--serif);
-  font-weight: 800;
-  font-size: clamp(24px, 2.8vw, 40px);
-  line-height: 1.1;
-  color: var(--ep-red);
-}
-/* the file: a sheet of paper, not a card */
-.case-file {
-  color: var(--ep-ink);
-  background:
-    linear-gradient(rgba(120, 90, 50, 0.05) 1px, transparent 1px) 0 0 / 100% 30px,
-    var(--ep-paper);
-  padding: clamp(22px, 2.6vw, 34px);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
-  border-top: 5px solid var(--ep-red);
-}
-.case-file dl > div {
-  display: grid;
-  gap: 4px;
-  padding: 12px 0;
-}
-.case-file dl > div + div {
-  border-top: 1px solid rgba(18, 14, 17, 0.14);
-}
-.case-file dt {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #7a6d63;
-}
-.case-file dd {
-  font-size: 16px;
-  line-height: 1.55;
-}
-.case-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
-}
-.case-links a {
-  font-weight: 700;
-  color: #b3122b;
-  text-underline-offset: 4px;
-}
 .case-shot {
-  margin: calc(-1 * clamp(22px, 2.6vw, 34px)) calc(-1 * clamp(22px, 2.6vw, 34px)) 18px;
+  margin-top: 18px;
 }
 .case-shot img {
   display: block;
   width: 100%;
   height: auto;
 }
-/* four compositions, used in turn */
-.case--0 .case-title {
-  grid-column: 1 / span 7;
+.case-facts {
+  margin-top: 18px;
+  border-top: 2px solid var(--ep-bronze);
 }
-.case--0 .case-file {
-  grid-column: 8 / span 5;
+.case-facts > div {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(110, 82, 20, 0.25);
 }
-.case--0 .case-no {
-  right: var(--gutter);
-  top: 0;
+.case-facts dt {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-top: 3px;
 }
-.case--1 .case-file {
-  grid-column: 1 / span 5;
-  grid-row: 1;
-  align-self: start;
+.case-facts dd {
+  font-size: 15.5px;
 }
-.case--1 .case-title {
-  grid-column: 6 / span 7;
-  grid-row: 1;
-  text-align: right;
-}
-.case--1 .case-no {
-  left: var(--gutter);
-  bottom: 0;
-}
-.case--2 .case-title {
-  grid-column: 1 / -1;
-}
-.case--2 .case-name {
-  font-size: clamp(52px, 9vw, 150px);
-}
-.case--2 .case-file {
-  grid-column: 6 / span 6;
-}
-.case--2 .case-no {
-  right: var(--gutter);
-  bottom: 0;
-}
-.case--3 .case-file {
-  grid-column: 2 / span 5;
-  grid-row: 1;
-}
-.case--3 .case-title {
-  grid-column: 8 / span 5;
-  grid-row: 1;
-  align-self: start;
-}
-.case--3 .case-no {
-  left: 38%;
-  top: 0;
-}
-
-/* the entrance: the name rises out of its mask, the result wipes in, the file settles */
-.case .case-name span,
-.case .case-result,
-.case .case-file,
-.case .case-no {
-  transition: transform 1s var(--ease), clip-path 1s var(--ease), opacity 0.9s var(--ease);
-}
-.case:not(.is-in) .case-name span {
-  transform: translateY(105%);
-}
-.case:not(.is-in) .case-result {
-  clip-path: inset(0 100% 0 0);
-}
-.case:not(.is-in) .case-file {
-  opacity: 0;
-  transform: translateY(48px);
-}
-.case:not(.is-in) .case-no {
-  opacity: 0;
-}
-.case.is-in .case-result {
-  clip-path: inset(0 0 0 0);
-  transition-delay: 0.25s;
-}
-.case.is-in .case-file {
-  transition-delay: 0.35s;
+.case-facts a {
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration-color: var(--ep-gold);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
 }
 
 /* ── SCENE 004 · Winter: the classroom ────────────────────────── */
 .ep-school {
-  padding: clamp(120px, 18vh, 200px) 0 clamp(100px, 16vh, 180px);
+  padding: clamp(110px, 16vh, 180px) 0 clamp(100px, 16vh, 180px);
 }
 .school {
   display: grid;
@@ -527,32 +293,29 @@
   gap: clamp(28px, 4vw, 56px);
   align-items: start;
   max-width: 1320px;
-  margin: clamp(40px, 7vh, 80px) auto 0;
-  padding: 0 var(--gutter);
+  margin: clamp(48px, 10vh, 120px) auto 0;
+  padding: 0 var(--gutter) 0 var(--gutter);
 }
-/* the record: a ruled school document */
-.record {
-  position: relative;
-  color: var(--ep-ink);
-  background: #f7f4ee;
-  padding: clamp(24px, 3vw, 40px);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
-  border-top: 3px double #8f8169;
+.school .ep-card {
+  max-width: none;
 }
 .record-title {
+  margin-top: 14px;
   font-family: var(--serif);
   font-weight: 800;
   font-size: clamp(24px, 2.4vw, 32px);
+  line-height: 1.1;
 }
 .record-table {
   width: 100%;
-  margin-top: 20px;
+  margin-top: 16px;
   border-collapse: collapse;
+  border-top: 2px solid var(--ep-bronze);
 }
 .record-table th,
 .record-table td {
   padding: 12px 10px 12px 0;
-  border-bottom: 1px solid #cfc5b3;
+  border-bottom: 1px solid rgba(110, 82, 20, 0.25);
   text-align: left;
   vertical-align: top;
 }
@@ -562,8 +325,7 @@
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #7a6d63;
-  border-bottom: 2px solid var(--ep-ink);
+  color: var(--muted);
 }
 .record-table tbody th {
   font-family: var(--serif);
@@ -574,213 +336,189 @@
 .record-table td {
   font-size: 15px;
 }
-.record-note {
-  margin-top: 22px;
-}
-/* the seal, in the record's red ink */
-.record-stamp {
-  display: inline-block;
-  padding: 6px 14px;
-  border: 2px solid #c11a33;
-  color: #c11a33;
-  font-family: var(--serif);
-  font-weight: 800;
-  font-size: 15px;
-  transform: rotate(-5deg);
-}
-
-/* the blackboard: the skills, classified in chalk */
-.board {
+.classes-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(28px, 3vw, 44px) clamp(32px, 4vw, 60px);
-  padding: clamp(28px, 3.4vw, 48px);
-  color: #eef1ea;
-  background:
-    radial-gradient(ellipse 50% 35% at 25% 30%, rgba(255, 255, 255, 0.06), transparent 70%),
-    radial-gradient(ellipse 40% 30% at 75% 75%, rgba(255, 255, 255, 0.05), transparent 70%),
-    #1f2c27;
-  border: clamp(10px, 1.2vw, 14px) solid #5c4733;
-  box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.45), 0 30px 60px rgba(0, 0, 0, 0.4);
+  gap: 26px 36px;
+  margin-top: 16px;
+  padding-top: 18px;
+  border-top: 2px solid var(--ep-bronze);
 }
-.board-head {
+.class-head {
   font-family: var(--serif);
   font-weight: 800;
-  font-size: clamp(22px, 2.2vw, 30px);
+  font-size: clamp(19px, 1.8vw, 23px);
   line-height: 1.15;
-  padding-bottom: 10px;
-  border-bottom: 2px solid rgba(238, 241, 234, 0.55);
-  text-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
 }
-.board-list {
-  margin-top: 14px;
+.class-list {
+  margin-top: 10px;
 }
-.board-list li {
-  font-size: 16px;
+.class-list li {
+  font-size: 15px;
   line-height: 1.5;
-  opacity: 0.94;
+  color: var(--ink-soft);
 }
-.board-list li + li {
+.class-list li + li {
   margin-top: 4px;
 }
-.record,
-.board {
-  transition: transform 1s var(--ease), opacity 0.9s var(--ease);
-}
-.record:not(.is-in) {
-  opacity: 0;
-  transform: translateX(-40px) rotate(-1deg);
-}
-.board:not(.is-in) {
-  opacity: 0;
-  transform: translateY(40px);
-}
 
-/* ── Interlude: the library catalogue ─────────────────────────── */
+/* ── Interlude: the library ───────────────────────────────────── */
 .ep-library {
-  padding: clamp(120px, 18vh, 200px) 0 clamp(100px, 16vh, 180px);
+  padding: clamp(110px, 16vh, 180px) 0 clamp(100px, 16vh, 180px);
 }
-.library-shelf {
-  max-width: 1240px;
-  margin: clamp(40px, 7vh, 80px) auto 0;
-  padding: 0 var(--gutter);
+.shelf-card {
+  max-width: min(860px, calc(100% - 2 * var(--gutter)));
+  margin: clamp(48px, 10vh, 120px) var(--gutter) 0 auto;
 }
 .catalogue {
-  border-bottom: 1px solid rgba(255, 226, 196, 0.24);
+  margin-top: 16px;
+  border-top: 2px solid var(--ep-bronze);
 }
 .catalogue li {
-  border-top: 1px solid rgba(255, 226, 196, 0.24);
+  border-bottom: 1px solid rgba(110, 82, 20, 0.25);
 }
 .volume {
-  --c: #c9a26b;
+  --c: var(--ep-gold);
   position: relative;
   display: grid;
-  grid-template-columns: clamp(76px, 9vw, 130px) minmax(0, 1fr) clamp(130px, 14vw, 190px);
-  gap: clamp(16px, 2.4vw, 36px);
+  grid-template-columns: 76px minmax(0, 1fr) 128px;
+  gap: 20px;
   align-items: baseline;
-  padding: clamp(22px, 3.4vh, 34px) 0 clamp(22px, 3.4vh, 34px) 22px;
-  color: #f4ebde;
+  padding: 18px 12px 18px 18px;
+  color: var(--ink);
   text-decoration: none;
-  transition: background 0.35s var(--ease), padding 0.35s var(--ease), color 0.35s;
+  transition: background 0.25s, color 0.25s, padding 0.25s var(--ease);
 }
 .volume.shelf-spring {
-  --c: #e2374f;
+  --c: #a51d33;
 }
 .volume.shelf-autumn {
-  --c: #e8743a;
+  --c: #c8662a;
 }
 .volume.shelf-winter {
-  --c: #6d8fe8;
+  --c: #2c4a8a;
 }
 .volume.shelf-summer {
-  --c: #3f8fe8;
+  --c: #1f5fb8;
 }
-/* the spine, which comes forward when the volume is chosen */
+/* the spine's colour, on the edge of each entry */
 .volume::before {
   content: '';
   position: absolute;
   left: 0;
-  top: 14%;
-  bottom: 14%;
-  width: 6px;
+  top: 12px;
+  bottom: 12px;
+  width: 5px;
   background: var(--c);
-  transform: scaleY(0.3);
-  opacity: 0.7;
-  transition: transform 0.35s var(--ease), opacity 0.35s;
+  transition: width 0.25s var(--ease);
 }
+/* chosen: the Monogatari cut to black, the title in red */
 .volume:hover,
 .volume:focus-visible {
-  padding-left: 40px;
-  background: rgba(8, 4, 4, 0.72);
+  background: var(--ink);
+  color: var(--paper);
+  padding-left: 26px;
   outline: none;
+}
+.volume:hover .volume-title,
+.volume:focus-visible .volume-title {
+  color: #ff4a5c;
 }
 .volume:hover::before,
 .volume:focus-visible::before {
-  transform: none;
-  opacity: 1;
-}
-.volume:focus-visible {
-  box-shadow: inset 0 0 0 2px var(--ep-paper);
+  width: 9px;
 }
 .volume-no {
   font-family: var(--serif);
   font-weight: 800;
-  font-size: clamp(40px, 5vw, 72px);
+  font-size: clamp(36px, 4vw, 52px);
   line-height: 0.9;
-  color: var(--c);
 }
 .volume-word {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   font-family: var(--mono);
   font-weight: 400;
   font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(244, 235, 222, 0.7);
+  opacity: 0.7;
 }
 .volume-title {
   display: block;
   font-family: var(--serif);
   font-weight: 800;
-  font-size: clamp(22px, 2.4vw, 34px);
-  line-height: 1.12;
-  transition: color 0.35s;
-}
-.volume:hover .volume-title,
-.volume:focus-visible .volume-title {
-  color: var(--ep-red);
-}
-.is-latest .volume-title {
-  font-size: clamp(30px, 4vw, 58px);
-  line-height: 1.02;
+  font-size: clamp(20px, 2vw, 27px);
+  line-height: 1.15;
+  transition: color 0.25s;
 }
 .volume-summary {
   display: block;
-  margin-top: 10px;
-  max-width: 38em;
-  font-size: 15.5px;
-  line-height: 1.55;
-  color: rgba(244, 235, 222, 0.78);
+  margin-top: 6px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  opacity: 0.78;
 }
 .volume-meta {
   display: flex;
   flex-direction: column;
   gap: 4px;
   text-align: right;
-  font-family: var(--mono);
-  font-size: 12px;
+  font-size: 11.5px;
   letter-spacing: 0.06em;
-  color: rgba(244, 235, 222, 0.76);
+  opacity: 0.8;
 }
-.library-more {
+.shelf-more {
   display: inline-block;
-  margin-top: 28px;
-  font-family: var(--mono);
-  font-size: 13px;
-  letter-spacing: 0.12em;
+  margin-top: 18px;
+  font-size: 12.5px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #f4ebde;
-  text-underline-offset: 6px;
+  color: var(--ink);
+  text-decoration-color: var(--ep-gold);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
 }
-.library-more:hover {
-  color: var(--ep-red);
+
+/* the blog pages: the same library, held still behind the cards */
+.library-page {
+  position: relative;
+  min-height: 100vh;
+  background: #2a0f0b;
 }
-.library-shelf .catalogue li {
-  transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+.library-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: #5c2418;
 }
-.library-shelf:not(.is-in) .catalogue li {
-  opacity: 0;
-  transform: translateY(24px);
+.ep-library--page {
+  padding-top: calc(var(--header) + clamp(40px, 8vh, 96px));
 }
-.library-shelf.is-in .catalogue li:nth-child(2) {
-  transition-delay: 0.08s;
+.ep-library--page .shelf-card {
+  margin-top: 40px;
 }
-.library-shelf.is-in .catalogue li:nth-child(3) {
-  transition-delay: 0.16s;
+.shelf-marks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin-top: 22px;
+  font-size: 12.5px;
+  letter-spacing: 0.08em;
 }
-.library-shelf.is-in .catalogue li:nth-child(4) {
-  transition-delay: 0.24s;
+.shelf-marks a {
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding-bottom: 3px;
+  border-bottom: 2px solid transparent;
+}
+.shelf-marks a span {
+  opacity: 0.6;
+}
+.shelf-marks a:hover,
+.shelf-marks a.is-active {
+  color: var(--ink);
+  border-bottom-color: var(--ep-bronze);
 }
 
 /* ── SCENE 005 · Next episode ─────────────────────────────────── */
@@ -797,9 +535,6 @@
   width: 100%;
   max-width: 1320px;
   margin: 0 auto;
-}
-.ep-finale .ep-label::before {
-  background: #fff;
 }
 .finale-headline {
   margin-top: clamp(18px, 3vh, 32px);
@@ -864,50 +599,32 @@
 
 /* ── responsive ─────────────────────────────────────────────── */
 @media (max-width: 860px) {
-  .station {
-    grid-template-columns: 1fr;
-  }
-  .station-name {
-    font-size: clamp(30px, 9vw, 44px);
-  }
-  .timetable > div {
-    grid-template-columns: 64px minmax(0, 1fr);
-    padding: 7px 0;
-  }
-  .timetable dd {
-    font-size: 14px;
-  }
-  .route-date {
-    display: none;
-  }
-  .route-name {
-    font-size: 11.5px;
-  }
-  .case {
+  .case,
+  .case--right {
+    justify-content: flex-start;
     min-height: 0;
-    padding: 10vh var(--gutter);
+    padding: 12vh var(--gutter);
   }
-  .case .case-title,
-  .case .case-file {
-    grid-column: 1 / -1 !important;
-    grid-row: auto !important;
-    text-align: left !important;
-  }
-  .case-no {
-    top: 4vh !important;
-    right: var(--gutter) !important;
-    left: auto !important;
-    bottom: auto !important;
-    font-size: 36vw;
+  .case-no,
+  .case--right .case-no {
+    top: 4vh;
+    right: var(--gutter);
+    left: auto;
+    transform: none;
+    font-size: 38vw;
   }
   .school {
     grid-template-columns: 1fr;
   }
-  .board {
+  .classes-grid {
     grid-template-columns: 1fr;
   }
+  .shelf-card {
+    margin-right: var(--gutter);
+    margin-left: var(--gutter);
+  }
   .volume {
-    grid-template-columns: 58px minmax(0, 1fr);
+    grid-template-columns: 52px minmax(0, 1fr);
   }
   .volume-meta {
     grid-column: 2;
@@ -915,86 +632,24 @@
     gap: 14px;
     text-align: left;
   }
+  .line-card .stop-work {
+    font-size: 14.5px;
+  }
 }
 @media (max-width: 860px) and (max-height: 760px) {
-  .is-riding .line-pin .ep-title {
-    font-size: 44px;
+  .line-card .ep-title {
+    font-size: 40px;
+    margin-top: 10px;
   }
 }
 
 /* ── reduced motion: everything simply present ───────────────── */
-html.reduce-motion .case .case-name span,
-html.reduce-motion .case .case-result,
-html.reduce-motion .case .case-file,
-html.reduce-motion .case .case-no,
-html.reduce-motion .record,
-html.reduce-motion .board,
-html.reduce-motion .library-shelf .catalogue li,
-html.reduce-motion .finale-line > span {
+html.reduce-motion .ep .ep-card,
+html.reduce-motion .case-no,
+html.reduce-motion .finale-line > span,
+html.reduce-motion .is-riding .stop {
   opacity: 1 !important;
   transform: none !important;
-  clip-path: none !important;
   transition: none !important;
-}
-html.reduce-motion .stage-frame {
-  transform: none;
-}
-
-/* ── the blog page: the library, standing on its own ─────────── */
-.library-page {
-  position: relative;
-  min-height: 100vh;
-  background: #0d0807;
-}
-.library-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-}
-.library-backdrop::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(90deg, rgba(10, 5, 4, 0.9), rgba(10, 5, 4, 0.62) 60%, rgba(10, 5, 4, 0.78)),
-    linear-gradient(to top, rgba(10, 5, 4, 0.6), transparent 50%);
-}
-.ep-library--page {
-  z-index: 1;
-  padding-top: calc(var(--header) + clamp(56px, 10vh, 120px));
-}
-.shelf-marks {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 28px;
-  margin-top: 30px;
-  font-family: var(--mono);
-  font-size: 13px;
-  letter-spacing: 0.08em;
-}
-.shelf-marks a {
-  color: rgba(244, 235, 222, 0.75);
-  text-decoration: none;
-  padding-bottom: 4px;
-  border-bottom: 2px solid transparent;
-}
-.shelf-marks a span {
-  opacity: 0.6;
-}
-.shelf-marks a:hover,
-.shelf-marks a.is-active {
-  color: #fff;
-  border-bottom-color: var(--ep-red);
-}
-.finale-credits {
-  max-width: 70em;
-  margin-top: clamp(48px, 9vh, 96px);
-  font-size: 12px;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.78);
-}
-.finale-credits a {
-  color: inherit;
-  text-underline-offset: 2px;
+  animation: none !important;
 }

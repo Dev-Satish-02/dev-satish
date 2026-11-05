@@ -1,78 +1,143 @@
 import { createContext, useEffect, useRef } from 'react';
-import ScenePhoto from './ScenePhoto';
+import { EDUCATION, EXPERIENCE, SKILL_GROUPS } from '../data/content';
+import { getAllPosts, seasonFor } from '../lib/blog';
+import { fullMotion } from '../lib/store';
 
 // Seasons the stage provides; Scene.jsx leaves its own illustration out for these.
 export const StageContext = createContext(null);
 export const STAGED = ['summer', 'autumn', 'winter', 'night'];
 
-// The order the seasons play in down the home page, the section each belongs to, and its
-// photograph (see design/ASSETS.md).
+// The order the sets play in, the section each belongs to, and the colour each one is cut in
+// through. The first is the staircase's own final blue, so the fall lands in the summer sky.
 const ACTS = [
-  { season: 'summer', section: 'experience', photo: 'summer-crossing' },
-  { season: 'autumn', section: 'projects', photo: 'autumn-corridor' },
-  { season: 'winter', section: 'skills', photo: 'winter-school' },
-  { season: 'night', section: 'blog', photo: 'library-stacks' },
+  { set: 'summer', section: 'experience', cut: '#0f47c2', pinned: true },
+  { set: 'autumn', section: 'projects', cut: '#c9844b' },
+  { set: 'winter', section: 'skills', cut: '#dfe6ef' },
+  { set: 'night', section: 'blog', cut: '#5c2418' },
 ];
 
-const clamp = (v) => Math.min(1, Math.max(0, v));
-const smooth = (t) => t * t * (3 - 2 * t);
+// the line runs in time order, first internship to latest
+export const STOPS = [...EXPERIENCE].reverse();
 
-/* One fixed backdrop behind the home page's episodes. Each season is a graded photograph;
-   as a section comes up the screen its photograph dissolves in over the last, and while a
-   section scrolls, its photograph drifts very slowly, as if the camera were tracking. At the
-   top, the flat blue the staircase fall ends on holds, then clears to the summer crossing. */
+const clamp = (v) => Math.min(1, Math.max(0, v));
+const smooth = (a, b, x) => {
+  const t = clamp((x - a) / (b - a));
+  return t * t * (3 - 2 * t);
+};
+
+// Writing asks the library to bring a volume forward
+export function chooseVolume(i) {
+  window.dispatchEvent(new CustomEvent('episodes:choose', { detail: i }));
+}
+
+/* The fixed stage behind the episodes: one WebGL canvas (src/three/episodes.js) and a flat
+   field of colour over it for the cuts. As the next section rises, the current set's haze
+   thickens toward that section's colour, the frame goes flat, and the next set clears out of
+   it. Without WebGL the flat fields still carry the seasons. */
 export default function SceneStage() {
-  const layers = useRef([]);
-  const blue = useRef(null);
+  const holder = useRef(null);
+  const field = useRef(null);
 
   useEffect(() => {
+    let stage;
+    let alive = true;
     let raf = 0;
+    const still = !fullMotion();
+
     const update = () => {
       raf = 0;
       const vh = window.innerHeight;
       const rects = ACTS.map(({ section }) => document.getElementById(section)?.getBoundingClientRect());
-      // p[i]: how far act i has dissolved in, from its section's top entering the bottom of
-      // the screen to it reaching the top fifth
-      const p = rects.map((r) => (r ? smooth(clamp((vh - r.top) / (vh * 0.8))) : 0));
-      // the landing: the blue holds until the hero has all but left (it shows the same blue)
-      const land = rects[0] ? smooth(clamp((vh * 0.25 - rects[0].top) / (vh * 0.7))) : 1;
-      if (blue.current) blue.current.style.opacity = String(1 - land);
-      ACTS.forEach((_, i) => {
-        const el = layers.current[i];
-        if (!el) return;
-        const shown = i === 0 ? 1 : p[i];
-        const covered = i + 1 < ACTS.length && p[i + 1] >= 1;
-        el.style.opacity = String(shown);
-        el.style.visibility = shown <= 0 || covered ? 'hidden' : 'visible';
-        const r = rects[i];
-        const drift = r ? clamp((vh - r.top) / (r.height + vh)) : 0;
-        el.style.setProperty('--drift', drift.toFixed(4));
-      });
+      if (!rects[0]) return;
+      // t[i]: how far section i has risen, from its top at the bottom of the screen (0) to the top (1)
+      const t = rects.map((r) => (r ? clamp((vh - r.top) / vh) : 0));
+      let active = 0;
+      for (let i = 1; i < ACTS.length; i += 1) if (t[i] >= 0.5) active = i;
+
+      // the field: opaque while the hero leaves, then cleared; flat again at every cut
+      let alpha;
+      let colour;
+      let haze = 0;
+      const landing = smooth(0, 1, (vh * 0.25 - rects[0].top) / (vh * 0.4));
+      if (active === 0 && (ACTS.length < 2 || t[1] < 0.02)) {
+        alpha = 1 - landing;
+        colour = ACTS[0].cut;
+        haze = 1 - landing;
+      } else {
+        const next = active + 1 < ACTS.length ? t[active + 1] : 0;
+        if (next > 0) {
+          // leaving: thicken toward the next colour
+          colour = ACTS[active + 1].cut;
+          haze = smooth(0, 0.5, next);
+          alpha = smooth(0.32, 0.5, next);
+        } else {
+          // arriving: clear out of this set's colour
+          colour = ACTS[active].cut;
+          const since = active === 0 ? landing : t[active];
+          haze = active === 0 ? 1 - landing : 1 - smooth(0.5, 0.85, since);
+          alpha = active === 0 ? 1 - landing : 1 - smooth(0.5, 0.7, since);
+        }
+      }
+      field.current.style.background = colour;
+      field.current.style.opacity = String(alpha);
+      holder.current.parentElement.style.setProperty('--stage-bg', colour);
+
+      if (!stage) return;
+      const r = rects[active];
+      const act = ACTS[active];
+      let p;
+      if (still) p = 0.5;
+      else if (act.pinned) p = clamp(-r.top / Math.max(1, r.height - vh));
+      else p = clamp((vh - r.top) / (r.height + vh));
+      stage.setActive(rects[0].top < vh);
+      stage.setView(act.set, p);
+      stage.setHaze(colour, haze);
+      // build the next set ahead of its cut, so the switch never stalls
+      if (ACTS[active + 1]) stage.prepare(ACTS[active + 1].set);
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
     };
+    const onChoose = (e) => stage?.choose(e.detail);
+
     update();
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
+    window.addEventListener('episodes:choose', onChoose);
+
+    import('../three/episodes')
+      .then(({ createEpisodes }) => {
+        if (!alive) return;
+        const posts = getAllPosts()
+          .slice(0, 4)
+          .map((p) => ({ title: p.title, season: seasonFor(p.categorySlug) }));
+        stage = createEpisodes(holder.current, {
+          stations: STOPS.map((s) => ({ name: s.company, role: s.role })),
+          skills: SKILL_GROUPS,
+          education: EDUCATION,
+          posts,
+        });
+        stage.setStill(still);
+        update();
+      })
+      .catch((err) => {
+        console.warn('[episodes] staying with flat colour fields', err);
+      });
+
     return () => {
+      alive = false;
       cancelAnimationFrame(raf);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
+      window.removeEventListener('episodes:choose', onChoose);
+      stage?.dispose();
     };
   }, []);
 
   return (
     <div className="stage" aria-hidden="true">
-      {ACTS.map(({ season, photo }, i) => (
-        <div key={season} ref={(el) => (layers.current[i] = el)} className={`stage-act stage-act--${season}`}>
-          <div className="stage-frame">
-            <ScenePhoto name={photo} eager={i === 0} />
-          </div>
-          <div className="stage-grade" />
-        </div>
-      ))}
-      <div ref={blue} className="stage-blue" />
+      <div ref={holder} className="stage-canvas" />
+      <div ref={field} className="stage-field" />
     </div>
   );
 }
