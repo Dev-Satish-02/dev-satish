@@ -131,6 +131,24 @@ and the scene, and the real place it was modelled on.
   library's haze thickens into this red before the card arrives, and the card's own top edge is
   clear, so the interlude runs into the end card without a hard edge.
 
+## The cold open (Loader)
+
+The intro cuts the way the series cuts: a one-word title card on flat colour (Summer, Autumn,
+Winter, Interlude), then a short live shot of that place, rendered by the same
+`src/three/episodes.js` sets the page scrolls through. After that come the name card with the
+物語 seal and the existing Scene 001 flashes into the staircase. Every card holds at least
+350 ms, which keeps the cuts under three flashes a second. With reduced motion only the name
+card plays.
+
+No frames from the anime are used. A Firecrawl search turned up no licence that covers a
+website:
+- Studio Shaft and Aniplex publish no press kit.
+- The official scene-cut releases (for example Madoka Magica's) are licensed only for posting
+  on social and video platforms.
+- The Monogatari live wallpaper app covers personal devices only.
+
+So the reel is built from the site's own sets, which keeps it consistent with the staircase.
+
 ## Cuts between seasons
 
 Each section starts as its haze. As the next section rises:

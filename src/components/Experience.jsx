@@ -3,11 +3,11 @@ import { SCENES } from '../data/content';
 import { useFullMotion } from '../lib/store';
 import { STOPS } from './SceneStage';
 
-/* Summer, at Iogi. The section pins while the camera walks the platform; across the tracks
-   each station-name sign is one internship, and the card (the hero's own card) carries the
-   details of the one in view. With reduced motion the stops are simply listed. */
+/* Summer, at the crossing. The section pins while the camera walks up the road to the
+   crossing and a train runs through; the card (the hero's own card) carries one internship at
+   a time as you scroll. With reduced motion they are simply listed. */
 export default function Experience() {
-  const { no, season } = SCENES.experience;
+  const { season } = SCENES.experience;
   const motion = useFullMotion();
   const section = useRef(null);
   const [at, setAt] = useState(0);
@@ -43,21 +43,14 @@ export default function Experience() {
     >
       <div className="line-pin">
         <div className="ep-card line-card">
-          <p className="scene-tag mono">
-            <span>Scene {no}</span>
-            <span>{season}</span>
-          </p>
+          <p className="ep-tag mono">{season}</p>
           <h2 id="experience-title" className="ep-title">
             Experience
           </h2>
           {shown.map((s) => {
-            const i = STOPS.indexOf(s);
             return (
               <article key={s.company} className="stop" aria-label={`${s.company}, ${s.role}`}>
-                <p className="stop-count mono">
-                  Stop {i + 1} of {STOPS.length}
-                  <span>{s.date}</span>
-                </p>
+                <p className="stop-count mono">{s.date}</p>
                 <h3 className="stop-name">{s.company}</h3>
                 <p className="ep-role">{s.role}</p>
                 <ul className="stop-work">
@@ -71,13 +64,6 @@ export default function Experience() {
               </article>
             );
           })}
-          {motion && (
-            <ol className="line-dots" aria-hidden="true">
-              {STOPS.map((s, i) => (
-                <li key={s.company} className={i === at ? 'is-here' : i < at ? 'is-past' : undefined} />
-              ))}
-            </ol>
-          )}
         </div>
       </div>
     </section>

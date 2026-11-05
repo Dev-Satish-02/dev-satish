@@ -53,10 +53,7 @@ export default function Writing() {
       }}
     >
       <div ref={open} className="ep-card ep-open">
-        <p className="scene-tag mono">
-          <span>Interlude</span>
-          <span>The library</span>
-        </p>
+        <p className="ep-tag mono">Interlude</p>
         <h2 id="blog-title" className="ep-title">
           Writing
         </h2>
@@ -68,7 +65,7 @@ export default function Writing() {
           {posts.map((post, i) => (
             <li key={href(post)}>
               <Link to={href(post)} onFocus={() => chooseVolume(i)} onBlur={() => chooseVolume(-1)}>
-                Vol. {all.length - i}: {post.title}
+                {post.title}
               </Link>
             </li>
           ))}
@@ -78,7 +75,7 @@ export default function Writing() {
       {hover >= 0 && (
         <div ref={label} className="spine-label" aria-hidden="true">
           <span className="spine-label-vol mono">
-            Vol. {all.length - hover}, {posts[hover].category}, {formatDate(posts[hover].date)}
+            {posts[hover].category}, {formatDate(posts[hover].date)}
           </span>
           <span className="spine-label-title">{posts[hover].title}</span>
         </div>

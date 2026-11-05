@@ -7,7 +7,7 @@ import { useFullMotion } from '../lib/store';
    over the scene, in the series' manner, as its pile comes into view. With reduced motion the
    projects are simply listed. */
 export default function Projects() {
-  const { no, season } = SCENES.projects;
+  const { season } = SCENES.projects;
   const motion = useFullMotion();
   const section = useRef(null);
   const [at, setAt] = useState(0);
@@ -43,28 +43,14 @@ export default function Projects() {
     >
       <div className="case-view">
         <header className="case-head">
-          <p className="scene-tag mono">
-            <span>Scene {no}</span>
-            <span>{season}</span>
-          </p>
+          <p className="ep-tag mono">{season}</p>
           <h2 id="projects-title" className="case-title">
             Projects
           </h2>
         </header>
-        {motion && (
-          <p className="case-no" aria-hidden="true">
-            {String(at + 1).padStart(2, '0')}
-          </p>
-        )}
         {shown.map((p) => {
-          const i = PROJECTS.indexOf(p);
-          const num = String(i + 1).padStart(2, '0');
           return (
-            <article key={p.name} className="case-text" aria-label={`Case ${i + 1} of ${PROJECTS.length}: ${p.name}`}>
-              <p className="scene-tag mono">
-                <span>Case {num}</span>
-                <span>{p.kind}</span>
-              </p>
+            <article key={p.name} className="case-text" aria-label={p.name}>
               <h3 className="case-name">{p.name}</h3>
               <p className="ep-role">{p.metric}</p>
               {p.shot && (
@@ -94,13 +80,6 @@ export default function Projects() {
             </article>
           );
         })}
-        {motion && (
-          <ol className="line-dots case-dots" aria-hidden="true">
-            {PROJECTS.map((p, i) => (
-              <li key={p.name} className={i === at ? 'is-here' : i < at ? 'is-past' : undefined} />
-            ))}
-          </ol>
-        )}
       </div>
     </section>
   );

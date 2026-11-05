@@ -20,10 +20,7 @@ export default function Blog() {
       <LibraryBackdrop />
       <section id="writing" className="ep ep-library ep-library--page" aria-labelledby="writing-title">
         <div className="ep-card ep-open is-in">
-          <p className="scene-tag mono">
-            <span>Interlude</span>
-            <span>The library</span>
-          </p>
+          <p className="ep-tag mono">Interlude</p>
           <h1 id="writing-title" className="ep-title">
             Writing
           </h1>

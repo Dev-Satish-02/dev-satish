@@ -664,23 +664,6 @@ html.custom-cursor * {
     width: min(60vw, 720px);
   }
 }
-.ld-corner {
-  position: absolute;
-  font-size: 11px;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  opacity: 0.7;
-}
-.ld-tl {
-  top: 26px;
-  left: var(--gutter);
-}
-.ld-bl {
-  bottom: 70px;
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-}
 .ld-cut {
   position: absolute;
   font-family: var(--serif);
@@ -688,9 +671,6 @@ html.custom-cursor * {
   font-size: clamp(54px, 11vw, 176px);
   line-height: 0.95;
   max-width: 90vw;
-}
-.ld-cut.is-accent {
-  color: var(--red);
 }
 .ld-pos-tl {
   top: 14%;
@@ -708,47 +688,26 @@ html.custom-cursor * {
   position: static;
   text-align: center;
 }
-.ld-season-art {
+.ld-pos-bl {
+  bottom: 16%;
+  left: var(--gutter);
+}
+/* the reel's live render: the page's own sets, shown under a shot card once built */
+.ld-stage {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  visibility: hidden;
 }
-.ld-season .ld-season-art {
-  animation: ld-push 0.52s linear forwards;
+.ld-stage.is-on {
+  visibility: visible;
 }
-@keyframes ld-push {
-  from {
-    transform: scale(1.1);
-  }
-  to {
-    transform: scale(1);
-  }
+.ld-stage canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
 }
-.ld-season-name {
-  position: absolute;
-  left: var(--gutter);
-  bottom: 12%;
-  font-family: var(--serif);
-  font-weight: 800;
-  font-size: clamp(72px, 15vw, 230px);
-  line-height: 0.9;
-}
-.ld-train {
-  position: absolute;
-  left: 0;
-  bottom: 9%;
-  width: 190vw;
-  height: auto;
-  animation: ld-train 1.6s cubic-bezier(0.45, 0, 0.55, 1) forwards;
-}
-@keyframes ld-train {
-  from {
-    transform: translateX(-190vw);
-  }
-  to {
-    transform: translateX(100vw);
-  }
+.ld-shot.is-live {
+  background: transparent !important;
 }
 .ld-title {
   align-content: center;
@@ -875,7 +834,6 @@ html.custom-cursor * {
     transform: translateY(-40px) scale(0.96);
   }
 }
-.ld-progress,
 .ld-skip {
   position: absolute;
   bottom: 26px;
@@ -885,9 +843,6 @@ html.custom-cursor * {
   text-transform: uppercase;
   color: #fff;
   mix-blend-mode: difference;
-}
-.ld-progress {
-  left: var(--gutter);
 }
 .ld-skip {
   right: var(--gutter);

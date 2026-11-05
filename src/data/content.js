@@ -39,7 +39,7 @@ export const EXPERIENCE = [
   {
     role: 'Python Intern',
     company: 'Sysstra',
-    date: 'Jul 2025 – Nov 2025',
+    date: 'Jul 2025 to Nov 2025',
     domain: 'Fintech',
     bullets: [
       'Built dividend-based trading strategies that rebalance portfolios systematically.',
@@ -50,7 +50,7 @@ export const EXPERIENCE = [
   {
     role: 'Machine Learning Intern',
     company: 'Aditya Birla Group',
-    date: 'May 2025 – Jul 2025',
+    date: 'May 2025 to Jul 2025',
     domain: 'Manufacturing',
     bullets: [
       'Deployed a corrosion-detection model, trained on 4,000+ images, that flags pipe defects from live camera feeds.',
@@ -61,7 +61,7 @@ export const EXPERIENCE = [
   {
     role: 'Web Development Intern',
     company: 'GPLAN',
-    date: 'Jan 2025 – Mar 2025',
+    date: 'Jan 2025 to Mar 2025',
     domain: 'Architecture software',
     bullets: [
       'Built an architectural layout tool that generates floor plans using graph theory.',
@@ -72,7 +72,7 @@ export const EXPERIENCE = [
   {
     role: 'Software Development Intern',
     company: 'Anitum',
-    date: 'Dec 2024 – Jan 2025',
+    date: 'Dec 2024 to Jan 2025',
     domain: 'Business software',
     bullets: [
       'Delivered ERP systems for education and manufacturing clients.',
@@ -119,8 +119,8 @@ export const PROJECTS = [
 ];
 
 export const EDUCATION = [
-  { degree: 'B.E. Mechanical Engineering', school: 'BITS Pilani', date: 'Aug 2023 – Present' },
-  { degree: 'M.Sc. Biological Sciences', school: 'BITS Pilani', date: 'Aug 2023 – Present · Dual degree' },
+  { degree: 'B.E. Mechanical Engineering', school: 'BITS Pilani', date: 'Since Aug 2023' },
+  { degree: 'M.Sc. Biological Sciences', school: 'BITS Pilani', date: 'Since Aug 2023' },
 ];
 
 // Edit freely: the first group comes from what you've written about and shipped.

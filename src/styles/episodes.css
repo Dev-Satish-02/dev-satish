@@ -74,6 +74,17 @@
   background: var(--ep-bronze);
 }
 
+/* the section's label: the hero's scene-tag type, one word, no rule */
+.ep-tag {
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.case-head .ep-tag,
+.ep-finale .ep-tag {
+  color: #fff8ec;
+}
+
 /* the opening card of each section sits where the hero's card sits */
 .ep-open {
   margin-left: var(--gutter);
@@ -173,22 +184,6 @@
     opacity: 1;
   }
 }
-.line-dots {
-  display: flex;
-  gap: 8px;
-  margin-top: 20px;
-}
-.line-dots li {
-  width: 22px;
-  height: 4px;
-  background: rgba(23, 17, 26, 0.18);
-}
-.line-dots li.is-past {
-  background: var(--ep-bronze);
-}
-.line-dots li.is-here {
-  background: var(--ink);
-}
 
 /* ── SCENE 003 · Autumn: the cram school, among the chairs ──────── */
 /* the section holds while you scroll; the camera walks from pile to pile behind the type */
@@ -227,21 +222,6 @@
   font-size: clamp(28px, 3vw, 40px);
   line-height: 1;
   text-shadow: 0 2px 18px rgba(20, 8, 2, 0.6);
-}
-.case-no {
-  position: absolute;
-  right: var(--gutter);
-  bottom: clamp(56px, 10vh, 100px);
-  font-family: var(--serif);
-  font-weight: 800;
-  font-size: clamp(150px, 24vw, 380px);
-  line-height: 0.8;
-  letter-spacing: -0.04em;
-  color: transparent;
-  -webkit-text-stroke: 2px var(--ep-gold);
-  opacity: 0.85;
-  pointer-events: none;
-  user-select: none;
 }
 .case-text {
   position: relative;
@@ -302,20 +282,6 @@
   display: block;
   width: 100%;
   height: auto;
-}
-.case-dots {
-  position: absolute;
-  left: var(--gutter);
-  bottom: clamp(32px, 6vh, 56px);
-}
-.case-dots li {
-  background: rgba(255, 248, 236, 0.3);
-}
-.case-dots li.is-past {
-  background: var(--ep-gold);
-}
-.case-dots li.is-here {
-  background: #fff8ec;
 }
 
 /* ── SCENE 004 · Winter: the classroom ────────────────────────── */
@@ -692,11 +658,6 @@
   .case-view {
     background: linear-gradient(180deg, rgba(26, 12, 4, 0.2) 0%, rgba(26, 12, 4, 0.7) 45%, rgba(26, 12, 4, 0.75) 100%);
   }
-  .case-no {
-    top: calc(var(--header) + 8px);
-    bottom: auto;
-    font-size: 34vw;
-  }
   .school {
     grid-template-columns: 1fr;
   }
@@ -782,17 +743,13 @@
   .is-riding .stop-tools {
     display: none;
   }
-  .line-dots {
-    margin-top: 12px;
-  }
 
-  /* Projects: no case numbers, the name, the result and one line, low on the screen */
+  /* Projects: the name, the result and one line, low on the screen */
   .case-view {
     justify-content: flex-end;
     padding-bottom: 120px;
     background: linear-gradient(180deg, rgba(26, 12, 4, 0) 0%, rgba(26, 12, 4, 0) 45%, rgba(26, 12, 4, 0.72) 100%);
   }
-  .case-no,
   .case-blurb,
   .case-shot {
     display: none;
