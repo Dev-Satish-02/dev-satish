@@ -718,7 +718,9 @@ function buildSummer(kit, small) {
       // low in the road under the machine, its crossbuck up against the sky
       const z = lerp(10.5, 7.2, p);
       camera.position.set(lerp(0.2, 1.0, p), 1.05, z);
-      look.set(R / 2 - 0.8, lerp(3.9, 4.3, p), 2.6);
+      // on a tall phone screen, aim straight at the machine so it stays in frame
+      const narrow = camera.aspect < 1;
+      look.set(narrow ? R / 2 + 0.4 : R / 2 - 0.8, lerp(3.9, 4.3, p), narrow ? 3.6 : 2.6);
       camera.lookAt(look);
       camera.rotateZ(-0.04); // the slight Shaft tilt
       rig.follow(new THREE.Vector3(0, 0, 4));
@@ -778,44 +780,40 @@ const PILES = [
   [2.4, -21],
 ];
 
-function chairPile(r, cx, cz, floorY) {
+function chairPile(r, cx, cz, floorY, { count = 90, radius = 2.5, height = 2.8 } = {}) {
+  // a heap, not a tower: chairs thrown together every which way, most of them at the base
+  // and fewer as it rises, filling a rough cone. Sampling evenly through the cone's volume
+  // puts the weight at the bottom, as a real pile has it.
   const out = [];
-  // towers: chairs stacked seat to seat, every other one upside down, leaning as they rise
-  const towers = 2 + Math.floor(r() * 2);
-  for (let k = 0; k < towers; k += 1) {
-    const bx = cx + (r() - 0.5) * 2.2;
-    const bz = cz + (r() - 0.5) * 2.2;
-    const n = 6 + Math.floor(r() * 6);
-    let lean = 0;
-    for (let i = 0; i < n; i += 1) {
-      lean += (r() - 0.5) * 0.05;
-      const flip = i % 2 === 1;
-      out.push({
-        x: bx + lean * i,
-        y: floorY + i * 0.47 + (flip ? 0.88 : 0),
-        z: bz + (r() - 0.5) * 0.06,
-        rx: flip ? Math.PI + (r() - 0.5) * 0.06 : (r() - 0.5) * 0.06,
-        ry: (r() - 0.5) * 0.5 + (flip ? Math.PI : 0),
-        rz: lean * 0.6,
-      });
-    }
-  }
-  // the heap at their feet: chairs thrown together every which way
-  const heap = 22 + Math.floor(r() * 10);
-  for (let i = 0; i < heap; i += 1) {
+  for (let i = 0; i < count; i += 1) {
+    const f = 1 - Math.cbrt(r()); // height fraction, dense near 0
+    const y = f * height;
+    const rad = radius * (1 - f) * Math.sqrt(r()) + 0.15;
     const a = r() * Math.PI * 2;
-    const d = Math.sqrt(r()) * 1.9;
-    const hgt = Math.max(0, 1 - d / 1.9) * 1.3 * r();
     out.push({
-      x: cx + Math.cos(a) * d,
-      y: floorY + 0.12 + hgt,
-      z: cz + Math.sin(a) * d,
-      rx: (r() - 0.5) * Math.PI * 1.6,
+      x: cx + Math.cos(a) * rad * (0.85 + r() * 0.3),
+      y: floorY + 0.1 + y,
+      z: cz + Math.sin(a) * rad,
+      rx: r() * Math.PI * 2,
       ry: r() * Math.PI * 2,
-      rz: (r() - 0.5) * Math.PI * 1.6,
+      rz: r() * Math.PI * 2,
     });
   }
+  // and a skirt of chairs slid off the pile, lying on the floor around it
+  for (let i = 0; i < Math.round(count * 0.3); i += 1) {
+    const a = r() * Math.PI * 2;
+    const d = radius + 0.2 + r() * 1.4;
+    out.push(lying(r, cx + Math.cos(a) * d, cz + Math.sin(a) * d, floorY));
+  }
   return out;
+}
+
+// a chair lying on the floor: on its side, on its back, or upside down
+function lying(r, x, z, floorY) {
+  const k = r();
+  if (k < 0.4) return { x, y: floorY + 0.19, z, rx: 0, ry: r() * Math.PI * 2, rz: (r() < 0.5 ? 1 : -1) * Math.PI / 2 };
+  if (k < 0.75) return { x, y: floorY + 0.2, z, rx: -Math.PI / 2, ry: r() * Math.PI * 2, rz: 0 };
+  return { x, y: floorY + 0.86, z, rx: Math.PI, ry: r() * Math.PI * 2, rz: 0 };
 }
 
 function buildAutumn(kit, small) {
@@ -883,25 +881,22 @@ function buildAutumn(kit, small) {
   boxes(scene, beams, mat({ color: '#c4b398', roughness: 0.9 }));
   boxes(scene, slabs, mat({ color: '#b9a88e', roughness: 0.95 }));
 
-  // the chairs: four piles, one by each project, and more strewn and fallen between them
+  // the chairs: a big pile by each project, chairs lying all over the floor between them,
+  // and more piles across the void on the other floors' edges
   const floorY = levels[2] + 2.05;
   const rr = rng(33);
   const chairs = [];
-  PILES.forEach(([x, z]) => chairs.push(...chairPile(rr, x, z, floorY)));
-  for (let i = 0; i < 70; i += 1) {
-    const fallen = rr() < 0.4;
-    chairs.push({
-      x: lerp(-7, 7, rr()),
-      y: floorY + (fallen ? 0.19 : 0),
-      z: lerp(-26, 26, rr()),
-      rx: fallen ? 0 : 0,
-      ry: rr() * Math.PI * 2,
-      rz: fallen ? Math.PI / 2 : 0,
-    });
+  const n = small ? 0.6 : 1;
+  PILES.forEach(([x, z]) => chairs.push(...chairPile(rr, x, z, floorY, { count: Math.round(95 * n), radius: 2.6, height: 3.0 })));
+  for (let i = 0; i < Math.round(160 * n); i += 1) {
+    const x = lerp(-7.2, 7.2, rr());
+    const z = lerp(-27, 27, rr());
+    // leave the spots the camera stands on clear
+    if (PILES.some(([px, pz]) => Math.hypot(x - (px - 4.6), z - (pz + 6.4)) < 1.4)) continue;
+    chairs.push(rr() < 0.82 ? lying(rr, x, z, floorY) : { x, y: floorY, z, ry: rr() * Math.PI * 2 });
   }
-  // and a far bank of them on the floor across the void, stacked to the beams
   [-15, 15].forEach((x) => {
-    for (let k = 0; k < 5; k += 1) chairs.push(...chairPile(rr, x + (rr() - 0.5) * 3, lerp(-20, 20, k / 4), floorY));
+    for (let k = 0; k < 4; k += 1) chairs.push(...chairPile(rr, x + (rr() - 0.5) * 3, lerp(-18, 18, k / 3), floorY, { count: Math.round(60 * n), radius: 2.4, height: 2.6 }));
   });
   furniture(scene, kit, chairGeometry(), { wood: mat({ color: '#9a7448', roughness: 0.65 }), metal: mat({ color: '#5a5550', roughness: 0.4, metalness: 0.6 }) }, chairs);
 
@@ -935,7 +930,8 @@ function buildAutumn(kit, small) {
       const [px, pz] = PILES[aim];
       const drift = (p - 0.5) * 1.2;
       goalPos.set(px - 4.6, floorY + 1.65, pz + 6.4 + drift);
-      goalLook.set(px - 1.5, floorY + 1.7, pz - 0.5);
+      // the pile right of centre on a wide screen, dead centre on a tall one
+      goalLook.set(camera.aspect < 1 ? px + 0.2 : px - 1.5, floorY + (camera.aspect < 1 ? 1.2 : 1.7), pz - 0.5);
       const k = first || still ? 1 : 0.08;
       first = false;
       at.lerp(goalPos, k);

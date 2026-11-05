@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { PROJECTS, SCENES } from '../data/content';
 import { useReveal } from '../hooks/useReveal';
 import { openCase } from './SceneStage';
@@ -10,6 +10,7 @@ export default function Projects() {
   const { no, season } = SCENES.projects;
   const open = useReveal();
   const [i, setI] = useState(0);
+  const swipe = useRef([0, 0]);
   const go = (n) => {
     const next = (n + PROJECTS.length) % PROJECTS.length;
     setI(next);
@@ -39,6 +40,16 @@ export default function Projects() {
         onKeyDown={(e) => {
           if (e.key === 'ArrowRight') go(i + 1);
           if (e.key === 'ArrowLeft') go(i - 1);
+        }}
+        // on a phone the scene itself is the control: swipe it left or right
+        onTouchStart={(e) => {
+          swipe.current = [e.touches[0].clientX, e.touches[0].clientY];
+        }}
+        onTouchEnd={(e) => {
+          const [x0, y0] = swipe.current;
+          const dx = e.changedTouches[0].clientX - x0;
+          const dy = e.changedTouches[0].clientY - y0;
+          if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? i + 1 : i - 1);
         }}
       >
         <p className="case-no" aria-hidden="true">
@@ -82,6 +93,9 @@ export default function Projects() {
           </button>
           <span className="case-count mono" aria-hidden="true">
             {num} / {String(PROJECTS.length).padStart(2, '0')}
+          </span>
+          <span className="case-swipe mono" aria-hidden="true">
+            Swipe the scene
           </span>
           <button type="button" onClick={() => go(i + 1)} aria-label="Next case">
             Next <span aria-hidden="true">▶</span>

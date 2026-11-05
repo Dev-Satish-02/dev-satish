@@ -45,8 +45,11 @@ export default function Writing() {
       aria-labelledby="blog-title"
       onPointerMove={onMove}
       onPointerLeave={leave}
-      onClick={() => {
-        if (hover >= 0) navigate(href(posts[hover]));
+      onClick={(e) => {
+        // a tap has no hover before it, so ask the shelf what is under the finger
+        const onText = e.target instanceof Element && e.target.closest('.ep-card, a, button');
+        const i = hover >= 0 ? hover : onText ? -1 : pickVolume(e.clientX, e.clientY);
+        if (i >= 0) navigate(href(posts[i]));
       }}
     >
       <div ref={open} className="ep-card ep-open">

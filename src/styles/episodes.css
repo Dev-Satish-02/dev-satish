@@ -736,6 +736,153 @@
   }
 }
 
+/* ── phones: the scene first ──────────────────────────────────
+   Small cards, sat low, with only what a glance needs; the set behind does the talking. */
+.case-swipe {
+  display: none;
+}
+@media (max-width: 720px) {
+  .ep-card {
+    max-width: min(330px, calc(100% - 2 * var(--gutter)));
+    padding: 14px 16px 16px;
+    box-shadow: 6px 6px 0 var(--ep-shadow);
+  }
+  .ep-card .scene-tag {
+    font-size: 10px;
+    gap: 8px;
+  }
+  .ep-card .scene-tag span + span::before {
+    width: 16px;
+    margin-right: 8px;
+  }
+  .ep-title {
+    margin-top: 10px;
+    font-size: 36px;
+  }
+  .ep-role {
+    margin-top: 10px;
+    padding: 5px 10px;
+    font-size: 13.5px;
+  }
+  .ep-summary {
+    margin-top: 10px;
+    font-size: 14px;
+  }
+
+  /* Experience: the card drops to the foot of the screen and keeps only the stop */
+  .is-riding .line-pin {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-bottom: 28px;
+  }
+  .line-card .ep-title {
+    font-size: 26px;
+    margin-top: 8px;
+  }
+  .stop {
+    margin-top: 10px;
+    padding-top: 10px;
+  }
+  .stop-name {
+    font-size: 24px;
+  }
+  .stop-count {
+    font-size: 10px;
+  }
+  .is-riding .stop-work,
+  .is-riding .stop-tools {
+    display: none;
+  }
+  .line-dots {
+    margin-top: 12px;
+  }
+
+  /* Projects: no case numbers, the name, the result and one line, low on the screen */
+  .case-view {
+    justify-content: flex-end;
+    padding-bottom: 120px;
+    background: linear-gradient(180deg, rgba(26, 12, 4, 0) 0%, rgba(26, 12, 4, 0) 45%, rgba(26, 12, 4, 0.72) 100%);
+  }
+  .case-no,
+  .case-blurb,
+  .case-shot {
+    display: none;
+  }
+  .case-name {
+    font-size: 40px;
+  }
+  .case-line {
+    font-size: 13.5px;
+  }
+  .case-nav {
+    bottom: 34px;
+    gap: 10px;
+  }
+  .case-nav button {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  .case-count {
+    display: none;
+  }
+  .case-swipe {
+    display: inline;
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #fff8ec;
+    opacity: 0.8;
+  }
+
+  /* Skills: the record and the board, small and tight, with the lists run on */
+  .school {
+    gap: 18px;
+    margin-top: 42vh;
+  }
+  .record-title {
+    margin-top: 8px;
+    font-size: 19px;
+  }
+  .record-table th,
+  .record-table td {
+    padding: 7px 8px 7px 0;
+  }
+  .record-table tbody th {
+    font-size: 14.5px;
+  }
+  .record-table td {
+    font-size: 12.5px;
+  }
+  .classes-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 10px;
+    padding-top: 10px;
+  }
+  .class-head {
+    font-size: 15px;
+  }
+  .class-list {
+    margin-top: 2px;
+  }
+  .class-list li {
+    display: inline;
+    font-size: 13px;
+  }
+  .class-list li + li::before {
+    content: ', ';
+  }
+
+  /* Writing: just the title; the shelf is the interface, tap a volume to open it */
+  .ep-library .ep-open .ep-summary {
+    font-size: 13.5px;
+  }
+  .shelf-zone {
+    min-height: 110vh;
+  }
+}
+
 /* ── reduced motion: everything simply present ───────────────── */
 html.reduce-motion .ep .ep-card,
 html.reduce-motion .case-text,
