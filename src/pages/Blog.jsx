@@ -1,77 +1,61 @@
 import { Link, useParams } from 'react-router-dom';
+import Scene from '../components/Scene';
+import TitleCard from '../components/TitleCard';
 import { getAllPosts, getCategories, getPostsByCategory } from '../lib/blog';
+import { useScrollReveal } from '../hooks/usePortfolioEffects';
 
 export default function Blog() {
   const { category } = useParams();
   const categories = getCategories();
-  const posts = category ? getPostsByCategory(category) : getAllPosts();
-  const selectedCategory = categories.find((item) => item.categorySlug === category);
+  const all = getAllPosts();
+  const posts = getPostsByCategory(category);
+  const selected = categories.find((c) => c.categorySlug === category);
+
+  useScrollReveal(category || 'all');
+
+  // chapters count up from the oldest post, so a post keeps its number when filtered
+  const chapterOf = (post) => all.length - all.indexOf(post);
 
   return (
-    <main className="blog-page" style={{ padding: 'clamp(64px, 8vw, 90px) clamp(16px, 5vw, 64px)' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '20px', marginBottom: '40px' }}>
-          <div style={{ maxWidth: '680px' }}>
-            <h1 style={{ fontFamily: "'Anybody',sans-serif", fontSize: 'clamp(42px, 6vw, 66px)', lineHeight: 1, marginBottom: '16px' }}>
-              Blog
-            </h1>
-            <p style={{ maxWidth: '640px', fontSize: '16px', lineHeight: 1.8, color: '#5c3f42' }}>
-              A library of essays, reviews, and strategy notes organized by category.
-              {selectedCategory ? ` Showing ${selectedCategory.category} posts.` : ' Browse the categories to find an article that fits your interests.'}
-            </p>
-          </div>
-          <Link
-            to="/"
-            className="nbtn"
-            style={{ background: '#e51152', color: '#fff' }}
-          >
-            Back Home
+    <main id="main">
+      <Scene
+        id="writing"
+        season="night"
+        no="—"
+        label={selected ? selected.category : 'Interlude'}
+        title="Writing"
+        lede="Notes on product, strategy and the books I read."
+        className="page-head"
+      >
+        <nav className="filters reveal" aria-label="Categories">
+          <Link to="/blog" className={`filter${!category ? ' is-active' : ''}`} aria-current={!category ? 'page' : undefined}>
+            All <span>{all.length}</span>
           </Link>
-        </div>
-
-        <div className="blog-categories">
-          <Link to="/blog" className={`tag ${!category ? 'nav-active' : ''}`}>
-            All
-          </Link>
-          {categories.map((item) => (
+          {categories.map((c) => (
             <Link
-              key={item.categorySlug}
-              to={`/blog/${item.categorySlug}`}
-              className={`tag ${category === item.categorySlug ? 'nav-active' : ''}`}
-              style={{ marginLeft: '10px' }}
+              key={c.categorySlug}
+              to={`/blog/${c.categorySlug}`}
+              className={`filter${category === c.categorySlug ? ' is-active' : ''}`}
+              aria-current={category === c.categorySlug ? 'page' : undefined}
             >
-              {item.category}
+              {c.category} <span>{c.count}</span>
             </Link>
           ))}
+        </nav>
+      </Scene>
+      <section className="paper-section">
+        <div className="paper-inner">
+          {posts.length ? (
+            <div className="tcard-grid">
+              {posts.map((post) => (
+                <TitleCard key={`${post.categorySlug}/${post.slug}`} post={post} chapter={chapterOf(post)} />
+              ))}
+            </div>
+          ) : (
+            <p className="empty">Nothing here yet.</p>
+          )}
         </div>
-
-        <div className="blog-grid" style={{ marginTop: '32px' }}>
-          {posts.map((post) => (
-            <Link key={post.slug} to={`/blog/${post.categorySlug}/${post.slug}`} className="blog-card">
-              {post.coverImage && (
-                <img src={post.coverImage} alt={post.title} className="blog-card-image" />
-              )}
-              <div style={{ padding: '24px' }}>
-                <span className="sticker" style={{ background: '#fcf8f9', color: '#1b1b1c', borderColor: '#1b1b1c' }}>
-                  {post.category}
-                </span>
-                <p className="blog-card-date" style={{ margin: '16px 0 8px', color: '#5c3f42' }}>{new Date(post.date).toLocaleDateString()}</p>
-                <h2 className="blog-title" style={{ fontFamily: "'Anybody',sans-serif", fontSize: 'clamp(22px, 3vw, 32px)', marginBottom: '16px' }}>
-                  {post.title}
-                </h2>
-                <p style={{ color: '#5c3f42', lineHeight: 1.7 }}>{post.summary}</p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '18px' }}>
-                  {post.tags.map((tag) => (
-                    <span key={tag} className="tag" style={{ background: '#fff' }}>
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </div>
+      </section>
     </main>
   );
 }

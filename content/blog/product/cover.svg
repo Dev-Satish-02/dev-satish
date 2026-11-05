@@ -1,6 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240">
-  <rect width="400" height="240" fill="#fdc003" />
-  <rect x="18" y="18" width="364" height="204" fill="#fff" stroke="#1b1b1c" stroke-width="6" />
-  <text x="50%" y="40%" dominant-baseline="middle" text-anchor="middle" fill="#1b1b1c" font-family="Anybody, sans-serif" font-size="32">Product</text>
-  <text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" fill="#1b1b1c" font-family="JetBrains Mono, monospace" font-size="18">Roadmap Rituals</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420">
+  <rect width="800" height="420" fill="#d21f3c"/>
+  <circle cx="610" cy="190" r="130" fill="#f8dadd"/><path d="M380 420 V380 H460 V340 H540 V300 H620 V260 H700 V220 H800 V420 Z" fill="#17111a"/>
+  <text x="40" y="58" fill="#ffffff" opacity="0.8" font-family="'JetBrains Mono',monospace" font-size="14" letter-spacing="4">WRITING · PRODUCT</text>
+  <rect x="40" y="76" width="56" height="3" fill="#ffffff"/>
+  <text x="40" y="360" fill="#ffffff" font-family="'Shippori Mincho B1',Georgia,serif" font-weight="800" font-size="64">Product</text>
 </svg>

@@ -1,44 +1,46 @@
+import Scene from './Scene';
+import { PROFILE, SCENES, SOCIALS } from '../data/content';
+import useResume from '../hooks/useResume';
+import { ArrowIcon, FileIcon, MailIcon } from './Icons';
+
+// The finale: staged as the series' next-episode preview.
 export default function Contact() {
+  const { no, season } = SCENES.contact;
+  const resume = useResume();
   return (
-    <section id="contact" style={{ padding: 'clamp(48px,8vw,80px) clamp(16px,5vw,64px)', maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
-      <div className="reveal">
-        <div style={{ display: 'inline-block', marginBottom: '24px' }}>
-          <h2 style={{ fontFamily: "'Anybody',sans-serif", fontWeight: 900, fontSize: 'clamp(32px,6vw,64px)', textTransform: 'uppercase', letterSpacing: '-0.02em', lineHeight: 1 }}>
-            LET&apos;S BUILD
-            <br />
-            <span style={{ color: '#e51152' }}>SOMETHING.</span>
-          </h2>
-        </div>
-        <p style={{ fontSize: '14px', color: '#5c3f42', lineHeight: 1.8, maxWidth: '500px', margin: '0 auto 36px' }}>
-          Open to internships, collaborations, and interesting problems. I reply to everything.
+    <Scene id="contact" season="finale" no={no} label={season} art={false}>
+      <div className="finale">
+        <p className="scene-tag mono reveal">
+          <span>Scene {no}</span>
+          <span>{season}</span>
         </p>
-
-        <a href="mailto:devsatish08@gmail.com" className="nbtn" style={{ background: '#e51152', color: '#fff', padding: '16px 36px', fontSize: '15px', marginBottom: '36px', display: 'inline-flex' }}>
-          devsatish08@gmail.com ✉️
+        <h2 className="finale-title reveal">
+          Next episode:
+          <br />
+          <em>we build something.</em>
+        </h2>
+        <a href={`mailto:${PROFILE.email}`} className="finale-mail reveal">
+          {PROFILE.email}
         </a>
-
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap', marginBottom: '32px' }}>
-          <a href="https://github.com/Dev-Satish-02" target="_blank" rel="noreferrer" className="nbtn" style={{ background: '#1b1b1c', color: '#fff', padding: '12px 24px', fontSize: '12px' }}>
-            GitHub ↗
+        <div className="finale-actions reveal">
+          <a href={`mailto:${PROFILE.email}`} className="btn btn--lg btn--paper">
+            <MailIcon /> Email me
           </a>
-          <a href="https://linkedin.com/in/dev-satish" target="_blank" rel="noreferrer" className="nbtn" style={{ background: '#fff', color: '#1b1b1c', padding: '12px 24px', fontSize: '12px' }}>
-            LinkedIn ↗
+          {resume && (
+            <a href={resume} className="btn btn--lg btn--ghost-light" target="_blank" rel="noreferrer">
+              <FileIcon /> Résumé
+            </a>
+          )}
+          {SOCIALS.map((s) => (
+            <a key={s.label} href={s.href} target="_blank" rel="noreferrer" className="link-arrow link-arrow--light">
+              {s.label} <ArrowIcon />
+            </a>
+          ))}
+          <a href={PROFILE.phoneHref} className="link-arrow link-arrow--light">
+            {PROFILE.phone}
           </a>
-          <a href="https://twitter.com/devtech08" target="_blank" rel="noreferrer" className="nbtn" style={{ background: '#1da1f2', color: '#fff', padding: '12px 24px', fontSize: '12px' }}>
-            Twitter ↗
-          </a>
-          <a href="tel:+917506857789" className="nbtn" style={{ background: '#fdc003', color: '#1b1b1c', padding: '12px 24px', fontSize: '12px' }}>
-            +91 75068 57789
-          </a>
-        </div>
-
-        <div className="ncard" style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', padding: '14px 24px' }}>
-          <span className="status-dot" />
-          <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em' }}>
-            Available for opportunities
-          </span>
         </div>
       </div>
-    </section>
+    </Scene>
   );
 }

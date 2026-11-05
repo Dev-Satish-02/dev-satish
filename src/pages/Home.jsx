@@ -1,25 +1,27 @@
-import Hero from '../components/Hero';
-import Experience from '../components/Experience';
-import Projects from '../components/Projects';
-import Skills from '../components/Skills';
-import Blog from '../components/Blog';
-import Contact from '../components/Contact';
-import Footer from '../components/Footer';
-import { useActiveNav, useScrollReveal } from '../hooks/usePortfolioEffects';
+import StaircaseHero from "../components/StaircaseHero";
+import SceneStage, { STAGED, StageContext } from "../components/SceneStage";
+import Experience from "../components/Experience";
+import Projects from "../components/Projects";
+import Skills from "../components/Skills";
+import Writing from "../components/Writing";
+import Contact from "../components/Contact";
+import { useActiveNav, useScrollReveal } from "../hooks/usePortfolioEffects";
 
 export default function Home() {
-  useScrollReveal();
+  useScrollReveal("home");
   useActiveNav();
 
   return (
-    <>
-      <Hero />
-      <Experience />
-      <Projects />
-      <Skills />
-      <Blog />
-      <Contact />
-      <Footer />
-    </>
+    <main id="main">
+      <SceneStage />
+      <StageContext.Provider value={STAGED}>
+        <StaircaseHero />
+        <Experience />
+        <Projects />
+        <Skills />
+        <Writing />
+        <Contact />
+      </StageContext.Provider>
+    </main>
   );
 }

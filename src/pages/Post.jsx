@@ -1,69 +1,79 @@
-import { useParams, Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { MDXProvider } from '@mdx-js/react';
 import MDXComponents from '../components/MDXComponents';
-import { getPost } from '../lib/blog';
+import { formatDate, getAdjacentPosts, getAllPosts, getPost, seasonFor } from '../lib/blog';
+import { useScrollReveal } from '../hooks/usePortfolioEffects';
 
 export default function Post() {
   const { category, slug } = useParams();
   const post = getPost(category, slug);
+  useScrollReveal(`${category}/${slug}`);
 
   if (!post) {
     return (
-      <main className="blog-page" style={{ padding: 'clamp(64px, 8vw, 90px) clamp(16px, 5vw, 64px)' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <p>Post not found.</p>
-          <Link
-            to="/blog"
-            className="nbtn"
-            style={{
-              marginTop: '24px',
-              display: 'inline-flex',
-              lineHeight: 1,
-              padding: '10px 16px',
-            }}
-          >
-            Back to Blog
-          </Link>
-        </div>
+      <main id="main">
+        <section className="title-card title-card--ink">
+          <div className="title-card-inner">
+            <p className="scene-tag mono">
+              <span>Interlude</span>
+              <span>Missing chapter</span>
+            </p>
+            <h1 className="title-card-title">This chapter doesn&apos;t exist.</h1>
+            <Link to="/blog" className="btn btn--paper" style={{ marginTop: 28 }}>
+              All writing
+            </Link>
+          </div>
+        </section>
       </main>
     );
   }
 
+  const all = getAllPosts();
+  const chapter = all.length - all.indexOf(post);
+  const { newer, older } = getAdjacentPosts(post.categorySlug, post.slug);
+
   return (
-    <main className="blog-page" style={{ padding: 'clamp(64px, 8vw, 90px) clamp(16px, 5vw, 64px)' }}>
-      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '18px', marginBottom: '30px' }}>
-          <div>
-            <span className="sticker" style={{ background: '#fcf8f9', color: '#1b1b1c' }}>{post.category}</span>
-            <h1 style={{ fontFamily: "'Anybody',sans-serif", fontSize: 'clamp(42px, 6vw, 66px)', lineHeight: 1, marginTop: '18px' }}>
-              {post.title}
-            </h1>
-            <p style={{ color: '#5c3f42', marginTop: '16px' }}>{new Date(post.date).toLocaleDateString()}</p>
-          </div>
-          <Link
-            to="/blog"
-            className="nbtn"
-            style={{
-              background: '#e51152',
-              color: '#fff',
-              lineHeight: 1,
-              padding: '10px 16px',
-            }}
-          >
-            Back to Blog
-          </Link>
+    <main id="main">
+      <section className={`title-card season-${seasonFor(post.categorySlug)}`}>
+        <div className="title-card-inner">
+          <p className="scene-tag mono">
+            <Link to={`/blog/${post.categorySlug}`} className="back-link">
+              ← {post.category}
+            </Link>
+            <span>Chapter {String(chapter).padStart(2, '0')}</span>
+          </p>
+          <h1 className="title-card-title title-card-title--post">{post.title}</h1>
+          {post.summary && <p className="title-card-lede">{post.summary}</p>}
+          <p className="post-meta mono">
+            <time>{formatDate(post.date)}</time>
+            {post.tags.map((t) => (
+              <span key={t}>#{t}</span>
+            ))}
+          </p>
         </div>
-
-        {post.coverImage && (
-          <img src={post.coverImage} alt={post.title} style={{ width: '100%', marginBottom: '32px', border: '3px solid #1b1b1c' }} />
-        )}
-
-        <article className="blog-post-content" style={{ color: '#1b1b1c', lineHeight: 1.8 }}>
+      </section>
+      <section className="paper-section">
+        <article className="prose">
           <MDXProvider components={MDXComponents}>
             <post.Component />
           </MDXProvider>
+          <p className="post-end">To be continued</p>
         </article>
-      </div>
+        <nav className="post-nav" aria-label="More writing">
+          {older ? (
+            <Link to={`/blog/${older.categorySlug}/${older.slug}`}>
+              <span className="mono">← Previous chapter</span>
+              <strong>{older.title}</strong>
+            </Link>
+          ) : (
+            <span />
+          )}
+          <Link to={newer ? `/blog/${newer.categorySlug}/${newer.slug}` : '/blog'} className="post-nav-next">
+            <span className="mono">{newer ? 'Next chapter →' : 'All writing →'}</span>
+            <strong>{newer ? newer.title : 'Writing'}</strong>
+          </Link>
+        </nav>
+      </section>
     </main>
   );
 }
