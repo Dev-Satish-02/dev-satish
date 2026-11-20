@@ -2,7 +2,7 @@
 
 export const PROFILE = {
   name: 'Dev Satish',
-  title: 'Product · Strategy · Engineering',
+  title: 'Product, strategy and engineering',
   summary: 'Studying at BITS Pilani. I like turning problems into things people use.',
   location: 'BITS Pilani, Rajasthan, India',
   email: 'devsatish08@gmail.com',
@@ -16,23 +16,6 @@ export const SOCIALS = [
   { label: 'GitHub', href: 'https://github.com/Dev-Satish-02' },
   { label: 'LinkedIn', href: 'https://linkedin.com/in/dev-satish' },
   { label: 'Twitter', href: 'https://twitter.com/devtech08' },
-];
-
-// One scene per season, the way the series runs from spring break to the next spring.
-export const SCENES = {
-  hero: { no: '001', season: 'Spring' },
-  experience: { no: '002', season: 'Summer' },
-  projects: { no: '003', season: 'Autumn' },
-  skills: { no: '004', season: 'Winter' },
-  contact: { no: '005', season: 'Next episode' },
-};
-
-export const NAV_LINKS = [
-  { hash: 'experience', label: 'Experience' },
-  { hash: 'projects', label: 'Projects' },
-  { hash: 'skills', label: 'Skills' },
-  { to: '/blog', label: 'Blog' },
-  { hash: 'contact', label: 'Contact' },
 ];
 
 export const EXPERIENCE = [
@@ -130,10 +113,3 @@ export const SKILL_GROUPS = [
   { title: 'Engineering', items: ['JavaScript / TypeScript', 'React', 'Node.js', 'Flask', 'AWS', 'C / C++', 'Java'] },
   { title: 'Certifications', items: ['Machine Learning Specialization (Stanford, DeepLearning.AI)', 'AWS DevOps'] },
 ];
-
-// Blog categories borrow a season's colour.
-export const CATEGORY_SEASON = {
-  'book-review': 'winter',
-  product: 'spring',
-  strategy: 'autumn',
-};

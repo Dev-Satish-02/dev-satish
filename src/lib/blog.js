@@ -1,5 +1,4 @@
-import { CATEGORY_SEASON } from '../data/content';
-// content lives at the project root `content/` folder — from `src/lib` we need to go up two levels
+// posts live in the project root's content/ folder, two levels up from src/lib
 const modules = import.meta.glob('../../content/blog/**/*.mdx', { eager: true });
 
 const posts = Object.entries(modules).map(([path, module]) => {
@@ -68,10 +67,6 @@ export function getAdjacentPosts(categorySlug, slug) {
   };
 }
 
-export function seasonFor(categorySlug) {
-  return CATEGORY_SEASON[categorySlug] || 'spring';
-}
-
 export function formatDate(date) {
-  return new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
+  return new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
