@@ -71,6 +71,9 @@ a {
   white-space: nowrap;
 }
 
+picture {
+  display: contents; /* the wallpaper's <picture> shouldn't take a place in any layout */
+}
 .wallpaper {
   position: absolute;
   inset: 0;
@@ -296,6 +299,65 @@ a {
 .lights:hover .light,
 .light:focus-visible {
   color: rgba(0, 0, 0, 0.6);
+}
+/* resize grips: thin strips inside the edges, squares at the corners (the window clips anything outside) */
+.grip {
+  position: absolute;
+  z-index: 4;
+  touch-action: none;
+}
+.grip-n,
+.grip-s {
+  left: 10px;
+  right: 10px;
+  height: 7px;
+  cursor: ns-resize;
+}
+.grip-n {
+  top: 0;
+}
+.grip-s {
+  bottom: 0;
+}
+.grip-e,
+.grip-w {
+  top: 10px;
+  bottom: 10px;
+  width: 7px;
+  cursor: ew-resize;
+}
+.grip-e {
+  right: 0;
+}
+.grip-w {
+  left: 0;
+}
+.grip-ne,
+.grip-nw,
+.grip-se,
+.grip-sw {
+  width: 14px;
+  height: 14px;
+}
+.grip-ne {
+  top: 0;
+  right: 0;
+  cursor: nesw-resize;
+}
+.grip-sw {
+  bottom: 0;
+  left: 0;
+  cursor: nesw-resize;
+}
+.grip-nw {
+  top: 0;
+  left: 0;
+  cursor: nwse-resize;
+}
+.grip-se {
+  bottom: 0;
+  right: 0;
+  cursor: nwse-resize;
 }
 .win-body {
   flex: 1;
@@ -1390,7 +1452,28 @@ a {
   position: relative;
   display: block;
   width: 54px;
-  transition: width 0.12s linear;
+  transition: width 0.22s var(--ease);
+}
+.dock.is-magnified .dock-item {
+  transition: width 0.07s linear;
+}
+.dock-item .app-icon {
+  transform-origin: 50% 100%;
+}
+.dock-item.is-bouncing .app-icon {
+  animation: dock-bounce 0.65s cubic-bezier(0.3, 0, 0.4, 1) 2;
+}
+@keyframes dock-bounce {
+  0%,
+  100% {
+    transform: none;
+  }
+  45% {
+    transform: translateY(-28px);
+  }
+  80% {
+    transform: translateY(0) scaleY(0.94);
+  }
 }
 .dock-tip {
   position: absolute;
@@ -1426,6 +1509,96 @@ a {
   width: 1px;
   margin: 6px 4px;
   background: rgba(255, 255, 255, 0.22);
+}
+
+/* sleep, shut down, restart and the lock screen */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  display: grid;
+  place-items: center;
+  background: #000;
+  animation: fade 0.5s ease;
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+.overlay-off span {
+  color: #555;
+  font-size: 13px;
+}
+.overlay-sleep,
+.overlay-off {
+  cursor: pointer;
+}
+.spinner {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 3px solid #333;
+  border-top-color: #ddd;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.overlay-lock {
+  place-items: stretch;
+  grid-template-rows: 1fr auto;
+  padding: 70px 0 64px;
+}
+.overlay-lock .wallpaper {
+  filter: blur(18px) brightness(0.75);
+  transform: scale(1.06);
+}
+.lock-time {
+  grid-row: 1;
+  align-self: start;
+}
+.lock-user {
+  grid-row: 2;
+}
+.lock-time,
+.lock-user {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+}
+.lock-time p {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+.lock-time strong {
+  font-size: clamp(80px, 11vw, 128px);
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.lock-user {
+  gap: 8px;
+}
+.lock-user strong {
+  font-size: 16px;
+}
+.lock-go {
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-size: 13px;
+}
+.menu-sep {
+  height: 1px;
+  margin: 5px 8px;
+  background: rgba(255, 255, 255, 0.14);
 }
 
 /* ── iPhone ────────────────────────────────────────────────── */

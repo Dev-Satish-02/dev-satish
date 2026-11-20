@@ -160,9 +160,9 @@ function General({ go }) {
   );
 }
 
-export default function SettingsApp({ layout, onClose, resume }) {
+export default function SettingsApp({ layout, onClose, resume, start }) {
   const phone = layout === 'phone';
-  const [page, setPage] = useState(phone ? null : 'general');
+  const [page, setPage] = useState(start || (phone ? null : 'general'));
   const [q, setQ] = useState('');
   const P = page && PAGES[page];
   const side = ['wifi', 'bluetooth', 'general'].filter((id) => PAGES[id].title.toLowerCase().includes(q.toLowerCase()));

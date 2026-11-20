@@ -40,12 +40,17 @@ function initialFrames() {
   };
 }
 
-function Clock() {
+function useNow() {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(t);
   }, []);
+  return now;
+}
+
+function Clock() {
+  const now = useNow();
   const day = now.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
   const time = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit' });
   return (
@@ -76,6 +81,56 @@ function BatteryLevel() {
   );
 }
 
+// sleep, shut down and the lock screen, as screens laid over the whole desk
+function Overlay({ kind, onWake }) {
+  const now = useNow();
+  useEffect(() => {
+    if (kind === 'restart') {
+      const t = setTimeout(() => window.location.reload(), 1600);
+      return () => clearTimeout(t);
+    }
+    const key = (e) => {
+      if (kind === 'sleep') onWake();
+      else if (kind === 'lock' && e.key === 'Enter') onWake();
+    };
+    window.addEventListener('keydown', key);
+    return () => window.removeEventListener('keydown', key);
+  }, [kind, onWake]);
+
+  if (kind === 'lock') {
+    return (
+      <div className="overlay overlay-lock" role="dialog" aria-modal="true" aria-label="Lock screen">
+        <Wallpaper />
+        <div className="lock-time">
+          <p>{now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+          <strong>{now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</strong>
+        </div>
+        <div className="lock-user">
+          <span className="avatar avatar-xl" aria-hidden="true">
+            DS
+          </span>
+          <strong>{PROFILE.name}</strong>
+          <button type="button" className="lock-go" onClick={onWake} autoFocus>
+            Click to unlock
+          </button>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div
+      className={`overlay overlay-${kind}`}
+      role="button"
+      tabIndex={0}
+      aria-label={kind === 'off' ? 'Start up' : kind === 'sleep' ? 'Wake' : 'Restarting'}
+      onClick={kind === 'off' ? () => window.location.reload() : kind === 'sleep' ? onWake : undefined}
+    >
+      {kind === 'off' && <span>Click anywhere to start up</span>}
+      {kind === 'restart' && <span className="spinner" aria-hidden="true" />}
+    </div>
+  );
+}
+
 function ReadMe() {
   return (
     <div className="textedit">
@@ -101,29 +156,58 @@ const DOCK = [
   { id: 'trash', label: 'Trash', app: 'finder', folder: 'Trash' },
 ];
 
+// the dock magnifies under the pointer like a Mac's: the icon you're on doubles, its
+// neighbours swell less the further away they are, and an app bounces as it opens
+const BASE = 54;
+const PEAK = 108;
+const REACH = 230;
+
 function Dock({ wins, onApp }) {
   const items = useRef([]);
-  const [sizes, setSizes] = useState({});
+  const centres = useRef([]);
+  const [sizes, setSizes] = useState(null);
+  const [bouncing, setBouncing] = useState(null);
   const reduce = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // measure resting centres once the pointer arrives, so growing icons don't shift the maths
+  const enter = () => {
+    centres.current = items.current.map((el) => {
+      if (!el) return null;
+      const r = el.getBoundingClientRect();
+      return r.left + r.width / 2;
+    });
+  };
   const move = (e) => {
     if (reduce) return;
-    const next = {};
-    items.current.forEach((el, i) => {
-      if (!el) return;
-      const r = el.getBoundingClientRect();
-      const d = Math.abs(e.clientX - (r.left + r.width / 2));
-      next[i] = 54 + 30 * Math.max(0, 1 - d / 150) ** 2;
-    });
-    setSizes(next);
+    if (!centres.current.length) enter();
+    setSizes(
+      centres.current.map((c) => {
+        if (c == null) return BASE;
+        const d = Math.abs(e.clientX - c);
+        if (d >= REACH) return BASE;
+        return BASE + (PEAK - BASE) * (Math.cos((d / REACH) * Math.PI) + 1) / 2;
+      })
+    );
+  };
+  const leave = () => {
+    centres.current = [];
+    setSizes(null);
+  };
+  const launch = (d) => {
+    if (!reduce && d.app && !wins[d.app]?.open) {
+      setBouncing(d.id);
+      setTimeout(() => setBouncing(null), 1300);
+    }
+    onApp(d.app, d.folder);
   };
 
   return (
-    <nav className="dock" aria-label="Dock" onMouseMove={move} onMouseLeave={() => setSizes({})}>
+    <nav className={`dock${sizes ? ' is-magnified' : ''}`} aria-label="Dock" onMouseEnter={enter} onMouseMove={move} onMouseLeave={leave}>
       {DOCK.map((d, i) => {
         if (d.sep) return <span key={`sep${i}`} className="dock-sep" aria-hidden="true" />;
         const label = d.label || NAMES[d.app];
-        const style = { width: sizes[i] || 54 };
+        const style = { width: sizes?.[i] ?? BASE };
+        const cls = `dock-item${bouncing === d.id ? ' is-bouncing' : ''}`;
         const inner = (
           <>
             <AppIcon id={d.id} />
@@ -132,11 +216,11 @@ function Dock({ wins, onApp }) {
           </>
         );
         return d.href ? (
-          <a key={d.id} ref={(el) => (items.current[i] = el)} className="dock-item" style={style} href={d.href} aria-label={label} {...(d.external ? { target: '_blank', rel: 'noreferrer' } : {})}>
+          <a key={d.id} ref={(el) => (items.current[i] = el)} className={cls} style={style} href={d.href} aria-label={label} {...(d.external ? { target: '_blank', rel: 'noreferrer' } : {})}>
             {inner}
           </a>
         ) : (
-          <button key={d.id} ref={(el) => (items.current[i] = el)} type="button" className="dock-item" style={style} onClick={() => onApp(d.app, d.folder)} aria-label={label}>
+          <button key={d.id} ref={(el) => (items.current[i] = el)} type="button" className={cls} style={style} onClick={() => launch(d)} aria-label={label}>
             {inner}
           </button>
         );
@@ -162,6 +246,8 @@ export default function Desktop({ noteId, openNote, resume }) {
   });
   const [folder, setFolder] = useState('Documents');
   const [menu, setMenu] = useState(null);
+  const [overlay, setOverlay] = useState(null);
+  const [settingsPage, setSettingsPage] = useState('general');
 
   const visible = Object.entries(wins).filter(([, w]) => w.open && !w.min);
   const focused = [...visible].sort((a, b) => b[1].z - a[1].z)[0]?.[0] || null;
@@ -203,7 +289,7 @@ export default function Desktop({ noteId, openNote, resume }) {
     notes: <NotesApp layout="desktop" noteId={noteId} onOpen={showNote} resume={resume} />,
     messages: <MessagesApp layout="desktop" />,
     ask: <AskApp layout="desktop" />,
-    settings: <SettingsApp layout="desktop" resume={resume} />,
+    settings: <SettingsApp key={settingsPage} layout="desktop" resume={resume} start={settingsPage} />,
     terminal: <TerminalApp layout="desktop" openNote={showNote} openApp={focus} />,
     readme: <ReadMe />,
   };
@@ -224,7 +310,26 @@ export default function Desktop({ noteId, openNote, resume }) {
   );
 
   const MENUS = {
-    mark: [item(`About ${PROFILE.name}`, () => showNote('about')), item('System Settings…', () => focus('settings')), item('Contact', () => showNote('contact'))],
+    mark: [
+      item(`About ${PROFILE.name}`, () => {
+        setSettingsPage('about');
+        focus('settings');
+      }),
+      item('System Settings…', () => {
+        setSettingsPage('general');
+        focus('settings');
+      }),
+      <li key="s1" className="menu-sep" role="separator" />,
+      item('Sleep', () => setOverlay('sleep')),
+      item('Restart…', () => setOverlay('restart')),
+      item('Shut Down…', () => setOverlay('off')),
+      <li key="s2" className="menu-sep" role="separator" />,
+      item('Lock Screen', () => setOverlay('lock')),
+      item(`Log Out ${PROFILE.name}…`, () => {
+        setWins((w) => Object.fromEntries(Object.entries(w).map(([k, v]) => [k, { ...v, open: false, zoomed: false }])));
+        setOverlay('lock');
+      }),
+    ],
     File: [
       item('New Message', () => focus('messages')),
       item('Open read-me.txt', () => focus('readme')),
@@ -309,6 +414,7 @@ export default function Desktop({ noteId, openNote, resume }) {
       )}
 
       <Dock wins={wins} onApp={onApp} />
+      {overlay && <Overlay kind={overlay} onWake={() => setOverlay(null)} />}
     </div>
   );
 }
