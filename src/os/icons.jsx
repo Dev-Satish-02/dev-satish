@@ -1,6 +1,26 @@
 import { useId } from 'react';
+import { siClaude, siGithub, siX } from 'simple-icons';
 
-/* App icons, drawn here: a rounded tile with a gradient and one plain glyph each. */
+/* App icons. The Mac's own apps use their real icons (public/icons, taken from PuruVJ/macos-web);
+   everything else is a tile drawn to the same Big Sur proportions, with brand marks from
+   simple-icons where a brand has one. */
+
+const base = import.meta.env.BASE_URL;
+const REAL = {
+  finder: 'finder',
+  notes: 'notes',
+  messages: 'messages',
+  mail: 'mail',
+  terminal: 'terminal',
+  settings: 'system-preferences',
+  contacts: 'contacts',
+};
+
+// a 24-unit brand path, centred in the tile at a given size
+function Mark({ icon, size = 30 }) {
+  const k = size / 24;
+  return <path transform={`translate(${30 - size / 2} ${30 - size / 2}) scale(${k})`} d={icon.path} fill="#fff" />;
+}
 
 const TILES = {
   notes: ['#fff7d6', '#ffe58a'],
@@ -12,11 +32,11 @@ const TILES = {
   projects: ['#8f7bff', '#5236e0'],
   skills: ['#ff9f6b', '#f0533a'],
   writing: ['#ffbf5f', '#ff8a00'],
-  github: ['#3b3f46', '#16181c'],
+  github: ['#2d333b', '#0d1117'],
   linkedin: ['#2f8fe0', '#0a62c2'],
   twitter: ['#2a2a2a', '#000000'],
   finder: ['#6fc3ff', '#1e7bf0'],
-  ask: ['#ff8a5c', '#c4386a'],
+  claude: ['#e3876a', '#c96442'],
   settings: ['#a4a4ab', '#5d5d64'],
   trash: ['#e8e9ec', '#b9bcc3'],
   resume: ['#f4f5f7', '#d9dce2'],
@@ -99,13 +119,7 @@ function Glyph({ id }) {
         </>
       );
     case 'github':
-      return (
-        <path
-          transform="translate(12 12) scale(1.5)"
-          fill="#fff"
-          d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.9 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"
-        />
-      );
+      return <Mark icon={siGithub} size={32} />;
     case 'linkedin':
       return (
         <>
@@ -115,40 +129,9 @@ function Glyph({ id }) {
         </>
       );
     case 'twitter':
-      return (
-        <path
-          transform="translate(16 16) scale(1.17)"
-          fill="#fff"
-          d="M18.2 2.2h3.4l-7.4 8.5L23 21.8h-6.8l-5.3-7-6.1 7H1.4l7.9-9L1 2.2h7l4.8 6.4zm-1.2 17.6h1.9L7.1 4.1H5.1z"
-        />
-      );
-    case 'finder':
-      return (
-        <>
-          <rect x="30" y="0" width="30" height="60" fill="#e9f4ff" />
-          <path d="M30 0c-3 12-4 22-2 32h5c-1 9 0 18 2 28" stroke="#1d3d66" strokeWidth="2" fill="none" />
-          <rect x="17" y="18" width="3.5" height="8" rx="1.7" fill="#1d3d66" />
-          <rect x="39" y="18" width="3.5" height="8" rx="1.7" fill="#1d3d66" />
-          <path d="M15 40c8 6 22 6 30 0" stroke="#1d3d66" strokeWidth="2.4" fill="none" strokeLinecap="round" />
-        </>
-      );
-    case 'ask':
-      return (
-        <>
-          <path d="M30 11l4.2 11.8L46 27l-11.8 4.2L30 43l-4.2-11.8L14 27l11.8-4.2z" fill="#fff" />
-          <path d="M44 38l1.8 4.2L50 44l-4.2 1.8L44 50l-1.8-4.2L38 44l4.2-1.8z" fill="#fff" opacity="0.85" />
-        </>
-      );
-    case 'settings':
-      return (
-        <>
-          <circle cx="30" cy="30" r="17" fill="none" stroke="#e9e9ee" strokeWidth="6" strokeDasharray="4.2 4.7" />
-          <circle cx="30" cy="30" r="12" fill="#d1d1d6" />
-          <circle cx="30" cy="30" r="5" fill="#5d5d64" />
-          <path d="M30 18v24M18 30h24M21.5 21.5l17 17M38.5 21.5l-17 17" stroke="#8e8e93" strokeWidth="1.6" />
-          <circle cx="30" cy="30" r="5" fill="#5d5d64" />
-        </>
-      );
+      return <Mark icon={siX} size={26} />;
+    case 'claude':
+      return <Mark icon={siClaude} size={32} />;
     case 'trash':
       return (
         <>
@@ -179,9 +162,12 @@ function Glyph({ id }) {
 }
 
 export function AppIcon({ id, className = '' }) {
+  const u = useId().replace(/:/g, '');
+  if (REAL[id]) {
+    return <img className={`app-icon ${className}`} src={`${base}icons/${REAL[id]}.webp`} alt="" draggable="false" />;
+  }
   const [a, b] = TILES[id] || TILES.notes;
   const doc = id === 'resume' || id === 'readme' || id === 'trash';
-  const u = useId().replace(/:/g, '');
   return (
     <svg className={`app-icon ${className}`} viewBox="0 0 60 60" aria-hidden="true">
       <defs>
@@ -190,15 +176,18 @@ export function AppIcon({ id, className = '' }) {
           <stop offset="1" stopColor={b} />
         </linearGradient>
         <clipPath id={`c${u}`}>
-          <rect width="60" height="60" rx="13.5" />
+          <rect width="60" height="60" rx="13.4" />
         </clipPath>
       </defs>
       {doc ? (
         <Glyph id={id} />
       ) : (
-        <g clipPath={`url(#c${u})`}>
-          <rect width="60" height="60" fill={`url(#g${u})`} />
-          <Glyph id={id} />
+        // inset to match the real icons, which leave a margin around the tile
+        <g transform="translate(4.6 4.6) scale(0.847)">
+          <g clipPath={`url(#c${u})`}>
+            <rect width="60" height="60" fill={`url(#g${u})`} />
+            <Glyph id={id} />
+          </g>
         </g>
       )}
     </svg>

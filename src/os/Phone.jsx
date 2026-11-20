@@ -5,7 +5,7 @@ import { AppIcon, Battery, SearchGlyph, Signal, Wifi } from './icons';
 import Wallpaper from './Wallpaper';
 import NotesApp from './apps/NotesApp';
 import MessagesApp from './apps/MessagesApp';
-import AskApp from './apps/AskApp';
+import ClaudeApp from './apps/ClaudeApp';
 import SettingsApp from './apps/SettingsApp';
 
 /* On a phone the desk becomes an iPhone: a home screen of apps, each opening full screen out of
@@ -66,7 +66,7 @@ export default function Phone({ noteId, openNote, resume, startApp }) {
   const grid = [
     { id: 'notes', label: 'Notes', go: (e) => launch(e, 'notes', null) },
     { id: 'messages', label: 'Messages', go: (e) => launch(e, 'messages') },
-    { id: 'ask', label: 'Ask', go: (e) => launch(e, 'ask') },
+    { id: 'claude', label: 'Claude', go: (e) => launch(e, 'claude') },
     { id: 'experience', label: 'Experience', go: (e) => launch(e, 'notes', 'experience') },
     { id: 'projects', label: 'Projects', go: (e) => launch(e, 'notes', 'projects') },
     { id: 'skills', label: 'Skills', go: (e) => launch(e, 'notes', 'skills') },
@@ -152,14 +152,14 @@ export default function Phone({ noteId, openNote, resume, startApp }) {
           style={{ transformOrigin: origin }}
           role="dialog"
           aria-modal="true"
-          aria-label={{ notes: 'Notes', messages: 'Messages', ask: 'Ask', settings: 'Settings' }[app]}
+          aria-label={{ notes: 'Notes', messages: 'Messages', claude: 'Claude', settings: 'Settings' }[app]}
           onKeyDown={(e) => e.key === 'Escape' && home()}
         >
           {app === 'notes' && (
             <NotesApp layout="phone" noteId={noteId} onOpen={openNote} onClose={home} resume={resume} searchFirst={searchFirst} />
           )}
           {app === 'messages' && <MessagesApp layout="phone" onClose={home} />}
-          {app === 'ask' && <AskApp layout="phone" onClose={home} />}
+          {app === 'claude' && <ClaudeApp layout="phone" onClose={home} />}
           {app === 'settings' && <SettingsApp layout="phone" onClose={home} resume={resume} />}
         </div>
       )}

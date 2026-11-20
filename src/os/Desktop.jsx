@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
 import { PROFILE, SOCIALS } from '../data/content';
 import { AppIcon, Battery, Bluetooth, ControlCentre, Mirror, Sound, Wifi } from './icons';
 import Window from './Window';
@@ -6,17 +7,21 @@ import Wallpaper from './Wallpaper';
 import NotesApp from './apps/NotesApp';
 import MessagesApp from './apps/MessagesApp';
 import TerminalApp from './apps/TerminalApp';
-import AskApp from './apps/AskApp';
+import ClaudeApp from './apps/ClaudeApp';
 import SettingsApp from './apps/SettingsApp';
 import FinderApp from './apps/FinderApp';
+import SocialApp from './apps/SocialApp';
 
 const NAMES = {
   finder: 'Finder',
   notes: 'Notes',
   messages: 'Messages',
-  ask: 'Ask',
+  claude: 'Claude',
   settings: 'System Settings',
   terminal: 'Terminal',
+  github: 'GitHub',
+  linkedin: 'LinkedIn',
+  twitter: 'X',
   readme: 'TextEdit',
 };
 const CAPTIONS = { terminal: 'dev: zsh', readme: 'read-me.txt' };
@@ -32,10 +37,13 @@ function initialFrames() {
     notes: { x: 14, y: 44, w: nw, h: nh },
     messages: { x: Math.round(W * 0.535), y: 68, w: Math.min(820, Math.round(W * 0.93 - W * 0.535)), h: Math.round(H * 0.56) },
     settings: { x: Math.round(W * 0.79), y: Math.round(H * 0.14), w: Math.min(640, Math.round(W * 0.36)), h: Math.round(H * 0.6) },
-    ask: { x: -8, y: Math.round(H * 0.6), w: Math.round(W * 0.46), h: Math.round(H * 0.4) - 92 },
+    claude: { x: -8, y: Math.round(H * 0.6), w: Math.round(W * 0.46), h: Math.round(H * 0.4) - 92 },
     finder: { x: Math.round(W * 0.2), y: 120, w: 720, h: 440 },
     terminal: { x: Math.round(W * 0.25), y: 160, w: Math.min(680, W - 160), h: 400 },
     readme: { x: W - 540, y: 110, w: 440, h: 360 },
+    github: { x: Math.round(W * 0.3), y: 90, w: Math.min(760, W - 80), h: Math.min(640, H - 190) },
+    linkedin: { x: Math.round(W * 0.34), y: 70, w: Math.min(820, W - 80), h: Math.min(680, H - 170) },
+    twitter: { x: Math.round(W * 0.38), y: 80, w: Math.min(600, W - 80), h: Math.min(640, H - 180) },
     roomy,
   };
 }
@@ -136,7 +144,7 @@ function ReadMe() {
     <div className="textedit">
       <p>Hi, and welcome to Dev&apos;s desk.</p>
       <p>Everything about me is in Notes: who I am, where I&apos;ve worked, what I&apos;ve shipped, and what I&apos;ve written. Finder has the same things as files.</p>
-      <p>Messages writes me an email. Ask answers questions about me from what&apos;s on this site. System Settings is me, as a computer. Terminal takes typed commands, start with help.</p>
+      <p>Messages writes me an email. Claude answers questions about me, and can hand them to the real Claude with my profile attached. System Settings is me, as a computer. Terminal takes typed commands, start with help.</p>
       <p>Windows drag by their top edge. The dock opens apps and brings them back; its links go to my profiles.</p>
       <p>On a phone, all of this is an iPhone.</p>
     </div>
@@ -146,8 +154,8 @@ function ReadMe() {
 const DOCK = [
   { id: 'finder', app: 'finder' },
   { id: 'notes', app: 'notes' },
-  { id: 'ask', app: 'ask' },
-  ...SOCIALS.map((s) => ({ id: s.label.toLowerCase(), label: s.label, href: s.href, external: true })),
+  { id: 'claude', app: 'claude' },
+  ...SOCIALS.map((s) => ({ id: s.label.toLowerCase(), app: s.label.toLowerCase() })),
   { id: 'messages', app: 'messages' },
   { id: 'mail', label: 'Mail', href: `mailto:${PROFILE.email}` },
   { id: 'terminal', app: 'terminal' },
@@ -156,75 +164,79 @@ const DOCK = [
   { id: 'trash', label: 'Trash', app: 'finder', folder: 'Trash' },
 ];
 
-// the dock magnifies under the pointer like a Mac's: the icon you're on doubles, its
-// neighbours swell less the further away they are, and an app bounces as it opens
+// The dock, magnified the way a Mac's is. The curve is the one PuruVJ/macos-web uses (twice the
+// width under the pointer, easing to normal six icons away); a spring from Motion smooths every
+// change, so the icons glide rather than jump. An app bounces as it opens.
 const BASE = 54;
-const PEAK = 108;
-const REACH = 230;
+const LIMIT = BASE * 6;
+const DISTANCE = [-LIMIT, -LIMIT / 1.25, -LIMIT / 2, 0, LIMIT / 2, LIMIT / 1.25, LIMIT];
+const WIDTH = [BASE, BASE * 1.1, BASE * 1.414, BASE * 2, BASE * 1.414, BASE * 1.1, BASE];
+
+function DockItem({ d, mouseX, label, open, onLaunch }) {
+  const ref = useRef(null);
+  const [bounce, setBounce] = useState(0);
+  const distance = useTransform(mouseX, (x) => {
+    const r = ref.current?.getBoundingClientRect();
+    return r ? x - (r.left + r.width / 2) : LIMIT + 1;
+  });
+  const target = useTransform(distance, DISTANCE, WIDTH, { clamp: true });
+  const width = useSpring(target, { mass: 0.1, stiffness: 170, damping: 12 });
+
+  const launch = () => {
+    if (d.app && !open) setBounce((n) => n + 1);
+    onLaunch();
+  };
+
+  const inner = (
+    <>
+      <motion.span
+        key={bounce}
+        className="dock-lift"
+        initial={false}
+        animate={bounce ? { y: [0, -34, 0, -16, 0] } : { y: 0 }}
+        transition={{ duration: 0.95, ease: 'easeInOut' }}
+      >
+        <AppIcon id={d.id} />
+      </motion.span>
+      <span className="dock-tip">{label}</span>
+      {d.app && !d.folder && open && <span className="dock-dot" aria-hidden="true" />}
+    </>
+  );
+  return d.href ? (
+    <motion.a ref={ref} className="dock-item" style={{ width }} href={d.href} aria-label={label} {...(d.external ? { target: '_blank', rel: 'noreferrer' } : {})}>
+      {inner}
+    </motion.a>
+  ) : (
+    <motion.button ref={ref} type="button" className="dock-item" style={{ width }} onClick={launch} aria-label={label}>
+      {inner}
+    </motion.button>
+  );
+}
 
 function Dock({ wins, onApp }) {
-  const items = useRef([]);
-  const centres = useRef([]);
-  const [sizes, setSizes] = useState(null);
-  const [bouncing, setBouncing] = useState(null);
+  const mouseX = useMotionValue(Infinity);
   const reduce = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // measure resting centres once the pointer arrives, so growing icons don't shift the maths
-  const enter = () => {
-    centres.current = items.current.map((el) => {
-      if (!el) return null;
-      const r = el.getBoundingClientRect();
-      return r.left + r.width / 2;
-    });
-  };
-  const move = (e) => {
-    if (reduce) return;
-    if (!centres.current.length) enter();
-    setSizes(
-      centres.current.map((c) => {
-        if (c == null) return BASE;
-        const d = Math.abs(e.clientX - c);
-        if (d >= REACH) return BASE;
-        return BASE + (PEAK - BASE) * (Math.cos((d / REACH) * Math.PI) + 1) / 2;
-      })
-    );
-  };
-  const leave = () => {
-    centres.current = [];
-    setSizes(null);
-  };
-  const launch = (d) => {
-    if (!reduce && d.app && !wins[d.app]?.open) {
-      setBouncing(d.id);
-      setTimeout(() => setBouncing(null), 1300);
-    }
-    onApp(d.app, d.folder);
-  };
-
   return (
-    <nav className={`dock${sizes ? ' is-magnified' : ''}`} aria-label="Dock" onMouseEnter={enter} onMouseMove={move} onMouseLeave={leave}>
-      {DOCK.map((d, i) => {
-        if (d.sep) return <span key={`sep${i}`} className="dock-sep" aria-hidden="true" />;
-        const label = d.label || NAMES[d.app];
-        const style = { width: sizes?.[i] ?? BASE };
-        const cls = `dock-item${bouncing === d.id ? ' is-bouncing' : ''}`;
-        const inner = (
-          <>
-            <AppIcon id={d.id} />
-            <span className="dock-tip">{label}</span>
-            {d.app && !d.folder && wins[d.app]?.open && <span className="dock-dot" aria-hidden="true" />}
-          </>
-        );
-        return d.href ? (
-          <a key={d.id} ref={(el) => (items.current[i] = el)} className={cls} style={style} href={d.href} aria-label={label} {...(d.external ? { target: '_blank', rel: 'noreferrer' } : {})}>
-            {inner}
-          </a>
+    <nav
+      className="dock"
+      aria-label="Dock"
+      onMouseMove={(e) => !reduce && mouseX.set(e.clientX)}
+      onMouseLeave={() => mouseX.set(Infinity)}
+    >
+      {DOCK.map((d, i) =>
+        d.sep ? (
+          <span key={`sep${i}`} className="dock-sep" aria-hidden="true" />
         ) : (
-          <button key={d.id} ref={(el) => (items.current[i] = el)} type="button" className={cls} style={style} onClick={() => launch(d)} aria-label={label}>
-            {inner}
-          </button>
-        );
-      })}
+          <DockItem
+            key={d.id}
+            d={d}
+            mouseX={mouseX}
+            label={d.label || NAMES[d.app]}
+            open={!!(d.app && wins[d.app]?.open)}
+            onLaunch={() => onApp(d.app, d.folder)}
+          />
+        )
+      )}
     </nav>
   );
 }
@@ -237,11 +249,14 @@ export default function Desktop({ noteId, openNote, resume }) {
     return {
       messages: { open: true, z: 2 },
       settings: { open: roomy, z: 3 },
-      ask: { open: roomy, z: 4 },
+      claude: { open: roomy, z: 4 },
       notes: { open: true, z: 5 },
       finder: { open: false, z: 1 },
       terminal: { open: false, z: 1 },
       readme: { open: false, z: 1 },
+      github: { open: false, z: 1 },
+      linkedin: { open: false, z: 1 },
+      twitter: { open: false, z: 1 },
     };
   });
   const [folder, setFolder] = useState('Documents');
@@ -288,10 +303,13 @@ export default function Desktop({ noteId, openNote, resume }) {
     finder: <FinderApp key={folder} start={folder} openNote={showNote} openApp={focus} resume={resume} />,
     notes: <NotesApp layout="desktop" noteId={noteId} onOpen={showNote} resume={resume} />,
     messages: <MessagesApp layout="desktop" />,
-    ask: <AskApp layout="desktop" />,
+    claude: <ClaudeApp layout="desktop" />,
     settings: <SettingsApp key={settingsPage} layout="desktop" resume={resume} start={settingsPage} />,
     terminal: <TerminalApp layout="desktop" openNote={showNote} openApp={focus} />,
     readme: <ReadMe />,
+    github: <SocialApp network="github" />,
+    linkedin: <SocialApp network="linkedin" />,
+    twitter: <SocialApp network="twitter" />,
   };
 
   const item = (label, run) => (
@@ -341,7 +359,7 @@ export default function Desktop({ noteId, openNote, resume }) {
       item('Show All Windows', () => Object.keys(NAMES).forEach((a) => a !== 'readme' && focus(a))),
     ],
     Window: Object.keys(NAMES).map((a) => item(`${wins[a].open && !wins[a].min ? '✓ ' : ''}${a === 'readme' ? 'read-me.txt' : NAMES[a]}`, () => onApp(a))),
-    Help: [item('Read me', () => focus('readme')), item('Ask about Dev', () => focus('ask'))],
+    Help: [item('Read me', () => focus('readme')), item('Ask Claude about Dev', () => focus('claude'))],
   };
 
   const menuButton = (name, label = name, extra = {}) => (
