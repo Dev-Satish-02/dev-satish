@@ -14,6 +14,7 @@ import ClaudeApp from './apps/ClaudeApp';
 import SettingsApp from './apps/SettingsApp';
 import FinderApp from './apps/FinderApp';
 import SocialApp from './apps/SocialApp';
+import SpotifyApp from './apps/SpotifyApp';
 
 const NAMES = {
   finder: 'Finder',
@@ -26,6 +27,7 @@ const NAMES = {
   linkedin: 'LinkedIn',
   twitter: 'X',
   weather: 'Weather',
+  spotify: 'Spotify',
   aboutmac: 'About This Mac',
   readme: 'TextEdit',
 };
@@ -50,6 +52,7 @@ function initialFrames() {
     linkedin: { x: Math.round(W * 0.34), y: 70, w: Math.min(820, W - 80), h: Math.min(680, H - 170) },
     twitter: { x: Math.max(20, Math.round(W * 0.3)), y: 70, w: Math.min(860, W - 60), h: Math.min(700, H - 170) },
     weather: { x: Math.round(W * 0.42), y: 64, w: Math.min(820, W - 80), h: Math.min(600, H - 170) },
+    spotify: { x: Math.max(20, Math.round(W * 0.24)), y: 56, w: Math.min(1000, W - 60), h: Math.min(720, H - 150) },
     aboutmac: { x: Math.round(W / 2 - 170), y: Math.round(H * 0.18), w: 340, h: 470 },
     roomy,
   };
@@ -310,6 +313,7 @@ const DOCK = [
   ...SOCIALS.map((s) => ({ id: s.label.toLowerCase(), app: s.label.toLowerCase() })),
   { id: 'messages', app: 'messages' },
   { id: 'weather', app: 'weather' },
+  { id: 'spotify', app: 'spotify' },
   { id: 'mail', label: 'Mail', href: `mailto:${PROFILE.email}` },
   { id: 'terminal', app: 'terminal' },
   { id: 'settings', app: 'settings' },
@@ -406,6 +410,7 @@ export default function Desktop({ noteId, openNote, resume }) {
       notes: { open: true, z: 5 },
       finder: { open: false, z: 1 },
       weather: { open: false, z: 1 },
+      spotify: { open: false, z: 1 },
       aboutmac: { open: false, z: 1 },
       terminal: { open: false, z: 1 },
       readme: { open: false, z: 1 },
@@ -485,6 +490,7 @@ export default function Desktop({ noteId, openNote, resume }) {
     terminal: <TerminalApp layout="desktop" openNote={showNote} openApp={onApp} openFile={openFile} resume={resume} />,
     readme: <TextEdit file={textFile} />,
     weather: <WeatherApp />,
+    spotify: <SpotifyApp layout="desktop" />,
     aboutmac: <AboutMac />,
     github: <SocialApp network="github" />,
     linkedin: <SocialApp network="linkedin" />,

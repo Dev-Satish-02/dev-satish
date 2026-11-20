@@ -1,15 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
-import { PROFILE, SOCIALS } from '../data/content';
+import { PROFILE, SOCIALS, SPOTIFY } from '../data/content';
 import { NOTES } from './notes';
-import { AppIcon, Battery, Signal, Wifi } from './icons';
+import { AppIcon, Battery, SearchGlyph, Signal, Wifi } from './icons';
+import { describe, useWeather } from './lib/weather';
 import Wallpaper from './Wallpaper';
 import NotesApp from './apps/NotesApp';
 import MessagesApp from './apps/MessagesApp';
 import ClaudeApp from './apps/ClaudeApp';
 import SettingsApp from './apps/SettingsApp';
+import SpotifyApp from './apps/SpotifyApp';
+import WeatherApp from './apps/WeatherApp';
 
-/* On a phone the desk becomes an iPhone: the wallpaper and one dock holding every app. Each app
-   opens full screen out of its icon and has its own way back home. */
+/* On a phone the desk becomes an iPhone home screen: widgets and apps up top, four apps in the
+   dock below. Each app opens full screen out of its icon and has its own way back home. */
+
+const base = import.meta.env.BASE_URL;
+const firstPost = NOTES.find((n) => n.group === 'Writing')?.id;
+const NAMES = { notes: 'Notes', messages: 'Messages', claude: 'Claude', settings: 'Settings', spotify: 'Spotify', weather: 'Weather' };
 
 function useTime() {
   const [now, setNow] = useState(() => new Date());
@@ -20,7 +27,41 @@ function useTime() {
   return now;
 }
 
-const firstPost = NOTES.find((n) => n.group === 'Writing')?.id;
+function WeatherWidget({ onOpen }) {
+  const { cities } = useWeather();
+  const c = cities?.[0];
+  const d = c && describe(c.current.weather_code);
+  return (
+    <button type="button" className="wd wd-weather" onClick={onOpen} aria-label="Weather in Pilani">
+      <strong>Pilani</strong>
+      <b>{c ? `${Math.round(c.current.temperature_2m)}°` : '--°'}</b>
+      <span>
+        {d ? `${d.icon} ${d.label}` : 'Forecast'}
+        <br />
+        {c ? `H:${Math.round(c.daily.temperature_2m_max[0])}° L:${Math.round(c.daily.temperature_2m_min[0])}°` : ''}
+      </span>
+    </button>
+  );
+}
+
+function SpotifyWidget({ onOpen }) {
+  return (
+    <button type="button" className="wd wd-spotify" onClick={onOpen} aria-label="Dev's playlists on Spotify">
+      <span className="wd-sp-head">
+        <AppIcon id="spotify" />
+        <span>
+          <strong>Spotify</strong>
+          <em>{SPOTIFY.playlists.length} playlists</em>
+        </span>
+      </span>
+      <span className="wd-covers">
+        {SPOTIFY.playlists.slice(0, 3).map((p) => (
+          <img key={p.id} src={`${base}images/spotify/${p.id}.jpg`} alt="" />
+        ))}
+      </span>
+    </button>
+  );
+}
 
 export default function Phone({ noteId, openNote, resume, startApp }) {
   const now = useTime();
@@ -63,32 +104,35 @@ export default function Phone({ noteId, openNote, resume, startApp }) {
 
   const time = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
-  // every app lives in the one dock at the bottom of the screen
-  const apps = [
+  const grid = [
+    { id: 'notes', label: 'Notes', go: (e) => launch(e, 'notes', null) },
+    { id: 'claude', label: 'Claude', go: (e) => launch(e, 'claude') },
+    { id: 'spotify', label: 'Spotify', go: (e) => launch(e, 'spotify') },
+    { id: 'weather', label: 'Weather', go: (e) => launch(e, 'weather') },
+    { id: 'experience', label: 'Experience', go: (e) => launch(e, 'notes', 'experience') },
+    { id: 'projects', label: 'Projects', go: (e) => launch(e, 'notes', 'projects') },
+    { id: 'skills', label: 'Skills and education', go: (e) => launch(e, 'notes', 'skills') },
+    { id: 'writing', label: 'Writing', go: (e) => launch(e, 'notes', firstPost) },
+    ...SOCIALS.map((s) => ({ id: s.label.toLowerCase(), label: s.label === 'Twitter' ? 'X' : s.label, href: s.href, external: true })),
+    { id: 'settings', label: 'Settings', go: (e) => launch(e, 'settings') },
+    ...(resume ? [{ id: 'resume', label: 'Résumé', href: resume, external: true }] : []),
+  ];
+  const dock = [
     { id: 'phone', label: 'Phone', href: PROFILE.phoneHref },
     { id: 'mail', label: 'Mail', href: `mailto:${PROFILE.email}` },
     { id: 'messages', label: 'Messages', go: (e) => launch(e, 'messages') },
-    { id: 'notes', label: 'Notes', go: (e) => launch(e, 'notes', null) },
-    { id: 'claude', label: 'Claude', go: (e) => launch(e, 'claude') },
-    { id: 'experience', label: 'Experience', go: (e) => launch(e, 'notes', 'experience') },
-    { id: 'projects', label: 'Projects', go: (e) => launch(e, 'notes', 'projects') },
-    { id: 'skills', label: 'Skills', go: (e) => launch(e, 'notes', 'skills') },
-    { id: 'writing', label: 'Writing', go: (e) => launch(e, 'notes', firstPost) },
-    { id: 'settings', label: 'Settings', go: (e) => launch(e, 'settings') },
-    ...(resume ? [{ id: 'resume', label: 'Résumé', href: resume, external: true }] : []),
-    ...SOCIALS.map((s) => ({ id: s.label.toLowerCase(), label: s.label === 'Twitter' ? 'X' : s.label, href: s.href, external: true })),
+    { id: 'contacts', label: 'About Dev', go: (e) => launch(e, 'notes', 'about') },
   ];
 
-  const icon = (a, withLabel = true) =>
+  // icons carry no visible label, as asked; the name is still there for screen readers
+  const icon = (a) =>
     a.href ? (
-      <a key={a.id} className="ph-icon" href={a.href} {...(a.external ? { target: '_blank', rel: 'noreferrer' } : {})}>
+      <a key={a.id} className="ph-icon" href={a.href} aria-label={a.label} {...(a.external ? { target: '_blank', rel: 'noreferrer' } : {})}>
         <AppIcon id={a.id} />
-        {withLabel ? <span>{a.label}</span> : <span className="sr-only">{a.label}</span>}
       </a>
     ) : (
-      <button key={a.id} type="button" className="ph-icon" onClick={a.go}>
+      <button key={a.id} type="button" className="ph-icon" onClick={a.go} aria-label={a.label}>
         <AppIcon id={a.id} />
-        {withLabel ? <span>{a.label}</span> : <span className="sr-only">{a.label}</span>}
       </button>
     );
 
@@ -97,6 +141,7 @@ export default function Phone({ noteId, openNote, resume, startApp }) {
       <Wallpaper />
       <div className="ph-status" aria-hidden="true">
         <span className="ph-time">{time}</span>
+        <span className="ph-island" />
         <span className="ph-glyphs">
           <Signal />
           <Wifi />
@@ -105,8 +150,18 @@ export default function Phone({ noteId, openNote, resume, startApp }) {
       </div>
 
       <main className="ph-home" aria-label="Home screen" inert={app ? true : undefined}>
-        <nav className="ph-dock" aria-label="Apps">
-          {apps.map((a) => icon(a))}
+        <div className="ph-page">
+          <div className="ph-widgets">
+            <WeatherWidget onOpen={(e) => launch(e, 'weather')} />
+            <SpotifyWidget onOpen={(e) => launch(e, 'spotify')} />
+          </div>
+          <div className="ph-grid">{grid.map(icon)}</div>
+        </div>
+        <button type="button" className="ph-search" onClick={(e) => launch(e, 'notes', null, true)}>
+          <SearchGlyph /> Search
+        </button>
+        <nav className="ph-dock" aria-label="Dock">
+          {dock.map(icon)}
         </nav>
       </main>
 
@@ -118,7 +173,7 @@ export default function Phone({ noteId, openNote, resume, startApp }) {
           style={{ transformOrigin: origin }}
           role="dialog"
           aria-modal="true"
-          aria-label={{ notes: 'Notes', messages: 'Messages', claude: 'Claude', settings: 'Settings' }[app]}
+          aria-label={NAMES[app]}
           onKeyDown={(e) => e.key === 'Escape' && home()}
         >
           {app === 'notes' && (
@@ -127,9 +182,10 @@ export default function Phone({ noteId, openNote, resume, startApp }) {
           {app === 'messages' && <MessagesApp layout="phone" onClose={home} />}
           {app === 'claude' && <ClaudeApp layout="phone" onClose={home} />}
           {app === 'settings' && <SettingsApp layout="phone" onClose={home} resume={resume} />}
+          {app === 'spotify' && <SpotifyApp layout="phone" onClose={home} />}
+          {app === 'weather' && <WeatherApp layout="phone" onClose={home} />}
         </div>
       )}
-
     </div>
   );
 }

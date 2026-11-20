@@ -46,6 +46,7 @@ export const APPS = [
   app('messages', 'Messages'),
   app('claude', 'Claude'),
   app('weather', 'Weather'),
+  app('spotify', 'Spotify'),
   app('terminal', 'Terminal'),
   app('settings', 'System Settings'),
   app('github', 'GitHub'),

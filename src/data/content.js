@@ -148,3 +148,17 @@ export const GITHUB = {
     ['Pull Shark', '🦈', '#4a7bd8'],
   ],
 };
+
+// Dev's Spotify: the public playlists on his profile, with covers saved in public/images/spotify.
+export const SPOTIFY = {
+  name: 'dev',
+  profile: 'https://open.spotify.com/user/1oziia7t09x2x1hqyuyktwo8w',
+  playlists: [
+    { id: '3cjbiVfQnwuxAZF4lajryx', title: 'desi rap' },
+    { id: '0CbcBhHjPfjDtyGNTFVYda', title: 'jazz' },
+    { id: '1rCSTiDZP6chFton6pg21K', title: 'haseena zulfonwale' },
+    { id: '2MJQZPxgBubwz9v0KKzfHy', title: 'lock in' },
+    { id: '2mbHULN4Ah0msLKTaIhgJE', title: 'my mind' },
+    { id: '4Qtb2nfpa3ByU53Mi8QqxG', title: 'arunachalam' },
+  ],
+};

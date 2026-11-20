@@ -69,12 +69,41 @@ function Detail({ city }) {
   );
 }
 
-export default function WeatherApp() {
+export default function WeatherApp({ layout, onClose }) {
   const { cities, failed } = useWeather();
   const [pick, setPick] = useState(0);
   const [q, setQ] = useState('');
+  const phone = layout === 'phone';
+  const nav = phone && (
+    <div className="ph-nav">
+      <button type="button" className="ph-back" onClick={onClose}>
+        <span aria-hidden="true">‹</span> Home
+      </button>
+    </div>
+  );
   if (!cities) {
-    return <div className="wx wx-wait">{failed ? 'The forecast service didn’t answer. Try again in a moment.' : 'Loading forecasts…'}</div>;
+    return (
+      <div className={`wx wx-wait${phone ? ' ph-app ph-weather' : ''}`}>
+        {nav}
+        {failed ? 'The forecast service didn’t answer. Try again in a moment.' : 'Loading forecasts…'}
+      </div>
+    );
+  }
+  if (phone) {
+    // on a phone: the forecast full screen, with the cities as a row of chips to switch between
+    return (
+      <div className="ph-app ph-weather">
+        {nav}
+        <div className="wx-chips" role="tablist" aria-label="Cities">
+          {cities.map((c, i) => (
+            <button key={c.name} type="button" role="tab" aria-selected={i === pick} className={i === pick ? 'is-on' : undefined} onClick={() => setPick(i)}>
+              {c.name} {Math.round(c.current.temperature_2m)}°
+            </button>
+          ))}
+        </div>
+        <Detail city={cities[pick]} />
+      </div>
+    );
   }
   const shown = cities.map((c, i) => [c, i]).filter(([c]) => c.name.toLowerCase().includes(q.toLowerCase()));
   return (
