@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
-import { EXPERIENCE, PROFILE, PROJECTS, SOCIALS } from '../data/content';
+import { PROFILE, SOCIALS } from '../data/content';
 import { NOTES } from './notes';
-import { AppIcon, Battery, SearchGlyph, Signal, Wifi } from './icons';
+import { AppIcon, Battery, Signal, Wifi } from './icons';
 import Wallpaper from './Wallpaper';
 import NotesApp from './apps/NotesApp';
 import MessagesApp from './apps/MessagesApp';
 import ClaudeApp from './apps/ClaudeApp';
 import SettingsApp from './apps/SettingsApp';
 
-/* On a phone the desk becomes an iPhone: a home screen of apps, each opening full screen out of
-   its icon, with the home bar to go back. */
+/* On a phone the desk becomes an iPhone: the wallpaper and one dock holding every app. Each app
+   opens full screen out of its icon and has its own way back home. */
 
 function useTime() {
   const [now, setNow] = useState(() => new Date());
@@ -63,9 +63,12 @@ export default function Phone({ noteId, openNote, resume, startApp }) {
 
   const time = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
-  const grid = [
-    { id: 'notes', label: 'Notes', go: (e) => launch(e, 'notes', null) },
+  // every app lives in the one dock at the bottom of the screen
+  const apps = [
+    { id: 'phone', label: 'Phone', href: PROFILE.phoneHref },
+    { id: 'mail', label: 'Mail', href: `mailto:${PROFILE.email}` },
     { id: 'messages', label: 'Messages', go: (e) => launch(e, 'messages') },
+    { id: 'notes', label: 'Notes', go: (e) => launch(e, 'notes', null) },
     { id: 'claude', label: 'Claude', go: (e) => launch(e, 'claude') },
     { id: 'experience', label: 'Experience', go: (e) => launch(e, 'notes', 'experience') },
     { id: 'projects', label: 'Projects', go: (e) => launch(e, 'notes', 'projects') },
@@ -73,13 +76,7 @@ export default function Phone({ noteId, openNote, resume, startApp }) {
     { id: 'writing', label: 'Writing', go: (e) => launch(e, 'notes', firstPost) },
     { id: 'settings', label: 'Settings', go: (e) => launch(e, 'settings') },
     ...(resume ? [{ id: 'resume', label: 'Résumé', href: resume, external: true }] : []),
-    ...SOCIALS.map((s) => ({ id: s.label.toLowerCase(), label: s.label, href: s.href, external: true })),
-  ];
-  const dock = [
-    { id: 'phone', label: 'Phone', href: PROFILE.phoneHref },
-    { id: 'mail', label: 'Mail', href: `mailto:${PROFILE.email}` },
-    { id: 'messages', label: 'Messages', go: (e) => launch(e, 'messages') },
-    { id: 'notes', label: 'Notes', go: (e) => launch(e, 'notes', null) },
+    ...SOCIALS.map((s) => ({ id: s.label.toLowerCase(), label: s.label === 'Twitter' ? 'X' : s.label, href: s.href, external: true })),
   ];
 
   const icon = (a, withLabel = true) =>
@@ -100,7 +97,6 @@ export default function Phone({ noteId, openNote, resume, startApp }) {
       <Wallpaper />
       <div className="ph-status" aria-hidden="true">
         <span className="ph-time">{time}</span>
-        <span className="ph-island" />
         <span className="ph-glyphs">
           <Signal />
           <Wifi />
@@ -109,38 +105,8 @@ export default function Phone({ noteId, openNote, resume, startApp }) {
       </div>
 
       <main className="ph-home" aria-label="Home screen" inert={app ? true : undefined}>
-        <button type="button" className="ph-widget" onClick={(e) => launch(e, 'notes', 'about')}>
-          <span className="ph-widget-top">
-            <span className="avatar avatar-lg" aria-hidden="true">
-              DS
-            </span>
-            <span>
-              <strong>{PROFILE.name}</strong>
-              <span>{PROFILE.title}</span>
-            </span>
-          </span>
-          <span className="ph-widget-stats">
-            <span>
-              <b>{EXPERIENCE.length}</b> internships
-            </span>
-            <span>
-              <b>{PROJECTS.length}</b> projects shipped
-            </span>
-            <span>
-              <b>2,000+</b> users in a week
-            </span>
-          </span>
-          <span className="ph-widget-foot">{PROFILE.location}</span>
-        </button>
-
-        <div className="ph-grid">{grid.map((a) => icon(a))}</div>
-
-        <button type="button" className="ph-search" onClick={(e) => launch(e, 'notes', null, true)}>
-          <SearchGlyph /> Search
-        </button>
-
-        <nav className="ph-dock" aria-label="Dock">
-          {dock.map((a) => icon(a, false))}
+        <nav className="ph-dock" aria-label="Apps">
+          {apps.map((a) => icon(a))}
         </nav>
       </main>
 
@@ -164,7 +130,6 @@ export default function Phone({ noteId, openNote, resume, startApp }) {
         </div>
       )}
 
-      <button type="button" className={`ph-homebar${app ? ' is-app' : ''}`} onClick={home} aria-label="Go to home screen" tabIndex={app ? 0 : -1} />
     </div>
   );
 }
