@@ -141,13 +141,25 @@ function Glyph({ id }) {
         </>
       );
     case 'trash':
+      // the Big Sur bin: a frosted wire basket with a darker rim
       return (
         <>
-          <rect x="14" y="13" width="32" height="5" rx="2" fill="#8d9098" />
-          <path d="M17 20h26l-2.5 30a3 3 0 0 1-3 2.8h-15a3 3 0 0 1-3-2.8z" fill="#f7f8fa" stroke="#9da0a8" strokeWidth="1.2" />
-          {[24, 30, 36].map((x) => (
-            <line key={x} x1={x} x2={x} y1="25" y2="47" stroke="#b9bcc3" strokeWidth="1.6" />
+          <defs>
+            <linearGradient id="bin-body" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stopColor="#c9ccd3" />
+              <stop offset="0.5" stopColor="#f4f5f8" />
+              <stop offset="1" stopColor="#c2c5cc" />
+            </linearGradient>
+          </defs>
+          <path d="M12 15h36l-3.6 37.5a4 4 0 0 1-4 3.5H19.6a4 4 0 0 1-4-3.5z" fill="url(#bin-body)" opacity="0.92" />
+          {[18.5, 24.5, 30, 35.5, 41.5].map((x, i) => (
+            <path key={x} d={`M${x} 19 L${30 + (x - 30) * 0.86} 52`} stroke="#9ea2ab" strokeWidth="1.3" opacity="0.8" />
           ))}
+          {[24, 31, 38, 45].map((y) => (
+            <path key={y} d={`M${12.6 + (y - 15) * 0.096} ${y}H${47.4 - (y - 15) * 0.096}`} stroke="#b4b8c0" strokeWidth="0.8" opacity="0.7" />
+          ))}
+          <rect x="10" y="11.5" width="40" height="5.5" rx="2.4" fill="#e9ebef" stroke="#a5a9b1" strokeWidth="1" />
+          <ellipse cx="30" cy="12.4" rx="17" ry="1.2" fill="#fff" opacity="0.8" />
         </>
       );
     case 'resume':

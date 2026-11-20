@@ -125,3 +125,26 @@ export const LINKEDIN = {
   banner: 'images/bits-clock-tower.jpg',
   bannerCredit: { text: 'Photo: JRDkg, CC BY-SA 4.0', href: 'https://commons.wikimedia.org/wiki/File:Bits_Clock_tower.jpg' },
 };
+
+// The profile photo the LinkedIn, X and GitHub windows use.
+export const AVATAR = 'images/dev.jpg';
+
+// What the X window shows, matching the live profile.
+export const X_PROFILE = {
+  name: 'dev',
+  joined: 'September 2024',
+  following: 2,
+  followers: 1,
+};
+
+// GitHub: pinned repositories, in the order the profile shows them, and a few profile extras.
+export const GITHUB = {
+  pinned: ['bits-nirmaan', 'mess-dev', 'snaps', 'meshery', 'meshery.io', 'readmebot'],
+  website: 'https://dev-satish-02.github.io/dev-satish/',
+  achievements: [
+    ['Pair Extraordinaire', '🫛', '#7fc96b'],
+    ['Quickdraw', '🤠', '#f2a65a'],
+    ['YOLO', '🎉', '#f28bb3'],
+    ['Pull Shark', '🦈', '#4a7bd8'],
+  ],
+};

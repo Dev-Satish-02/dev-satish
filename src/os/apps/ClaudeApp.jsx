@@ -151,7 +151,7 @@ export default function ClaudeApp({ layout, onClose }) {
           ))}
         </aside>
       )}
-      <div className="ask-main">
+      <div className={`ask-main${empty ? ' is-empty' : ''}`}>
         <header className="ask-head">
           <span>Claude</span>
           <a className="ask-open" href={claudeLink()} target="_blank" rel="noreferrer">
