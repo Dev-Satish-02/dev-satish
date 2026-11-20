@@ -113,3 +113,15 @@ export const SKILL_GROUPS = [
   { title: 'Engineering', items: ['JavaScript / TypeScript', 'React', 'Node.js', 'Flask', 'AWS', 'C / C++', 'Java'] },
   { title: 'Certifications', items: ['Machine Learning Specialization (Stanford, DeepLearning.AI)', 'AWS DevOps'] },
 ];
+
+// What the LinkedIn window shows, matching the live profile.
+export const LINKEDIN = {
+  headline: 'Placement Unit | Alumni Relations | BITS Pilani',
+  pronouns: 'He/Him',
+  location: 'Mumbai, Maharashtra, India',
+  connections: '500+ connections',
+  school: 'Birla Institute of Technology and Science, Pilani',
+  // banner: "Bits Clock tower" by JRDkg, CC BY-SA 4.0, via Wikimedia Commons (cropped to 4:1)
+  banner: 'images/bits-clock-tower.jpg',
+  bannerCredit: { text: 'Photo: JRDkg, CC BY-SA 4.0', href: 'https://commons.wikimedia.org/wiki/File:Bits_Clock_tower.jpg' },
+};

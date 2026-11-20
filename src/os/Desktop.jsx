@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
-import { PROFILE, SOCIALS } from '../data/content';
-import { AppIcon, Battery, Bluetooth, ControlCentre, Mirror, Sound, Wifi } from './icons';
+import { EDUCATION, EXPERIENCE, PROFILE, PROJECTS, SOCIALS } from '../data/content';
+import { AppIcon, AppleLogo, Battery, Bluetooth, ControlCentre, Mirror, Sound, Wifi } from './icons';
+import { README } from './lib/fs';
+import { describe, useWeather } from './lib/weather';
+import WeatherApp from './apps/WeatherApp';
 import Window from './Window';
 import Wallpaper from './Wallpaper';
 import NotesApp from './apps/NotesApp';
@@ -22,9 +25,11 @@ const NAMES = {
   github: 'GitHub',
   linkedin: 'LinkedIn',
   twitter: 'X',
+  weather: 'Weather',
+  aboutmac: 'About This Mac',
   readme: 'TextEdit',
 };
-const CAPTIONS = { terminal: 'dev: zsh', readme: 'read-me.txt' };
+const CAPTIONS = { terminal: 'dev: zsh' };
 
 // where each window sits when the desk first opens, like a desk someone has been working at
 function initialFrames() {
@@ -44,6 +49,8 @@ function initialFrames() {
     github: { x: Math.round(W * 0.3), y: 90, w: Math.min(760, W - 80), h: Math.min(640, H - 190) },
     linkedin: { x: Math.round(W * 0.34), y: 70, w: Math.min(820, W - 80), h: Math.min(680, H - 170) },
     twitter: { x: Math.round(W * 0.38), y: 80, w: Math.min(600, W - 80), h: Math.min(640, H - 180) },
+    weather: { x: Math.round(W * 0.42), y: 64, w: Math.min(820, W - 80), h: Math.min(600, H - 170) },
+    aboutmac: { x: Math.round(W / 2 - 170), y: Math.round(H * 0.18), w: 340, h: 470 },
     roomy,
   };
 }
@@ -89,12 +96,121 @@ function BatteryLevel() {
   );
 }
 
+// the real battery level and charging state, for the battery popover
+function useBattery() {
+  const [b, setB] = useState(null);
+  useEffect(() => {
+    let bat;
+    const read = () => setB({ level: Math.round(bat.level * 100), charging: bat.charging });
+    navigator.getBattery?.().then((x) => {
+      bat = x;
+      read();
+      x.addEventListener('levelchange', read);
+      x.addEventListener('chargingchange', read);
+    });
+    return () => {
+      bat?.removeEventListener('levelchange', read);
+      bat?.removeEventListener('chargingchange', read);
+    };
+  }, []);
+  return b;
+}
+
+// the panels that drop from the menu bar's status icons
+function StatusPanel({ kind, weather, battery, openApp }) {
+  const now = useNow();
+  const [volume, setVolume] = useState(70);
+  const [wifi, setWifi] = useState(true);
+  const pilani = weather.cities?.[0];
+  if (kind === 'clock') {
+    return (
+      <div className="status-panel">
+        <strong className="status-title">{now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</strong>
+        <button type="button" className="status-row" onClick={() => openApp('weather')}>
+          Weather: {pilani ? `${Math.round(pilani.current.temperature_2m)}° and ${describe(pilani.current.weather_code).label.toLowerCase()} in Pilani` : 'open forecast'}
+        </button>
+        <button type="button" className="status-row" onClick={() => openApp('messages')}>
+          Messages: a note from Dev is waiting
+        </button>
+      </div>
+    );
+  }
+  if (kind === 'battery') {
+    return (
+      <div className="status-panel">
+        <strong className="status-title">Battery {battery ? `${battery.level}%` : ''}</strong>
+        <p className="status-row">Power source: {battery ? (battery.charging ? 'Power Adapter' : 'Battery') : 'unknown'}</p>
+        <p className="status-row status-muted">No apps using significant energy</p>
+      </div>
+    );
+  }
+  if (kind === 'sound') {
+    return (
+      <div className="status-panel">
+        <strong className="status-title">Sound</strong>
+        <input type="range" min="0" max="100" value={volume} onChange={(e) => setVolume(+e.target.value)} aria-label="Volume" className="status-slider" />
+        <p className="status-caption">Output</p>
+        <p className="status-row">✓ MacBook Air Speakers</p>
+        <p className="status-row status-muted">AirPods Pro</p>
+      </div>
+    );
+  }
+  if (kind === 'wifi') {
+    return (
+      <div className="status-panel">
+        <span className="status-title status-split">
+          Wi-Fi
+          <button type="button" className={`set-toggle${wifi ? ' is-on' : ''}`} aria-pressed={wifi} aria-label="Wi-Fi" onClick={() => setWifi(!wifi)} />
+        </span>
+        {wifi && (
+          <>
+            <p className="status-caption">Known network</p>
+            <p className="status-row">◉ BITS-Pilani</p>
+            <p className="status-caption">Other networks</p>
+            {SOCIALS.map((x) => (
+              <a key={x.href} className="status-row" href={x.href} target="_blank" rel="noreferrer">
+                {x.label}
+              </a>
+            ))}
+          </>
+        )}
+      </div>
+    );
+  }
+  return null;
+}
+
+// About This Mac, if the Mac were Dev
+function AboutMac() {
+  return (
+    <div className="aboutmac">
+      <span className="avatar avatar-xl" aria-hidden="true">
+        DS
+      </span>
+      <h2>{PROFILE.name}</h2>
+      <p className="aboutmac-sub">{PROFILE.title}</p>
+      <dl>
+        <dt>Chip</dt>
+        <dd>{EDUCATION[0].school}, dual degree</dd>
+        <dt>Memory</dt>
+        <dd>{EXPERIENCE.length} internships</dd>
+        <dt>Startup disk</dt>
+        <dd>{PROJECTS[0].name}</dd>
+        <dt>Serial number</dt>
+        <dd>{PROFILE.email}</dd>
+        <dt>macOS</dt>
+        <dd>Sierra</dd>
+      </dl>
+    </div>
+  );
+}
+
 // sleep, shut down and the lock screen, as screens laid over the whole desk
 function Overlay({ kind, onWake }) {
   const now = useNow();
   useEffect(() => {
     if (kind === 'restart') {
-      const t = setTimeout(() => window.location.reload(), 1600);
+      const t = setTimeout(() => window.location.reload(), 2600);
       return () => clearTimeout(t);
     }
     const key = (e) => {
@@ -134,19 +250,55 @@ function Overlay({ kind, onWake }) {
       onClick={kind === 'off' ? () => window.location.reload() : kind === 'sleep' ? onWake : undefined}
     >
       {kind === 'off' && <span>Click anywhere to start up</span>}
-      {kind === 'restart' && <span className="spinner" aria-hidden="true" />}
+      {kind === 'restart' && (
+        <span className="boot" aria-hidden="true">
+          <AppleLogo size={72} />
+          <span className="boot-bar">
+            <i />
+          </span>
+        </span>
+      )}
     </div>
   );
 }
 
-function ReadMe() {
+// the confirmation a Mac asks before restarting or shutting down; restarts by itself after 60s
+function Confirm({ kind, onYes, onNo }) {
+  const [left, setLeft] = useState(60);
+  useEffect(() => {
+    if (left <= 0) {
+      onYes();
+      return undefined;
+    }
+    const t = setTimeout(() => setLeft(left - 1), 1000);
+    return () => clearTimeout(t);
+  }, [left, onYes]);
+  const verb = kind === 'restart' ? 'restart' : 'shut down';
+  return (
+    <div className="confirm-back">
+      <div className="confirm" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title">
+        <AppleLogo size={34} />
+        <h2 id="confirm-title">Are you sure you want to {verb} your computer now?</h2>
+        <p>
+          This dialog will {verb} automatically in {left} seconds.
+        </p>
+        <button type="button" className="confirm-yes" onClick={onYes} autoFocus>
+          {kind === 'restart' ? 'Restart' : 'Shut Down'}
+        </button>
+        <button type="button" onClick={onNo}>
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function TextEdit({ file }) {
   return (
     <div className="textedit">
-      <p>Hi, and welcome to Dev&apos;s desk.</p>
-      <p>Everything about me is in Notes: who I am, where I&apos;ve worked, what I&apos;ve shipped, and what I&apos;ve written. Finder has the same things as files.</p>
-      <p>Messages writes me an email. Claude answers questions about me, and can hand them to the real Claude with my profile attached. System Settings is me, as a computer. Terminal takes typed commands, start with help.</p>
-      <p>Windows drag by their top edge. The dock opens apps and brings them back; its links go to my profiles.</p>
-      <p>On a phone, all of this is an iPhone.</p>
+      {file.text.split('\n\n').map((para, i) => (
+        <p key={i}>{para}</p>
+      ))}
     </div>
   );
 }
@@ -157,11 +309,12 @@ const DOCK = [
   { id: 'claude', app: 'claude' },
   ...SOCIALS.map((s) => ({ id: s.label.toLowerCase(), app: s.label.toLowerCase() })),
   { id: 'messages', app: 'messages' },
+  { id: 'weather', app: 'weather' },
   { id: 'mail', label: 'Mail', href: `mailto:${PROFILE.email}` },
   { id: 'terminal', app: 'terminal' },
   { id: 'settings', app: 'settings' },
   { sep: true },
-  { id: 'trash', label: 'Trash', app: 'finder', folder: 'Trash' },
+  { id: 'trash', label: 'Bin', app: 'finder', folder: 'Bin' },
 ];
 
 // The dock, magnified the way a Mac's is. The curve is the one PuruVJ/macos-web uses (twice the
@@ -252,6 +405,8 @@ export default function Desktop({ noteId, openNote, resume }) {
       claude: { open: roomy, z: 4 },
       notes: { open: true, z: 5 },
       finder: { open: false, z: 1 },
+      weather: { open: false, z: 1 },
+      aboutmac: { open: false, z: 1 },
       terminal: { open: false, z: 1 },
       readme: { open: false, z: 1 },
       github: { open: false, z: 1 },
@@ -263,6 +418,11 @@ export default function Desktop({ noteId, openNote, resume }) {
   const [menu, setMenu] = useState(null);
   const [overlay, setOverlay] = useState(null);
   const [settingsPage, setSettingsPage] = useState('general');
+  const [confirm, setConfirm] = useState(null);
+  const [panel, setPanel] = useState(null);
+  const [textFile, setTextFile] = useState({ name: 'read-me.txt', text: README });
+  const weather = useWeather();
+  const battery = useBattery();
 
   const visible = Object.entries(wins).filter(([, w]) => w.open && !w.min);
   const focused = [...visible].sort((a, b) => b[1].z - a[1].z)[0]?.[0] || null;
@@ -277,8 +437,18 @@ export default function Desktop({ noteId, openNote, resume }) {
     focus('notes');
   };
   const onApp = (app, f) => {
-    if (app === 'finder') setFolder(f || 'Documents');
+    if (app === 'finder') setFolder(f || 'Recents');
     focus(app);
+  };
+  // a file from Finder or Terminal opens in the app it belongs to
+  const openFile = (it) => {
+    if (it.app) onApp(it.app);
+    else if (it.note) showNote(it.note);
+    else if (it.href) window.open(it.href, '_blank', 'noreferrer');
+    else if (it.text) {
+      setTextFile({ name: it.name, text: it.text });
+      focus('readme');
+    }
   };
 
   useEffect(() => {
@@ -288,25 +458,34 @@ export default function Desktop({ noteId, openNote, resume }) {
   }, []);
 
   useEffect(() => {
-    if (!menu) return undefined;
-    const close = (e) => !e.target.closest('.menu') && setMenu(null);
-    const key = (e) => e.key === 'Escape' && setMenu(null);
+    if (!menu && !panel) return undefined;
+    const close = (e) => {
+      if (!e.target.closest('.menu')) setMenu(null);
+      if (!e.target.closest('.status')) setPanel(null);
+    };
+    const key = (e) => {
+      if (e.key !== 'Escape') return;
+      setMenu(null);
+      setPanel(null);
+    };
     window.addEventListener('pointerdown', close);
     window.addEventListener('keydown', key);
     return () => {
       window.removeEventListener('pointerdown', close);
       window.removeEventListener('keydown', key);
     };
-  }, [menu]);
+  }, [menu, panel]);
 
   const apps = {
-    finder: <FinderApp key={folder} start={folder} openNote={showNote} openApp={focus} resume={resume} />,
+    finder: <FinderApp key={folder} start={folder} resume={resume} onOpen={openFile} />,
     notes: <NotesApp layout="desktop" noteId={noteId} onOpen={showNote} resume={resume} />,
     messages: <MessagesApp layout="desktop" />,
     claude: <ClaudeApp layout="desktop" />,
     settings: <SettingsApp key={settingsPage} layout="desktop" resume={resume} start={settingsPage} />,
-    terminal: <TerminalApp layout="desktop" openNote={showNote} openApp={focus} />,
-    readme: <ReadMe />,
+    terminal: <TerminalApp layout="desktop" openNote={showNote} openApp={onApp} openFile={openFile} resume={resume} />,
+    readme: <TextEdit file={textFile} />,
+    weather: <WeatherApp />,
+    aboutmac: <AboutMac />,
     github: <SocialApp network="github" />,
     linkedin: <SocialApp network="linkedin" />,
     twitter: <SocialApp network="twitter" />,
@@ -329,18 +508,15 @@ export default function Desktop({ noteId, openNote, resume }) {
 
   const MENUS = {
     mark: [
-      item(`About ${PROFILE.name}`, () => {
-        setSettingsPage('about');
-        focus('settings');
-      }),
+      item('About This Mac', () => focus('aboutmac')),
       item('System Settings…', () => {
         setSettingsPage('general');
         focus('settings');
       }),
       <li key="s1" className="menu-sep" role="separator" />,
       item('Sleep', () => setOverlay('sleep')),
-      item('Restart…', () => setOverlay('restart')),
-      item('Shut Down…', () => setOverlay('off')),
+      item('Restart…', () => setConfirm('restart')),
+      item('Shut Down…', () => setConfirm('off')),
       <li key="s2" className="menu-sep" role="separator" />,
       item('Lock Screen', () => setOverlay('lock')),
       item(`Log Out ${PROFILE.name}…`, () => {
@@ -350,7 +526,7 @@ export default function Desktop({ noteId, openNote, resume }) {
     ],
     File: [
       item('New Message', () => focus('messages')),
-      item('Open read-me.txt', () => focus('readme')),
+      item('Open read-me.txt', () => openFile({ name: 'read-me.txt', text: README })),
       item('Close Window', () => focused && patch(focused, { open: false, zoomed: false })),
     ],
     Edit: [item('Copy Email Address', () => navigator.clipboard?.writeText(PROFILE.email))],
@@ -358,8 +534,8 @@ export default function Desktop({ noteId, openNote, resume }) {
       item('Zoom Window', () => focused && patch(focused, { zoomed: !wins[focused].zoomed })),
       item('Show All Windows', () => Object.keys(NAMES).forEach((a) => a !== 'readme' && focus(a))),
     ],
-    Window: Object.keys(NAMES).map((a) => item(`${wins[a].open && !wins[a].min ? '✓ ' : ''}${a === 'readme' ? 'read-me.txt' : NAMES[a]}`, () => onApp(a))),
-    Help: [item('Read me', () => focus('readme')), item('Ask Claude about Dev', () => focus('claude'))],
+    Window: Object.keys(NAMES).map((a) => item(`${wins[a].open && !wins[a].min ? '✓ ' : ''}${a === 'readme' ? textFile.name : NAMES[a]}`, () => onApp(a))),
+    Help: [item('Read me', () => openFile({ name: 'read-me.txt', text: README })), item('Ask Claude about Dev', () => focus('claude'))],
   };
 
   const menuButton = (name, label = name, extra = {}) => (
@@ -381,23 +557,50 @@ export default function Desktop({ noteId, openNote, resume }) {
 
       <header className="menubar">
         <div className="menubar-left">
-          {menuButton('mark', '◆', { className: 'menu-mark', 'aria-label': 'Dev menu' })}
+          {menuButton('mark', <AppleLogo size={15} />, { className: 'menu-mark', 'aria-label': 'Apple menu' })}
           <strong className="menubar-app">{NAMES[focused] || 'Finder'}</strong>
           {['File', 'Edit', 'View', 'Window', 'Help'].map((m) => menuButton(m))}
         </div>
-        <div className="menubar-right" aria-hidden="true">
-          <Sound />
-          <Mirror />
-          <Wifi />
-          <Bluetooth />
-          <BatteryLevel />
-          <ControlCentre />
-          <Clock />
+        <div className="menubar-right">
+          {weather.cities && (
+            <button type="button" className="status" onClick={() => onApp('weather')} aria-label="Weather">
+              {describe(weather.cities[0].current.weather_code).icon} {Math.round(weather.cities[0].current.temperature_2m)}°C
+            </button>
+          )}
+          {[
+            ['sound', <Sound key="s" />, 'Sound'],
+            [null, <Mirror key="m" />, 'Screen mirroring'],
+            ['wifi', <Wifi key="w" />, 'Wi-Fi'],
+            [null, <Bluetooth key="b" />, 'Bluetooth', () => { setSettingsPage('bluetooth'); focus('settings'); }],
+            ['battery', <BatteryLevel key="bt" />, 'Battery'],
+            [null, <ControlCentre key="c" />, 'Control Centre', () => { setSettingsPage('general'); focus('settings'); }],
+            ['clock', <Clock key="k" />, 'Date and time'],
+          ].map(([kind, glyph, label, run], i) => (
+            <div className="status" key={label}>
+              <button
+                type="button"
+                aria-label={label}
+                aria-expanded={kind ? panel === kind : undefined}
+                className={panel && panel === kind ? 'is-open' : undefined}
+                onClick={() => (kind ? setPanel(panel === kind ? null : kind) : run?.())}
+              >
+                {glyph}
+              </button>
+              {kind && panel === kind && (
+                <StatusPanel kind={kind} weather={weather} battery={battery} openApp={(a) => { setPanel(null); onApp(a); }} />
+              )}
+            </div>
+          ))}
         </div>
       </header>
 
       <div className="desk-icons">
-        <button type="button" className="desk-icon" onDoubleClick={() => focus('readme')} onKeyDown={(e) => e.key === 'Enter' && focus('readme')}>
+        <button
+          type="button"
+          className="desk-icon"
+          onDoubleClick={() => openFile({ name: 'read-me.txt', text: README })}
+          onKeyDown={(e) => e.key === 'Enter' && openFile({ name: 'read-me.txt', text: README })}
+        >
           <AppIcon id="readme" />
           <span>read-me.txt</span>
         </button>
@@ -414,8 +617,8 @@ export default function Desktop({ noteId, openNote, resume }) {
           <Window
             key={app}
             app={app}
-            title={app === 'readme' ? 'read-me.txt' : NAMES[app]}
-            caption={CAPTIONS[app]}
+            title={app === 'readme' ? textFile.name : NAMES[app]}
+            caption={app === 'readme' ? textFile.name : CAPTIONS[app]}
             frame={frames[app]}
             z={w.z}
             zoomed={w.zoomed}
@@ -432,6 +635,16 @@ export default function Desktop({ noteId, openNote, resume }) {
       )}
 
       <Dock wins={wins} onApp={onApp} />
+      {confirm && (
+        <Confirm
+          kind={confirm}
+          onNo={() => setConfirm(null)}
+          onYes={() => {
+            setConfirm(null);
+            setOverlay(confirm);
+          }}
+        />
+      )}
       {overlay && <Overlay kind={overlay} onWake={() => setOverlay(null)} />}
     </div>
   );
