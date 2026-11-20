@@ -1,20 +1,47 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { EDUCATION, EXPERIENCE, PROFILE, PROJECTS, SKILL_GROUPS, SOCIALS } from '../../data/content';
 import { NOTES } from '../notes';
+import { HOME, makeFS, resolve } from '../lib/fs';
 
 /* A small shell over the same content: for people who would rather type than click. */
 
-const PROMPT = 'dev@bits ~ %';
+const prompt = (cwd) => `${HOME}@Devs-MacBook-Air ${cwd.length ? cwd[cwd.length - 1] : '~'} %`;
 const social = (label) => SOCIALS.find((s) => s.label.toLowerCase() === label)?.href;
 
-function run(line, { openNote, openApp }) {
+function run(line, { openNote, openApp, openFile, fs, cwd, setCwd }) {
   const [cmd, ...rest] = line.trim().split(/\s+/);
   const arg = rest.join(' ').toLowerCase();
   switch ((cmd || '').toLowerCase()) {
     case '':
       return [];
+    case 'pwd':
+      return [`/Users/${HOME}${cwd.length ? `/${cwd.join('/')}` : ''}`];
+    case 'ls': {
+      const r = resolve(fs.home, cwd, rest[0] || '.');
+      if (!r) return [`ls: ${rest[0]}: No such file or directory`];
+      if (r.node.type !== 'dir') return [r.node.name];
+      const names = r.node.children.map((c) => (c.type === 'dir' ? `${c.name}/` : c.type === 'app' ? `${c.name}.app` : c.name.includes('.') ? c.name : `${c.name}.${c.ext}`));
+      return [names.join('    ')];
+    }
+    case 'cd': {
+      const r = resolve(fs.home, cwd, rest[0] || '~');
+      if (!r) return [`cd: no such file or directory: ${rest[0]}`];
+      if (r.node.type !== 'dir') return [`cd: not a directory: ${rest[0]}`];
+      setCwd(r.parts);
+      return [];
+    }
+    case 'cat': {
+      if (!rest[0]) return ['usage: cat <file>'];
+      const r = resolve(fs.home, cwd, rest.join(' '));
+      if (!r) return [`cat: ${rest.join(' ')}: No such file or directory`];
+      if (r.node.text) return r.node.text.split('\n');
+      if (r.node.type === 'dir') return [`cat: ${rest[0]}: Is a directory`];
+      openFile(r.node);
+      return [`${r.node.name} isn't plain text; opening it instead`];
+    }
     case 'help':
       return [
+        'ls, cd, cat, pwd   look around the files (try: ls, cat about.txt)',
         'about        who I am',
         'experience   where I have worked',
         'projects     what I have shipped',
@@ -73,10 +100,12 @@ function run(line, { openNote, openApp }) {
   }
 }
 
-export default function TerminalApp({ layout, onClose, openNote, openApp }) {
+export default function TerminalApp({ layout, onClose, openNote, openApp, openFile = () => {}, resume }) {
+  const fs = useMemo(() => makeFS(resume), [resume]);
+  const [cwd, setCwd] = useState([]);
   const [lines, setLines] = useState(() => [
     `Last login: ${new Date().toDateString()} on ttys001`,
-    'Type help to see what is here.',
+    "Type 'help' for available commands",
   ]);
   const [input, setInput] = useState('');
   const [history, setHistory] = useState([]);
@@ -98,7 +127,7 @@ export default function TerminalApp({ layout, onClose, openNote, openApp }) {
       setLines([]);
       return;
     }
-    setLines((x) => [...x, `${PROMPT} ${line}`, ...run(line, { openNote, openApp })]);
+    setLines((x) => [...x, `${prompt(cwd)} ${line}`, ...run(line, { openNote, openApp, openFile, fs, cwd, setCwd })]);
   };
 
   const onKey = (e) => {
@@ -129,7 +158,7 @@ export default function TerminalApp({ layout, onClose, openNote, openApp }) {
           <pre key={i}>{l || ' '}</pre>
         ))}
         <form onSubmit={submit} className="term-line">
-          <label htmlFor="term-in">{PROMPT}</label>
+          <label htmlFor="term-in">{prompt(cwd)}</label>
           <input
             id="term-in"
             ref={field}

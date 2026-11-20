@@ -1,5 +1,5 @@
 import { useId } from 'react';
-import { siClaude, siGithub, siX } from 'simple-icons';
+import { siApple, siClaude, siGithub, siX } from 'simple-icons';
 
 /* App icons. The Mac's own apps use their real icons (public/icons, taken from PuruVJ/macos-web);
    everything else is a tile drawn to the same Big Sur proportions, with brand marks from
@@ -39,6 +39,7 @@ const TILES = {
   claude: ['#e3876a', '#c96442'],
   settings: ['#a4a4ab', '#5d5d64'],
   trash: ['#e8e9ec', '#b9bcc3'],
+  weather: ['#4aa3ff', '#1c5fd6'],
   resume: ['#f4f5f7', '#d9dce2'],
   readme: ['#f4f5f7', '#d9dce2'],
 };
@@ -132,6 +133,13 @@ function Glyph({ id }) {
       return <Mark icon={siX} size={26} />;
     case 'claude':
       return <Mark icon={siClaude} size={32} />;
+    case 'weather':
+      return (
+        <>
+          <circle cx="24" cy="24" r="9" fill="#ffd54a" />
+          <path d="M22 44h20a8 8 0 0 0 0-16 11 11 0 0 0-21 4 6 6 0 0 0 1 12z" fill="#fff" />
+        </>
+      );
     case 'trash':
       return (
         <>
@@ -276,6 +284,32 @@ export function ControlCentre() {
       <circle cx="4" cy="3.5" r="1.6" fill="currentColor" />
       <rect x="1" y="8" width="16" height="5" rx="2.5" fill="none" stroke="currentColor" strokeWidth="1.4" />
       <circle cx="14" cy="10.5" r="1.6" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function AppleLogo({ size = 14 }) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true">
+      <path d={siApple.path} fill="currentColor" />
+    </svg>
+  );
+}
+
+// a Finder folder, in the Big Sur blue
+export function Folder({ className = '' }) {
+  const u = useId().replace(/:/g, '');
+  return (
+    <svg className={`app-icon ${className}`} viewBox="0 0 60 48" aria-hidden="true">
+      <defs>
+        <linearGradient id={`f${u}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#7cc4f8" />
+          <stop offset="1" stopColor="#4a9fe6" />
+        </linearGradient>
+      </defs>
+      <path d="M4 8a4 4 0 0 1 4-4h14l5 5h25a4 4 0 0 1 4 4v4H4z" fill="#3d8fd8" />
+      <rect x="4" y="13" width="52" height="31" rx="4" fill={`url(#f${u})`} />
+      <rect x="4" y="13" width="52" height="1.5" fill="#a9daff" opacity="0.8" />
     </svg>
   );
 }

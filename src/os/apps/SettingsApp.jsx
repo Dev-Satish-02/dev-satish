@@ -9,8 +9,8 @@ const COLORS = ['#0a84ff', '#30d158', '#ff9f0a', '#bf5af2', '#ff375f'];
 const TOOLS = [...new Set([...EXPERIENCE.flatMap((e) => e.tags), ...PROJECTS.flatMap((p) => p.stack)])];
 
 function Glyph({ id }) {
-  const bg = { wifi: '#0a84ff', bluetooth: '#0a84ff', general: '#8e8e93', about: '#8e8e93', update: '#8e8e93', storage: '#8e8e93' }[id];
-  const ch = { wifi: '◠', bluetooth: 'ᛒ', general: '⚙', about: 'i', update: '↻', storage: '▤' }[id];
+  const bg = { appearance: '#1c1c1e', wifi: '#0a84ff', bluetooth: '#0a84ff', general: '#8e8e93', about: '#8e8e93', update: '#8e8e93', storage: '#8e8e93' }[id];
+  const ch = { appearance: '◐', wifi: '◠', bluetooth: 'ᛒ', general: '⚙', about: 'i', update: '↻', storage: '▤' }[id];
   return (
     <span className="set-glyph" style={{ background: bg }} aria-hidden="true">
       {ch}
@@ -127,16 +127,89 @@ function Wifi() {
 }
 
 function Bluetooth() {
+  const [on, setOn] = useState(true);
   return (
     <>
-      <p className="set-caption">Tools Dev has paired with on real work</p>
-      <Rows rows={TOOLS.map((t) => [t, 'Connected'])} />
+      <ul className="set-rows">
+        <li>
+          <span>Bluetooth</span>
+          <button type="button" className={`set-toggle${on ? ' is-on' : ''}`} aria-pressed={on} aria-label="Bluetooth" onClick={() => setOn(!on)} />
+        </li>
+      </ul>
+      <p className="set-caption">{on ? 'My devices: tools Dev has paired with on real work' : 'Bluetooth is off.'}</p>
+      {on && <Rows rows={TOOLS.map((t) => [t, 'Connected'])} />}
+    </>
+  );
+}
+
+function Account() {
+  return (
+    <>
+      <div className="set-hero">
+        <span className="avatar avatar-xl" aria-hidden="true">
+          DS
+        </span>
+        <h3>{PROFILE.name}</h3>
+        <p>{PROFILE.email}</p>
+      </div>
+      <Rows
+        rows={[
+          ['Name, phone, email', <a key="p" href={PROFILE.phoneHref}>{PROFILE.phone}</a>],
+          ['Sign-in & security', 'Portfolio account'],
+          ['Media & purchases', `${EXPERIENCE.length} internships, ${PROJECTS.length} projects`],
+          ['iCloud', `${EDUCATION.length} degrees in progress`],
+        ]}
+      />
+    </>
+  );
+}
+
+const ACCENTS = [
+  ['Blue', '#0a84ff'],
+  ['Purple', '#bf5af2'],
+  ['Pink', '#ff375f'],
+  ['Orange', '#ff9f0a'],
+  ['Green', '#30d158'],
+  ['Graphite', '#8e8e93'],
+];
+
+function Appearance() {
+  const [accent, setAccent] = useState(() => getComputedStyle(document.documentElement).getPropertyValue('--blue').trim());
+  const pick = (c) => {
+    document.documentElement.style.setProperty('--blue', c);
+    setAccent(c);
+  };
+  return (
+    <>
+      <ul className="set-rows">
+        <li>
+          <span>Appearance</span>
+          <span className="set-val">Dark</span>
+        </li>
+      </ul>
+      <p className="set-caption">Accent colour</p>
+      <div className="set-accents" role="radiogroup" aria-label="Accent colour">
+        {ACCENTS.map(([name, c]) => (
+          <button
+            key={name}
+            type="button"
+            role="radio"
+            aria-checked={accent === c}
+            aria-label={name}
+            className={accent === c ? 'is-on' : undefined}
+            style={{ background: c }}
+            onClick={() => pick(c)}
+          />
+        ))}
+      </div>
     </>
   );
 }
 
 const PAGES = {
+  account: { title: 'Account', Body: Account },
   wifi: { title: 'Wi-Fi', Body: Wifi },
+  appearance: { title: 'Appearance', Body: Appearance },
   bluetooth: { title: 'Bluetooth', Body: Bluetooth },
   general: { title: 'General' },
   about: { title: 'About', Body: About, parent: 'general' },
@@ -165,7 +238,7 @@ export default function SettingsApp({ layout, onClose, resume, start }) {
   const [page, setPage] = useState(start || (phone ? null : 'general'));
   const [q, setQ] = useState('');
   const P = page && PAGES[page];
-  const side = ['wifi', 'bluetooth', 'general'].filter((id) => PAGES[id].title.toLowerCase().includes(q.toLowerCase()));
+  const side = ['wifi', 'bluetooth', 'general', 'appearance'].filter((id) => PAGES[id].title.toLowerCase().includes(q.toLowerCase()));
 
   const pane = P && (
     <div className="set-pane">
@@ -199,13 +272,13 @@ export default function SettingsApp({ layout, onClose, resume, start }) {
         <SearchGlyph />
         <input type="search" placeholder="Search" aria-label="Search settings" value={q} onChange={(e) => setQ(e.target.value)} />
       </label>
-      <button type="button" className={`set-account${page === 'about' ? ' is-current' : ''}`} onClick={() => setPage('about')}>
+      <button type="button" className={`set-account${page === 'account' ? ' is-current' : ''}`} onClick={() => setPage('account')}>
         <span className="avatar" aria-hidden="true">
           DS
         </span>
         <span>
           <strong>{PROFILE.name}</strong>
-          <span>Portfolio account</span>
+          <span>Account</span>
         </span>
       </button>
       <ul className="set-side-list">
