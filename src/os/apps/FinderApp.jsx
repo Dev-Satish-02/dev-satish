@@ -13,7 +13,7 @@ const SIDEBAR = [
 ];
 const TAG = { Portfolio: '#0a84ff', Important: '#ff453a', Ideas: '#ffd60a' };
 const GLYPH = { Recents: '🕘', Applications: '🅰︎', Desktop: '🖥', Documents: '📄', Downloads: '⬇︎', 'iCloud Drive': '☁︎', [HOME]: '⌂', AirDrop: '◎', Bin: '🗑' };
-const APP_ICON = { weather: 'weather', github: 'github', linkedin: 'linkedin', twitter: 'twitter' };
+const APP_ICON = { spotify: 'spotify', weather: 'weather', github: 'github', linkedin: 'linkedin', twitter: 'twitter' };
 
 function ItemIcon({ item }) {
   if (item.type === 'dir') return <Folder />;

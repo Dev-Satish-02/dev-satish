@@ -1,5 +1,5 @@
 import { useId } from 'react';
-import { siApple, siClaude, siGithub, siX } from 'simple-icons';
+import { siApple, siClaude, siGithub, siSpotify, siX } from 'simple-icons';
 
 /* App icons. The Mac's own apps use their real icons (public/icons, taken from PuruVJ/macos-web);
    everything else is a tile drawn to the same Big Sur proportions, with brand marks from
@@ -40,6 +40,8 @@ const TILES = {
   settings: ['#a4a4ab', '#5d5d64'],
   trash: ['#e8e9ec', '#b9bcc3'],
   weather: ['#4aa3ff', '#1c5fd6'],
+  spotify: ['#1f1f1f', '#0a0a0a'],
+  calendar: ['#ffffff', '#f2f2f2'],
   resume: ['#f4f5f7', '#d9dce2'],
   readme: ['#f4f5f7', '#d9dce2'],
 };
@@ -133,6 +135,8 @@ function Glyph({ id }) {
       return <Mark icon={siX} size={26} />;
     case 'claude':
       return <Mark icon={siClaude} size={32} />;
+    case 'spotify':
+      return <path transform="translate(14 14) scale(1.333)" d={siSpotify.path} fill="#1ed760" />;
     case 'weather':
       return (
         <>
