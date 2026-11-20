@@ -15,6 +15,10 @@ const TILES = {
   github: ['#3b3f46', '#16181c'],
   linkedin: ['#2f8fe0', '#0a62c2'],
   twitter: ['#2a2a2a', '#000000'],
+  finder: ['#6fc3ff', '#1e7bf0'],
+  ask: ['#ff8a5c', '#c4386a'],
+  settings: ['#a4a4ab', '#5d5d64'],
+  trash: ['#e8e9ec', '#b9bcc3'],
   resume: ['#f4f5f7', '#d9dce2'],
   readme: ['#f4f5f7', '#d9dce2'],
 };
@@ -118,6 +122,43 @@ function Glyph({ id }) {
           d="M18.2 2.2h3.4l-7.4 8.5L23 21.8h-6.8l-5.3-7-6.1 7H1.4l7.9-9L1 2.2h7l4.8 6.4zm-1.2 17.6h1.9L7.1 4.1H5.1z"
         />
       );
+    case 'finder':
+      return (
+        <>
+          <rect x="30" y="0" width="30" height="60" fill="#e9f4ff" />
+          <path d="M30 0c-3 12-4 22-2 32h5c-1 9 0 18 2 28" stroke="#1d3d66" strokeWidth="2" fill="none" />
+          <rect x="17" y="18" width="3.5" height="8" rx="1.7" fill="#1d3d66" />
+          <rect x="39" y="18" width="3.5" height="8" rx="1.7" fill="#1d3d66" />
+          <path d="M15 40c8 6 22 6 30 0" stroke="#1d3d66" strokeWidth="2.4" fill="none" strokeLinecap="round" />
+        </>
+      );
+    case 'ask':
+      return (
+        <>
+          <path d="M30 11l4.2 11.8L46 27l-11.8 4.2L30 43l-4.2-11.8L14 27l11.8-4.2z" fill="#fff" />
+          <path d="M44 38l1.8 4.2L50 44l-4.2 1.8L44 50l-1.8-4.2L38 44l4.2-1.8z" fill="#fff" opacity="0.85" />
+        </>
+      );
+    case 'settings':
+      return (
+        <>
+          <circle cx="30" cy="30" r="17" fill="none" stroke="#e9e9ee" strokeWidth="6" strokeDasharray="4.2 4.7" />
+          <circle cx="30" cy="30" r="12" fill="#d1d1d6" />
+          <circle cx="30" cy="30" r="5" fill="#5d5d64" />
+          <path d="M30 18v24M18 30h24M21.5 21.5l17 17M38.5 21.5l-17 17" stroke="#8e8e93" strokeWidth="1.6" />
+          <circle cx="30" cy="30" r="5" fill="#5d5d64" />
+        </>
+      );
+    case 'trash':
+      return (
+        <>
+          <rect x="14" y="13" width="32" height="5" rx="2" fill="#8d9098" />
+          <path d="M17 20h26l-2.5 30a3 3 0 0 1-3 2.8h-15a3 3 0 0 1-3-2.8z" fill="#f7f8fa" stroke="#9da0a8" strokeWidth="1.2" />
+          {[24, 30, 36].map((x) => (
+            <line key={x} x1={x} x2={x} y1="25" y2="47" stroke="#b9bcc3" strokeWidth="1.6" />
+          ))}
+        </>
+      );
     case 'resume':
     case 'readme':
       return (
@@ -139,7 +180,7 @@ function Glyph({ id }) {
 
 export function AppIcon({ id, className = '' }) {
   const [a, b] = TILES[id] || TILES.notes;
-  const doc = id === 'resume' || id === 'readme';
+  const doc = id === 'resume' || id === 'readme' || id === 'trash';
   const u = useId().replace(/:/g, '');
   return (
     <svg className={`app-icon ${className}`} viewBox="0 0 60 60" aria-hidden="true">
@@ -209,6 +250,43 @@ export function Compose() {
     <svg viewBox="0 0 20 20" className="sb-glyph" aria-hidden="true">
       <path d="M15 3.5l1.5 1.5-7.8 7.8-2.2.7.7-2.2z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
       <path d="M16 11v5.2a.8.8 0 0 1-.8.8H3.8a.8.8 0 0 1-.8-.8V4.8a.8.8 0 0 1 .8-.8H9" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function Sound() {
+  return (
+    <svg viewBox="0 0 18 14" className="sb-glyph" aria-hidden="true">
+      <path d="M1 5h3l4-3.5v11L4 9H1z" fill="currentColor" />
+      <path d="M11 4.2a4 4 0 0 1 0 5.6M13.4 2a7 7 0 0 1 0 10" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function Mirror() {
+  return (
+    <svg viewBox="0 0 18 14" className="sb-glyph" aria-hidden="true">
+      <rect x="1" y="1" width="16" height="10" rx="1.6" fill="none" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M5.5 13.5L9 9.5l3.5 4z" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function Bluetooth() {
+  return (
+    <svg viewBox="0 0 10 16" className="sb-glyph" aria-hidden="true">
+      <path d="M1.5 4.5l7 6.5L5 14.5V1.5L8.5 5l-7 6.5" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinejoin="round" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function ControlCentre() {
+  return (
+    <svg viewBox="0 0 18 14" className="sb-glyph" aria-hidden="true">
+      <rect x="1" y="1" width="16" height="5" rx="2.5" fill="none" stroke="currentColor" strokeWidth="1.4" />
+      <circle cx="4" cy="3.5" r="1.6" fill="currentColor" />
+      <rect x="1" y="8" width="16" height="5" rx="2.5" fill="none" stroke="currentColor" strokeWidth="1.4" />
+      <circle cx="14" cy="10.5" r="1.6" fill="currentColor" />
     </svg>
   );
 }

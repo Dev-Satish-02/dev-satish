@@ -5,7 +5,8 @@ import { AppIcon, Battery, SearchGlyph, Signal, Wifi } from './icons';
 import Wallpaper from './Wallpaper';
 import NotesApp from './apps/NotesApp';
 import MessagesApp from './apps/MessagesApp';
-import TerminalApp from './apps/TerminalApp';
+import AskApp from './apps/AskApp';
+import SettingsApp from './apps/SettingsApp';
 
 /* On a phone the desk becomes an iPhone: a home screen of apps, each opening full screen out of
    its icon, with the home bar to go back. */
@@ -65,11 +66,12 @@ export default function Phone({ noteId, openNote, resume, startApp }) {
   const grid = [
     { id: 'notes', label: 'Notes', go: (e) => launch(e, 'notes', null) },
     { id: 'messages', label: 'Messages', go: (e) => launch(e, 'messages') },
-    { id: 'terminal', label: 'Terminal', go: (e) => launch(e, 'terminal') },
+    { id: 'ask', label: 'Ask', go: (e) => launch(e, 'ask') },
     { id: 'experience', label: 'Experience', go: (e) => launch(e, 'notes', 'experience') },
     { id: 'projects', label: 'Projects', go: (e) => launch(e, 'notes', 'projects') },
     { id: 'skills', label: 'Skills', go: (e) => launch(e, 'notes', 'skills') },
     { id: 'writing', label: 'Writing', go: (e) => launch(e, 'notes', firstPost) },
+    { id: 'settings', label: 'Settings', go: (e) => launch(e, 'settings') },
     ...(resume ? [{ id: 'resume', label: 'Résumé', href: resume, external: true }] : []),
     ...SOCIALS.map((s) => ({ id: s.label.toLowerCase(), label: s.label, href: s.href, external: true })),
   ];
@@ -150,24 +152,15 @@ export default function Phone({ noteId, openNote, resume, startApp }) {
           style={{ transformOrigin: origin }}
           role="dialog"
           aria-modal="true"
-          aria-label={app === 'notes' ? 'Notes' : app === 'messages' ? 'Messages' : 'Terminal'}
+          aria-label={{ notes: 'Notes', messages: 'Messages', ask: 'Ask', settings: 'Settings' }[app]}
           onKeyDown={(e) => e.key === 'Escape' && home()}
         >
           {app === 'notes' && (
             <NotesApp layout="phone" noteId={noteId} onOpen={openNote} onClose={home} resume={resume} searchFirst={searchFirst} />
           )}
           {app === 'messages' && <MessagesApp layout="phone" onClose={home} />}
-          {app === 'terminal' && (
-            <TerminalApp
-              layout="phone"
-              onClose={home}
-              openNote={(id) => {
-                openNote(id);
-                setApp('notes');
-              }}
-              openApp={(a) => setApp(a)}
-            />
-          )}
+          {app === 'ask' && <AskApp layout="phone" onClose={home} />}
+          {app === 'settings' && <SettingsApp layout="phone" onClose={home} resume={resume} />}
         </div>
       )}
 
