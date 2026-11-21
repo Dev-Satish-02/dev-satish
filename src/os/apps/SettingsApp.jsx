@@ -6,7 +6,7 @@ import { SearchGlyph } from '../icons';
    his latest role, Storage his skills, Wi-Fi his profiles, Bluetooth the tools he pairs with. */
 
 const COLORS = ['#0a84ff', '#30d158', '#ff9f0a', '#bf5af2', '#ff375f'];
-const TOOLS = [...new Set([...EXPERIENCE.flatMap((e) => e.tags), ...PROJECTS.flatMap((p) => p.stack)])];
+const TOOLS = SKILL_GROUPS.filter((g) => g.title === 'Engineering' || g.title === 'Data & analysis').flatMap((g) => g.items);
 
 function Glyph({ id }) {
   const bg = { appearance: '#1c1c1e', wifi: '#0a84ff', bluetooth: '#0a84ff', general: '#8e8e93', about: '#8e8e93', update: '#8e8e93', storage: '#8e8e93' }[id];
@@ -136,7 +136,7 @@ function Bluetooth() {
           <button type="button" className={`set-toggle${on ? ' is-on' : ''}`} aria-pressed={on} aria-label="Bluetooth" onClick={() => setOn(!on)} />
         </li>
       </ul>
-      <p className="set-caption">{on ? 'My devices: tools Dev has paired with on real work' : 'Bluetooth is off.'}</p>
+      <p className="set-caption">{on ? 'My devices: the tools Dev works with' : 'Bluetooth is off.'}</p>
       {on && <Rows rows={TOOLS.map((t) => [t, 'Connected'])} />}
     </>
   );
@@ -261,8 +261,8 @@ export default function SettingsApp({ layout, onClose, resume, start }) {
       {phone && (
         <>
           <div className="ph-nav">
-            <button type="button" className="ph-back" onClick={onClose}>
-              <span aria-hidden="true">‹</span> Home
+            <button type="button" className="ph-back" onClick={onClose} aria-label="Back">
+              <span aria-hidden="true">‹</span>
             </button>
           </div>
           <h1 className="ph-large-title">Settings</h1>

@@ -1,6 +1,6 @@
 import { siClaude } from 'simple-icons';
 import { useEffect, useRef, useState } from 'react';
-import { EDUCATION, EXPERIENCE, PROFILE, PROJECTS, SKILL_GROUPS, SOCIALS } from '../../data/content';
+import { ACHIEVEMENTS, EDUCATION, EXPERIENCE, POSITIONS, PROFILE, PROJECTS, SKILL_GROUPS, SOCIALS } from '../../data/content';
 import { getAllPosts } from '../../lib/blog';
 
 
@@ -16,7 +16,8 @@ const ANSWERS = [
   {
     keys: ['hire', 'why', 'good', 'fit', 'strength', 'best'],
     text: () =>
-      `Three reasons. He ships: a campus mess portal that reached ${PROJECTS[0].metric.replace(' in 7 days', '')} in its first week, and Readmebot at ${PROJECTS[1].metric}. He has range: ${EXPERIENCE.length} internships across ${list(EXPERIENCE.map((e) => e.domain.toLowerCase()))}. And he works where product, strategy and engineering meet, so he can decide what to build and then build it.`,
+      `Three reasons. He ships: an AI research workspace at Callistra AI that processes 10,000+ documents and cut analysis time by 40%, and the Yearbook Portal, which reached 80% of his batch and brought in INR 7L+. He has range: AI engineering, plant operations at Aditya Birla Group and a founder's office role at Anitum. And he leads: he coordinates placements for 700+ students and was top 47 of 5k+ in P&G's Spotlight Program.`,
+
   },
   {
     keys: ['built', 'build', 'project', 'made', 'ship', 'portfolio'],
@@ -57,9 +58,12 @@ function profile() {
     `${PROFILE.name}: ${PROFILE.summary} Focus: ${PROFILE.title}. Location: ${PROFILE.location}.`,
     `Education: ${EDUCATION.map((e) => `${e.degree}, ${e.school} (${e.date})`).join('; ')}.`,
     'Experience:',
-    ...EXPERIENCE.map((e) => `- ${e.role}, ${e.company} (${e.domain}), ${e.date}: ${e.bullets.join(' ')} Tools: ${e.tags.join(', ')}.`),
+    ...EXPERIENCE.map((e) => `- ${e.role}, ${e.company} (${e.about}), ${e.date}: ${e.bullets.join(' ')}`),
     'Projects:',
-    ...PROJECTS.map((p) => `- ${p.name} (${p.kind}): ${p.blurb} Result: ${p.metric}. Stack: ${p.stack.join(', ')}.`),
+    ...PROJECTS.map((p) => `- ${p.name} (${p.kind}): ${(p.bullets || [p.blurb]).join(' ')}`),
+    'Positions of responsibility:',
+    ...POSITIONS.map((p) => `- ${p.role}, ${p.company}, ${p.date}: ${p.bullets.join(' ')}`),
+    `Achievements: ${ACHIEVEMENTS.map(([a, b]) => `${a}: ${b}`).join(' ')}`,
     `Skills: ${SKILL_GROUPS.map((g) => `${g.title}: ${g.items.join(', ')}`).join('. ')}.`,
     'Writing:',
     ...posts,
@@ -134,8 +138,8 @@ export default function ClaudeApp({ layout, onClose }) {
     <div className={`ask claude${phone ? ' ph-app ph-ask' : ''}`}>
       {phone ? (
         <div className="ph-nav">
-          <button type="button" className="ph-back" onClick={onClose}>
-            <span aria-hidden="true">‹</span> Home
+          <button type="button" className="ph-back" onClick={onClose} aria-label="Back">
+            <span aria-hidden="true">‹</span>
           </button>
         </div>
       ) : (

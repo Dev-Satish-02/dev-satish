@@ -18,87 +18,130 @@ export const SOCIALS = [
   { label: 'Twitter', href: 'https://twitter.com/devtech08' },
 ];
 
+// From the latest résumé (public/resume.pdf). Most recent first.
 export const EXPERIENCE = [
   {
-    role: 'Python Intern',
-    company: 'Sysstra',
-    date: 'Jul 2025 to Nov 2025',
-    domain: 'Fintech',
+    role: 'AI Engineering Intern',
+    company: 'Callistra AI',
+    date: 'Mar 2026 to Aug 2026',
+    domain: 'Financial AI',
+    about: 'AI-native research workspace helping public-market financial analysts evaluate companies faster',
+    logo: null,
     bullets: [
-      'Built dividend-based trading strategies that rebalance portfolios systematically.',
-      'Designed the data pipeline (Redis, AWS S3) behind high-frequency analysis, cutting its latency.',
+      'Spearheaded an AI research workspace for financial analysts, processing 10,000+ documents and cutting analysis time by 40%.',
+      'Translated analyst workflows into real-time product features with sub-500 ms responses, accelerating analyst research decisions.',
+      'Automated event-driven document and notebook workflows, removing manual hand-offs and improving responsiveness for users.',
     ],
-    tags: ['Python', 'Redis', 'AWS S3'],
+    tags: [],
   },
   {
-    role: 'Machine Learning Intern',
+    role: 'Operations Intern',
     company: 'Aditya Birla Group',
     date: 'May 2025 to Jul 2025',
     domain: 'Manufacturing',
+    about: '60B+ global conglomerate operating across 40+ countries and multiple industries',
+    logo: 'images/logos/aditya-birla.png',
     bullets: [
-      'Deployed a corrosion-detection model, trained on 4,000+ images, that flags pipe defects from live camera feeds.',
-      'Built a browser app for pipe detection and predictive fouling analysis.',
+      'Optimized sulphuric acid plant operations by analyzing 10+ KPIs and driving process changes, cutting energy use by 10%.',
+      'Evaluated crystallization and MSFE configurations to boost throughput and system reliability, sustaining 98–99% recovery rates.',
+      'Championed fouling management improvements, saving about 100 m³ of water a day and raising equipment uptime across the plant.',
     ],
-    tags: ['TensorFlow.js', 'Python', 'OpenCV'],
+    tags: [],
   },
   {
-    role: 'Web Development Intern',
-    company: 'GPLAN',
-    date: 'Jan 2025 to Mar 2025',
-    domain: 'Architecture software',
-    bullets: [
-      'Built an architectural layout tool that generates floor plans using graph theory.',
-      'Designed its interactive interface for real-time layout visualisation.',
-    ],
-    tags: ['React', 'D3.js', 'Redux'],
-  },
-  {
-    role: 'Software Development Intern',
+    role: "Founder's Office",
     company: 'Anitum',
     date: 'Dec 2024 to Jan 2025',
-    domain: 'Business software',
+    domain: 'Applied AI',
+    about: 'AI-driven intelligence platform transforming workplaces with real-time analytics, reducing inefficiencies',
+    logo: null,
     bullets: [
-      'Delivered ERP systems for education and manufacturing clients.',
-      'Added computer-vision features to client dashboards.',
+      'Accelerated issue identification and response by 20–30% across multi-industry client deployments by streamlining operations.',
+      'Defined the product, turning live operational data into actionable insights that guided decisions across 4+ client deployments.',
+      'Drove product adoption by aligning engineering teams and client stakeholders, improving throughput across operational settings.',
     ],
-    tags: ['Flask', 'SQLite', 'Chart.js'],
+    tags: [],
+  },
+];
+
+export const POSITIONS = [
+  {
+    role: 'Coordinator',
+    company: 'Placement Unit, BITS Pilani',
+    date: 'Nov 2025 to Present',
+    about: 'A student-led body overseeing campus recruitment, acting as interface between the institute and recruiters',
+    logo: 'images/logos/bits.png',
+    bullets: [
+      'Orchestrated campus placements for 700+ students by coordinating institute stakeholders and engaging 50+ hiring companies.',
+      'Built PU Outreach, an AI tool that auto-logs leads and drafts pitch emails, cutting per-company time from 2.25 min to 10s.',
+      'Supervised 80+ recruitment drives end-to-end, ensuring seamless execution for top firms such as P&G, KPMG and Deloitte.',
+    ],
+  },
+  {
+    role: 'Events & Outreach Head',
+    company: 'Alumni Relations Cell, BITS Pilani',
+    date: 'Apr 2025 to Present',
+    about: "The institute's official organization fostering long-term student–alumni networks",
+    logo: 'images/logos/bits.png',
+    bullets: [
+      'Spearheaded alumni engagement by hosting on-campus talks with 50+ alumni, building mentorship access for 1,000+ students.',
+      'Led the launch of the Yearbook Portal & TagYourSnap, driving 700+ snaps and enabling interaction across 80%+ of the batch.',
+      'Executed Batch Snaps, a flagship 2-day event, coordinating 500+ students and 50+ faculty with the Alumni Relations office.',
+    ],
+  },
+  {
+    role: 'Project Lead',
+    company: 'Nirmaan Organization',
+    date: 'Dec 2024 to Jul 2025',
+    about: 'NGO focused on community development through education, and women empowerment',
+    logo: 'images/logos/nirmaan.png',
+    bullets: [
+      'Mobilized 30+ volunteers across 11+ projects, optimizing resource allocation for streamlined execution and on-time delivery.',
+      'Spearheaded 25+ community initiatives, mobilizing volunteers and raising 1M+ in funds to benefit 500+ underserved people.',
+      'Introduced a data-driven volunteer certification from field visits, strengthening accountability and clarifying performance metrics.',
+    ],
   },
 ];
 
 // Links set to null are hidden. Fill them in when you have them.
 export const PROJECTS = [
   {
-    name: 'BITS Mess Portal',
-    kind: 'Campus product',
-    blurb: 'Menus, ratings and feedback for the BITS Pilani mess, launched to the whole campus.',
-    metric: '2,000+ users in 7 days',
-    stack: ['React', 'REST API'],
+    name: 'The Yearbook',
+    kind: 'A Yearbook Portal to digitize submissions and streamline creation of the final physical yearbook',
+    blurb: 'Led the Yearbook Portal launch, onboarding 80% of the batch and generating INR 7L+ in revenue by digitizing submissions.',
+    metric: 'INR 7L+ revenue, 9,000+ quotes',
+    bullets: [
+      'Led the Yearbook Portal launch, onboarding 80% of the batch and generating INR 7L+ in revenue by digitizing submissions.',
+      'Doubled engagement (2×) in just one week by shipping new interactive features prioritized through rapid user feedback loops.',
+      'Cut manual effort by 90%+ and scaled adoption to 9,000+ quotes through digitized workflows and targeted student outreach.',
+    ],
+    stack: [],
     links: [],
   },
   {
-    name: 'Readmebot',
-    kind: 'Developer tool',
-    blurb: 'A command-line tool that reads a codebase and writes its README with GPT-4, in under a second.',
-    metric: '500+ downloads / week',
-    stack: ['Node.js', 'OpenAI'],
-    links: [{ label: 'npm', href: 'https://www.npmjs.com/package/readmebot' }],
-  },
-  {
-    name: 'Yearbook Portal',
-    kind: 'Community product',
-    blurb: 'An online yearbook for a graduating class: profiles, messages and memories in one place.',
-    metric: 'Live',
-    stack: ['PostgreSQL', 'Express', 'React', 'Node.js'],
+    name: 'College Merchandise',
+    kind: 'Campus apparel for large-scale fests',
+    blurb: 'Drove merchandise sales across campus fests such as OASIS, securing 1,200+ orders and generating INR 1.5L+ in revenue.',
+    metric: '1,200+ orders, INR 1.5L+ revenue',
+    bullets: [
+      'Drove merchandise sales across campus fests such as OASIS, securing 1,200+ orders and generating INR 1.5L+ in revenue.',
+      'Optimized demand planning and inventory allocation using student insights, achieving high sell-through across peak fest cycles.',
+      'Owned the end-to-end supply chain across sourcing, production and distribution, ensuring timely delivery and quality standards.',
+    ],
+    stack: [],
     links: [],
   },
-  {
-    name: 'Nirmaan NGO',
-    kind: 'Non-profit website',
-    blurb: 'Digital outreach site for Nirmaan, a student-run NGO.',
-    metric: 'Shipped to production',
-    stack: ['Angular', 'TypeScript', 'Tailwind'],
-    links: [],
-  },
+];
+
+// The npm package GitHub's Packages tab shows, with live download counts.
+export const PACKAGES = [{ name: 'readmebot', repo: 'readmebot' }];
+
+export const ACHIEVEMENTS = [
+  ['Procter & Gamble', 'Top 47 among 5k+ students across India for the P&G Spotlight Program; offered a summer internship.'],
+  ['Siemens', 'Top 10 at BITS Pilani in the AI for the Real World Hackathon; invited to Siemens Innovation Day 2026, New Delhi.'],
+  ['Student Faculty Council', 'Built a feedback system, drove policy improvements and increased student–faculty engagement by 40%.'],
+  ['Team Robocon', 'Won the 20K Maze-Solving Competition, building drones, a quadruped and IoT systems while leading tech initiatives.'],
+  ['CEL, Bedrock', 'Third in Bedrock, a one-day marketing event, with a 500% increase in sales revenue (Rs. 70,000).'],
 ];
 
 export const EDUCATION = [

@@ -3096,6 +3096,217 @@ button.status-row:hover {
   -webkit-backdrop-filter: blur(28px) saturate(1.6);
 }
 
+/* GitHub: tabs that work, no scrollbars, and the extra tabs' content */
+.social-github .social-scroll,
+.gh-tabs,
+.gh-graph {
+  scrollbar-width: none;
+}
+.social-github .social-scroll::-webkit-scrollbar,
+.gh-tabs::-webkit-scrollbar,
+.gh-graph::-webkit-scrollbar {
+  display: none;
+}
+.gh-tabs button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px 10px;
+  border-radius: 6px 6px 0 0;
+  color: #e6edf3;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.gh-tabs button:hover {
+  background: rgba(177, 186, 196, 0.08);
+}
+.gh-tabs button.is-on {
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 #f78166;
+}
+.gh-tabs .gh-back {
+  width: 32px;
+  justify-content: center;
+  font-size: 22px;
+  line-height: 1;
+  color: #8d96a0;
+}
+.gh-tabs .gh-back:disabled {
+  opacity: 0.35;
+  cursor: default;
+  background: none;
+}
+.gh-find {
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #30363d;
+  background: #0d1117;
+  color: #e6edf3;
+  font: inherit;
+  font-size: 14px;
+  outline: 0;
+}
+.gh-find:focus {
+  border-color: #4493f8;
+}
+.gh-repo-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.gh-repo-list li {
+  padding: 18px 0;
+  border-bottom: 1px solid #30363d;
+}
+.gh-repo-list li:first-child {
+  padding-top: 4px;
+}
+.gh-repo-list .gh-repo-top a {
+  font-size: 18px;
+}
+.gh-repo-list p {
+  margin: 6px 0 0;
+  color: #8d96a0;
+  font-size: 13.5px;
+}
+.gh-repo-list .gh-meta {
+  gap: 16px;
+  font-size: 12px;
+}
+.gh-repo-list .gh-meta a {
+  color: #8d96a0;
+}
+.gh-tab-lede {
+  margin: 0 0 12px;
+}
+.gh-projects {
+  display: grid;
+  gap: 14px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+.gh-projects .gh-box {
+  padding: 16px 18px;
+}
+.gh-projects strong {
+  font-size: 16px;
+}
+.gh-project-kind {
+  margin: 4px 0 8px;
+  color: #8d96a0;
+  font-size: 13px;
+}
+.gh-projects ul {
+  margin: 0;
+  padding-left: 1.2em;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+.gh-inline {
+  display: inline-block;
+  padding: 5px 16px;
+}
+.gh-npm {
+  padding: 0 5px;
+  border-radius: 3px;
+  background: #cb3837;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  vertical-align: 2px;
+}
+.gh-activity {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+.gh-activity > div {
+  flex: 1 1 240px;
+}
+.gh-activity h3 {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.gh-activity-repos {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #e6edf3;
+}
+.gh-activity-repos a {
+  color: #4493f8;
+  font-weight: 600;
+}
+.gh-activity-chart {
+  flex: none;
+  width: 240px;
+  height: 240px;
+}
+.gh-activity-chart line {
+  stroke: #2ea043;
+  stroke-width: 2;
+}
+.gh-activity-chart polygon {
+  fill: rgba(46, 160, 67, 0.35);
+  stroke: #56d364;
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.gh-activity-chart circle {
+  fill: #0d1117;
+  stroke: #56d364;
+  stroke-width: 2;
+}
+.gh-activity-chart text {
+  fill: #8d96a0;
+  font-size: 10px;
+}
+
+/* LinkedIn logos and positions */
+.li-logo-img {
+  object-fit: contain;
+  background: #fff;
+  padding: 3px;
+}
+.li-about {
+  margin: 4px 0 0 !important;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+}
+
+/* Notes: résumé download and role groups */
+.note-resume {
+  display: inline-block;
+  margin: 4px 0 14px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: var(--notes);
+  color: #1c1c1e !important;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none !important;
+}
+.note-group {
+  margin-top: 30px !important;
+  color: var(--muted) !important;
+  font-size: 13px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.note-about {
+  margin: 2px 0 8px !important;
+  color: var(--muted);
+  font-size: 13.5px;
+  font-style: italic;
+}
+
 /* profiles on a phone */
 .ph-social {
   display: flex;
@@ -3431,6 +3642,9 @@ button.status-row:hover {
 .ph-back {
   display: flex;
   align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
   gap: 2px;
   color: var(--notes);
   font-size: 17px;

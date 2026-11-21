@@ -63,8 +63,8 @@ export default function SpotifyApp({ layout, onClose }) {
     return (
       <div className="ph-app ph-spotify sp">
         <div className="ph-nav">
-          <button type="button" className="ph-back" onClick={playing ? () => setPick(null) : onClose}>
-            <span aria-hidden="true">‹</span> {playing ? 'Playlists' : 'Home'}
+          <button type="button" className="ph-back" onClick={playing ? () => setPick(null) : onClose} aria-label="Back">
+            <span aria-hidden="true">‹</span>
           </button>
         </div>
         {playing ? (

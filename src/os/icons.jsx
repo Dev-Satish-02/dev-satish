@@ -40,6 +40,7 @@ const TILES = {
   settings: ['#a4a4ab', '#5d5d64'],
   trash: ['#e8e9ec', '#b9bcc3'],
   weather: ['#4aa3ff', '#1c5fd6'],
+  cv: ['#ff6b5e', '#e5302a'],
   spotify: ['#1f1f1f', '#0a0a0a'],
   calendar: ['#ffffff', '#f2f2f2'],
   resume: ['#f4f5f7', '#d9dce2'],
@@ -137,6 +138,15 @@ function Glyph({ id }) {
       return <Mark icon={siClaude} size={32} />;
     case 'spotify':
       return <path transform="translate(14 14) scale(1.333)" d={siSpotify.path} fill="#1ed760" />;
+    case 'cv':
+      // the résumé as an app: a page with a download arrow
+      return (
+        <>
+          <path d="M19 11h16l8 8v28a2 2 0 0 1-2 2H19a2 2 0 0 1-2-2V13a2 2 0 0 1 2-2z" fill="#fff" />
+          <path d="M35 11v8h8" fill="#ffd1cc" />
+          <path d="M30 23v15M24 33l6 6 6-6" stroke="#e5302a" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        </>
+      );
     case 'weather':
       return (
         <>

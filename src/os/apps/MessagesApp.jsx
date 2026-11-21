@@ -22,7 +22,7 @@ const THREADS = [
     time: 'now',
     messages: [
       'hey, thanks for stopping by 👋',
-      "I'm Dev. I study at BITS Pilani and build products: a mess portal 2,000 students used in its first week, and a README generator with 500+ downloads a week.",
+      "I'm Dev. I study at BITS Pilani; most recently I built an AI research workspace at Callistra AI that processes 10,000+ documents, and on campus I launched the Yearbook Portal (INR 7L+ in revenue).",
       "if you're hiring for product, strategy or engineering, or just want to talk, send me a message here.",
     ],
   },
@@ -33,7 +33,7 @@ const THREADS = [
     pinned: e === EXPERIENCE[0],
     time: e.date.split(' to ')[1] || e.date,
     about: `${e.role}, ${e.date}`,
-    messages: [`quick recap of my time at ${e.company}, as ${e.role} 👇`, ...e.bullets, `tools: ${e.tags.join(', ')}`],
+    messages: [`quick recap of my time at ${e.company}, as ${e.role} 👇`, ...e.bullets],
   })),
   ...PROJECTS.map((p) => ({
     id: p.name,
@@ -41,8 +41,8 @@ const THREADS = [
     short: p.name.replace(/^BITS /, '').split(' ')[0],
     pinned: p === PROJECTS[0],
     time: p.metric,
-    about: p.kind,
-    messages: [p.blurb, `${p.metric} ✨`, `built with ${p.stack.join(', ')}`, ...p.links.map((l) => `${l.label}: ${l.href}`)],
+    about: p.metric,
+    messages: [`${p.name}: ${p.kind.toLowerCase()} 👇`, ...(p.bullets || [p.blurb]), ...p.links.map((l) => `${l.label}: ${l.href}`)],
   })),
 ];
 
@@ -159,8 +159,8 @@ export default function MessagesApp({ layout, onClose }) {
       {phone && (
         <>
           <div className="ph-nav">
-            <button type="button" className="ph-back" onClick={onClose}>
-              <span aria-hidden="true">‹</span> Home
+            <button type="button" className="ph-back" onClick={onClose} aria-label="Back">
+              <span aria-hidden="true">‹</span>
             </button>
           </div>
           <h1 className="ph-large-title">Messages</h1>
