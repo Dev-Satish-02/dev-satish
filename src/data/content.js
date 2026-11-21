@@ -35,6 +35,19 @@ export const EXPERIENCE = [
     tags: [],
   },
   {
+    role: 'Python Intern',
+    company: 'Sysstra',
+    date: 'Jul 2025 to Nov 2025',
+    domain: 'Fintech',
+    about: 'Fintech firm building systematic trading strategies',
+    logo: 'images/logos/sysstra.png',
+    bullets: [
+      'Built dividend-based trading strategies that rebalance portfolios systematically.',
+      'Designed the data pipeline (Redis, AWS S3) behind high-frequency analysis, cutting its latency.',
+    ],
+    tags: ['Python', 'Redis', 'AWS S3'],
+  },
+  {
     role: 'Operations Intern',
     company: 'Aditya Birla Group',
     date: 'May 2025 to Jul 2025',

@@ -33,8 +33,8 @@ function About({ open, resume }) {
       </p>
       <p>
         Most recently I was an AI Engineering Intern at Callistra AI, building a research workspace that
-        processes 10,000+ documents for financial analysts. Before that, operations at Aditya Birla Group and
-        the founder&apos;s office at Anitum. On campus I coordinate placements for 700+ students and launched the
+        processes 10,000+ documents for financial analysts. Before that, trading systems in Python at Sysstra,
+        operations at Aditya Birla Group and the founder&apos;s office at Anitum. On campus I coordinate placements for 700+ students and launched the
         Yearbook Portal, which brought in INR 7L+.
       </p>
       <ResumeButton resume={resume} />
