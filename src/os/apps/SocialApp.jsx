@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { marked } from 'marked';
-import { AVATAR, EDUCATION, EXPERIENCE, GITHUB, LINKEDIN, PROFILE, SKILL_GROUPS, SOCIALS, X_PROFILE } from '../../data/content';
+import { ACHIEVEMENTS, AVATAR, EDUCATION, EXPERIENCE, GITHUB, LINKEDIN, PACKAGES, POSITIONS, PROFILE, PROJECTS, SKILL_GROUPS, SOCIALS, X_PROFILE } from '../../data/content';
 import { AppIcon } from '../icons';
 
 /* Dev's profiles, opened as windows on the desk. GitHub is live (its public API allows it); the
@@ -40,11 +40,8 @@ function loadGitHub() {
     api(`/users/${githubUser}/repos?per_page=100&sort=updated`),
     fetch(`https://raw.githubusercontent.com/${githubUser}/${githubUser}/main/README.md`).then((r) => (r.ok ? r.text() : Promise.reject())),
     fetch(`https://github-contributions-api.jogruber.de/v4/${githubUser}?y=last`).then((r) => (r.ok ? r.json() : Promise.reject())),
-    fetch(`https://api.github.com/users/${githubUser}/starred?per_page=1`).then((r) => {
-      const last = (r.headers.get('link') || '').match(/[?&]page=(\d+)>; rel="last"/);
-      return last ? +last[1] : r.ok ? r.json().then((x) => x.length) : Promise.reject();
-    }),
-  ]).then(async ([user, repos, readme, contrib, stars]) => {
+    api(`/users/${githubUser}/events/public?per_page=100`),
+  ]).then(async ([user, repos, readme, contrib, events]) => {
     const all = repos.status === 'fulfilled' ? repos.value : [];
     const pinned = GITHUB.pinned.map((name) => all.find((r) => r.name === name)).filter(Boolean);
     // a fork's card names where it came from, which only the repository's own page says
@@ -52,13 +49,55 @@ function loadGitHub() {
     const parent = Object.fromEntries(forks.filter((f) => f.status === 'fulfilled').map((f) => [f.value.name, f.value.parent?.full_name]));
     return {
       user: user.status === 'fulfilled' ? user.value : null,
+      repos: all.map((r) => ({ ...r, parent: parent[r.name] })),
       pinned: pinned.map((r) => ({ ...r, parent: parent[r.name] })),
       readme: readme.status === 'fulfilled' ? readme.value : null,
       contrib: contrib.status === 'fulfilled' ? contrib.value : null,
-      stars: stars.status === 'fulfilled' ? stars.value : null,
+      activity: events.status === 'fulfilled' ? summarise(events.value) : null,
     };
   });
   return cache;
+}
+
+// the activity overview: which repositories Dev pushed to lately, and how his work splits between
+// commits, issues, pull requests and code review (from GitHub's public events, the last 90 days)
+function summarise(events) {
+  const count = { commits: 0, issues: 0, prs: 0, reviews: 0 };
+  const repos = new Map();
+  for (const e of events) {
+    repos.set(e.repo.name, (repos.get(e.repo.name) || 0) + 1);
+    if (e.type === 'PushEvent') count.commits += e.payload?.size || e.payload?.distinct_size || 1;
+    else if (e.type === 'IssuesEvent' && e.payload?.action === 'opened') count.issues += 1;
+    else if (e.type === 'PullRequestEvent' && e.payload?.action === 'opened') count.prs += 1;
+    else if (e.type === 'PullRequestReviewEvent') count.reviews += 1;
+  }
+  const total = Object.values(count).reduce((a, b) => a + b, 0);
+  if (!total) return null;
+  const pct = Object.fromEntries(Object.entries(count).map(([k, v]) => [k, Math.round((v / total) * 100)]));
+  return { pct, repos: [...repos.entries()].sort((a, b) => b[1] - a[1]).map(([n]) => n) };
+}
+
+let npm;
+function loadPackages() {
+  npm ||= Promise.all(
+    PACKAGES.map((p) =>
+      Promise.allSettled([
+        fetch(`https://registry.npmjs.org/${p.name}`).then((r) => (r.ok ? r.json() : Promise.reject())),
+        fetch(`https://api.npmjs.org/downloads/point/last-week/${p.name}`).then((r) => (r.ok ? r.json() : Promise.reject())),
+      ]).then(([meta, dl]) => {
+        const m = meta.status === 'fulfilled' ? meta.value : {};
+        return {
+          ...p,
+          version: m['dist-tags']?.latest,
+          description: m.description,
+          license: m.license,
+          published: m.time?.[m['dist-tags']?.latest],
+          weekly: dl.status === 'fulfilled' ? dl.value.downloads : null,
+        };
+      })
+    )
+  );
+  return npm;
 }
 
 const LANG = { TypeScript: '#3178c6', JavaScript: '#f1e05a', Python: '#3572a5', CSS: '#663399', HTML: '#e34c26', 'C++': '#f34b7d', Java: '#b07219', Shell: '#89e051' };
@@ -122,9 +161,177 @@ function Contributions({ data }) {
   );
 }
 
+function ActivityChart({ pct }) {
+  // GitHub's cross: code review up, issues right, pull requests down, commits left
+  const r = 70;
+  const pt = (v, dx, dy) => [100 + dx * (8 + (r - 8) * (v / 100)), 100 + dy * (8 + (r - 8) * (v / 100))];
+  const pts = [pt(pct.reviews, 0, -1), pt(pct.issues, 1, 0), pt(pct.prs, 0, 1), pt(pct.commits, -1, 0)];
+  return (
+    <svg className="gh-activity-chart" viewBox="0 0 200 200" role="img" aria-label={`${pct.commits}% commits, ${pct.issues}% issues, ${pct.prs}% pull requests, ${pct.reviews}% code review`}>
+      <line x1="100" y1="22" x2="100" y2="178" />
+      <line x1="22" y1="100" x2="178" y2="100" />
+      <polygon points={pts.map((p) => p.join(',')).join(' ')} />
+      {pts.map(([x, y], i) => (
+        <circle key={i} cx={x} cy={y} r="3" />
+      ))}
+      <text x="100" y="12" textAnchor="middle">{pct.reviews ? `${pct.reviews}% ` : ''}Code review</text>
+      <text x="100" y="196" textAnchor="middle">{pct.prs ? `${pct.prs}% ` : ''}Pull requests</text>
+      <text x="18" y="88" textAnchor="start">{pct.commits}%</text>
+      <text x="18" y="116" textAnchor="start">Commits</text>
+      <text x="182" y="88" textAnchor="end">{pct.issues ? `${pct.issues}%` : ''}</text>
+      <text x="182" y="116" textAnchor="end">Issues</text>
+    </svg>
+  );
+}
+
+function Activity({ activity }) {
+  const [first, ...rest] = activity.repos;
+  const shown = activity.repos.slice(0, 3);
+  return (
+    <section className="gh-box gh-activity">
+      <div>
+        <h3>Activity overview</h3>
+        <p className="gh-activity-repos">
+          <span aria-hidden="true">▤ </span>Contributed to{' '}
+          {shown.map((n, i) => (
+            <span key={n}>
+              <a href={`https://github.com/${n}`} target="_blank" rel="noreferrer">
+                {n}
+              </a>
+              {i < shown.length - 1 ? ', ' : ''}
+            </span>
+          ))}
+          {activity.repos.length > 3 && ` and ${activity.repos.length - 3} other repositories`}
+          {!first && rest.length === 0 && 'no public repositories lately'}
+        </p>
+      </div>
+      <ActivityChart pct={activity.pct} />
+    </section>
+  );
+}
+
+function RepoCard({ r }) {
+  return (
+    <li>
+      <span className="gh-repo-top">
+        <a href={r.html_url} target="_blank" rel="noreferrer">
+          {r.name}
+        </a>
+        <span className="gh-public">Public</span>
+      </span>
+      {r.parent ? <p className="gh-fork">Forked from {r.parent}</p> : r.fork && <p className="gh-fork">Fork</p>}
+      {r.description && <p>{r.description}</p>}
+      <p className="gh-meta">
+        {r.language && (
+          <span>
+            <i className="gh-lang" style={{ background: LANG[r.language] || '#8d96a0' }} /> {r.language}
+          </span>
+        )}
+        {r.stargazers_count > 0 && <span>☆ {r.stargazers_count}</span>}
+        <span>Updated {new Date(r.pushed_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+      </p>
+    </li>
+  );
+}
+
+function Repositories({ repos }) {
+  const [q, setQ] = useState('');
+  const shown = repos.filter((r) => `${r.name} ${r.description || ''}`.toLowerCase().includes(q.toLowerCase()));
+  return (
+    <>
+      <input className="gh-find" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Find a repository…" aria-label="Find a repository" />
+      <ul className="gh-repo-list">
+        {shown.map((r) => (
+          <RepoCard key={r.id} r={r} />
+        ))}
+      </ul>
+      {shown.length === 0 && <p className="social-muted">No repositories match.</p>}
+    </>
+  );
+}
+
+function Projects() {
+  const resume = `${import.meta.env.BASE_URL}${PROFILE.resume}`;
+  return (
+    <>
+      <p className="social-muted gh-tab-lede">From Dev&apos;s latest résumé.</p>
+      <ul className="gh-projects">
+        {PROJECTS.map((p) => (
+          <li key={p.name} className="gh-box">
+            <span className="gh-repo-top">
+              <strong>▦ {p.name}</strong>
+              <span className="gh-public">{p.metric}</span>
+            </span>
+            <p className="gh-project-kind">{p.kind}</p>
+            <ul>
+              {(p.bullets || [p.blurb]).map((b) => (
+                <li key={b}>{b}</li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ul>
+      <a className="gh-follow gh-inline" href={resume} download="Dev_Satish_Resume.pdf">
+        ⬇ Download résumé
+      </a>
+    </>
+  );
+}
+
+function Packages() {
+  const [list, setList] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    loadPackages().then((x) => alive && setList(x));
+    return () => {
+      alive = false;
+    };
+  }, []);
+  if (!list) return <p className="social-muted">Loading packages…</p>;
+  return (
+    <ul className="gh-repo-list">
+      {list.map((p) => (
+        <li key={p.name}>
+          <span className="gh-repo-top">
+            <a href={`https://www.npmjs.com/package/${p.name}`} target="_blank" rel="noreferrer">
+              <span className="gh-npm" aria-hidden="true">npm</span> {p.name}
+            </a>
+            {p.version && <span className="gh-public">v{p.version}</span>}
+          </span>
+          {p.description && <p>{p.description}</p>}
+          <p className="gh-meta">
+            {p.weekly != null && <span>⬇ {p.weekly.toLocaleString()} downloads last week</span>}
+            {p.license && <span>{p.license}</span>}
+            {p.published && <span>Published {new Date(p.published).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>}
+            <a href={`https://github.com/${githubUser}/${p.repo}`} target="_blank" rel="noreferrer">
+              Source
+            </a>
+          </p>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+const GH_TABS = [
+  ['overview', '📖', 'Overview'],
+  ['repositories', '▤', 'Repositories'],
+  ['projects', '▦', 'Projects'],
+  ['packages', '⬡', 'Packages'],
+];
+
 function GitHub() {
   const [data, setData] = useState(null);
   const [failed, setFailed] = useState(false);
+  const [trail, setTrail] = useState(['overview']);
+  const tab = trail[trail.length - 1];
+  const page = useRef(null);
+  const go = (t) => t !== tab && setTrail((x) => [...x, t]);
+  const back = () => setTrail((x) => (x.length > 1 ? x.slice(0, -1) : x));
+  // each tab opens at its top, not wherever the last one was scrolled to
+  useEffect(() => {
+    page.current?.scrollTo(0, 0);
+  }, [tab]);
   useEffect(() => {
     let alive = true;
     loadGitHub()
@@ -139,23 +346,19 @@ function GitHub() {
   return (
     <div className="social social-github">
       <nav className="gh-tabs" aria-label="GitHub profile">
-        <a className="is-on" href={href('GitHub')} target="_blank" rel="noreferrer">
-          📖 Overview
-        </a>
-        <a href={`${href('GitHub')}?tab=repositories`} target="_blank" rel="noreferrer">
-          ▤ Repositories {user && <b>{user.public_repos}</b>}
-        </a>
-        <a href={`${href('GitHub')}?tab=projects`} target="_blank" rel="noreferrer">
-          ▦ Projects
-        </a>
-        <a href={`${href('GitHub')}?tab=packages`} target="_blank" rel="noreferrer">
-          ⬡ Packages
-        </a>
-        <a href={`${href('GitHub')}?tab=stars`} target="_blank" rel="noreferrer">
-          ☆ Stars {data?.stars != null && <b>{data.stars}</b>}
-        </a>
+        <button type="button" className="gh-back" onClick={back} disabled={trail.length < 2} aria-label="Back">
+          ‹
+        </button>
+        {GH_TABS.map(([id, icon, label]) => (
+          <button key={id} type="button" className={id === tab ? 'is-on' : undefined} aria-current={id === tab ? 'page' : undefined} onClick={() => go(id)}>
+            <span aria-hidden="true">{icon}</span> {label}
+            {id === 'repositories' && user && <b>{user.public_repos}</b>}
+            {id === 'projects' && <b>{PROJECTS.length}</b>}
+            {id === 'packages' && <b>{PACKAGES.length}</b>}
+          </button>
+        ))}
       </nav>
-      <div className="social-scroll gh-page">
+      <div className="social-scroll gh-page" ref={page}>
         <aside className="gh-side">
           <Avatar className="gh-avatar" />
           <h2>{user?.name || PROFILE.name}</h2>
@@ -204,47 +407,49 @@ function GitHub() {
           </p>
         </aside>
         <div className="gh-main">
-          {!data && !failed && <p className="social-muted">Loading profile…</p>}
+          {!data && !failed && tab !== 'projects' && tab !== 'packages' && <p className="social-muted">Loading profile…</p>}
           {failed && <p className="social-muted">GitHub didn&apos;t answer just now. The profile is one click away.</p>}
-          {data?.readme && (
-            <div className="gh-box">
-              <p className="gh-box-path">
-                {githubUser} / README<span>.md</span>
-              </p>
-              <Readme text={data.readme} />
-            </div>
-          )}
-          {data?.pinned.length > 0 && (
+          {tab === 'overview' && data && (
             <>
-              <h3 className="gh-section">Popular repositories</h3>
-              <ul className="gh-repos">
-                {data.pinned.map((r) => (
-                  <li key={r.id}>
-                    <span className="gh-repo-top">
-                      <a href={r.html_url} target="_blank" rel="noreferrer">
-                        {r.name}
-                      </a>
-                      <span className="gh-public">Public</span>
-                    </span>
-                    {r.parent && <p className="gh-fork">Forked from {r.parent}</p>}
-                    {r.description && <p>{r.description}</p>}
-                    <p className="gh-meta">
-                      {r.language && (
-                        <span>
-                          <i className="gh-lang" style={{ background: LANG[r.language] || '#8d96a0' }} /> {r.language}
-                        </span>
-                      )}
-                      {r.stargazers_count > 0 && <span>☆ {r.stargazers_count}</span>}
-                    </p>
-                  </li>
-                ))}
-              </ul>
+              {data.readme && (
+                <div className="gh-box">
+                  <p className="gh-box-path">
+                    {githubUser} / README<span>.md</span>
+                  </p>
+                  <Readme text={data.readme} />
+                </div>
+              )}
+              {data.pinned.length > 0 && (
+                <>
+                  <h3 className="gh-section">Popular repositories</h3>
+                  <ul className="gh-repos">
+                    {data.pinned.map((r) => (
+                      <RepoCard key={r.id} r={r} />
+                    ))}
+                  </ul>
+                </>
+              )}
+              {data.contrib && <Contributions data={data.contrib} />}
+              {data.activity && <Activity activity={data.activity} />}
             </>
           )}
-          {data?.contrib && <Contributions data={data.contrib} />}
+          {tab === 'repositories' && data && <Repositories repos={data.repos} />}
+          {tab === 'projects' && <Projects />}
+          {tab === 'packages' && <Packages />}
         </div>
       </div>
     </div>
+  );
+}
+
+// a company's logo where one was found, else a lettered tile like LinkedIn's placeholder
+function Logo({ src, name }) {
+  return src ? (
+    <img className="li-logo li-logo-img" src={`${import.meta.env.BASE_URL}${src}`} alt="" loading="lazy" />
+  ) : (
+    <span className="li-logo" aria-hidden="true">
+      {name[0]}
+    </span>
   );
 }
 
@@ -290,9 +495,7 @@ function LinkedIn() {
                 <p className="li-blue li-strong">{LINKEDIN.connections}</p>
               </div>
               <div className="li-org">
-                <span className="li-logo li-logo-sm" aria-hidden="true">
-                  B
-                </span>
+                <img className="li-logo li-logo-sm li-logo-img" src={`${import.meta.env.BASE_URL}images/logos/bits.png`} alt="" />
                 <strong>{LINKEDIN.school}</strong>
               </div>
             </div>
@@ -310,28 +513,30 @@ function LinkedIn() {
         <section className="li-card li-list">
           <h3>About</h3>
           <p>
-            {PROFILE.summary} I work where product, strategy and engineering meet: {EXPERIENCE.length} internships across{' '}
-            {EXPERIENCE.map((e) => e.domain.toLowerCase()).join(', ')}, and campus products used by thousands of students.
+            {PROFILE.summary} Most recently an AI Engineering Intern at Callistra AI, building a research workspace for
+            financial analysts; before that, operations at Aditya Birla Group and the founder&apos;s office at Anitum. On
+            campus I coordinate placements for 700+ students and lead alumni outreach.
           </p>
         </section>
 
         <section className="li-card li-list">
           <h3>Experience</h3>
-          {EXPERIENCE.map((e) => (
+          {[...EXPERIENCE, ...POSITIONS].map((e) => (
             <div key={e.company} className="li-item">
-              <span className="li-logo" aria-hidden="true">
-                {e.company[0]}
-              </span>
+              <Logo src={e.logo} name={e.company} />
               <div>
                 <strong>{e.role}</strong>
-                <p>{e.company} · Internship</p>
+                <p>
+                  {e.company}
+                  {EXPERIENCE.includes(e) ? ' · Internship' : ''}
+                </p>
                 <p className="social-muted">{e.date}</p>
+                {e.about && <p className="li-about">{e.about}</p>}
                 <ul>
                   {e.bullets.map((b) => (
                     <li key={b}>{b}</li>
                   ))}
                 </ul>
-                <p className="li-skills">◆ {e.tags.join(' · ')}</p>
               </div>
             </div>
           ))}
@@ -341,9 +546,7 @@ function LinkedIn() {
           <h3>Education</h3>
           {EDUCATION.map((e) => (
             <div key={e.degree} className="li-item">
-              <span className="li-logo" aria-hidden="true">
-                B
-              </span>
+              <Logo src="images/logos/bits.png" name="BITS Pilani" />
               <div>
                 <strong>{LINKEDIN.school}</strong>
                 <p>{e.degree}</p>
@@ -369,6 +572,21 @@ function LinkedIn() {
             ))}
           </section>
         )}
+
+        <section className="li-card li-list">
+          <h3>Honors &amp; awards</h3>
+          {ACHIEVEMENTS.map(([who, what]) => (
+            <div key={who} className="li-item">
+              <span className="li-logo" aria-hidden="true">
+                🏆
+              </span>
+              <div>
+                <strong>{who}</strong>
+                <p>{what}</p>
+              </div>
+            </div>
+          ))}
+        </section>
 
         <section className="li-card li-list">
           <h3>Skills</h3>
@@ -473,8 +691,8 @@ export default function SocialApp({ network, layout, onClose }) {
   return (
     <div className={`ph-app ph-social ph-${network}`}>
       <div className="ph-nav">
-        <button type="button" className="ph-back" onClick={onClose}>
-          <span aria-hidden="true">‹</span> Home
+        <button type="button" className="ph-back" onClick={onClose} aria-label="Back">
+          <span aria-hidden="true">‹</span>
         </button>
       </div>
       {body}

@@ -148,8 +148,8 @@ export default function TerminalApp({ layout, onClose, openNote, openApp, openFi
     <div className={`term${layout === 'phone' ? ' ph-app ph-term' : ''}`} onClick={() => field.current?.focus()}>
       {layout === 'phone' && (
         <div className="ph-nav ph-nav--dark">
-          <button type="button" className="ph-back" onClick={onClose}>
-            <span aria-hidden="true">‹</span> Home
+          <button type="button" className="ph-back" onClick={onClose} aria-label="Back">
+            <span aria-hidden="true">‹</span>
           </button>
         </div>
       )}

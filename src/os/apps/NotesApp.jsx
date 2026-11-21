@@ -88,8 +88,8 @@ export default function NotesApp({ layout, noteId, onOpen, onClose, resume, sear
       return (
         <div className="ph-app ph-notes" ref={pane}>
           <div className="ph-nav">
-            <button type="button" className="ph-back" onClick={() => onOpen(null)}>
-              <span aria-hidden="true">‹</span> Notes
+            <button type="button" className="ph-back" onClick={() => onOpen(null)} aria-label="Back to notes">
+              <span aria-hidden="true">‹</span>
             </button>
           </div>
           <NoteBody note={note} onOpen={onOpen} resume={resume} />
@@ -99,8 +99,8 @@ export default function NotesApp({ layout, noteId, onOpen, onClose, resume, sear
     return (
       <div className="ph-app ph-notes" ref={pane}>
         <div className="ph-nav">
-          <button type="button" className="ph-back" onClick={onClose}>
-            <span aria-hidden="true">‹</span> Home
+          <button type="button" className="ph-back" onClick={onClose} aria-label="Back">
+            <span aria-hidden="true">‹</span>
           </button>
         </div>
         <h1 className="ph-large-title">Notes</h1>

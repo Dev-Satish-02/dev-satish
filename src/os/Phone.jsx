@@ -116,19 +116,27 @@ export default function Phone({ noteId, openNote, resume, startApp }) {
     { id: 'writing', label: 'Writing', go: (e) => launch(e, 'notes', firstPost) },
     ...SOCIALS.map((s) => ({ id: s.label.toLowerCase(), label: s.label === 'Twitter' ? 'X' : s.label, go: (e) => launch(e, s.label.toLowerCase()) })),
     { id: 'settings', label: 'Settings', go: (e) => launch(e, 'settings') },
-    ...(resume ? [{ id: 'resume', label: 'Résumé', href: resume, external: true }] : []),
   ];
   const dock = [
     { id: 'phone', label: 'Phone', href: PROFILE.phoneHref },
     { id: 'mail', label: 'Mail', href: `mailto:${PROFILE.email}` },
     { id: 'messages', label: 'Messages', go: (e) => launch(e, 'messages') },
-    { id: 'contacts', label: 'About Dev', go: (e) => launch(e, 'notes', 'about') },
+    resume
+      ? { id: 'cv', label: 'Download résumé', href: resume, download: 'Dev_Satish_Resume.pdf' }
+      : { id: 'contacts', label: 'About Dev', go: (e) => launch(e, 'notes', 'about') },
   ];
 
   // icons carry no visible label, as asked; the name is still there for screen readers
   const icon = (a) =>
     a.href ? (
-      <a key={a.id} className="ph-icon" href={a.href} aria-label={a.label} {...(a.external ? { target: '_blank', rel: 'noreferrer' } : {})}>
+      <a
+        key={a.id}
+        className="ph-icon"
+        href={a.href}
+        aria-label={a.label}
+        download={a.download}
+        {...(a.external ? { target: '_blank', rel: 'noreferrer' } : {})}
+      >
         <AppIcon id={a.id} />
       </a>
     ) : (

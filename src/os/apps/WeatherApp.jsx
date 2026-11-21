@@ -76,8 +76,8 @@ export default function WeatherApp({ layout, onClose }) {
   const phone = layout === 'phone';
   const nav = phone && (
     <div className="ph-nav">
-      <button type="button" className="ph-back" onClick={onClose}>
-        <span aria-hidden="true">‹</span> Home
+      <button type="button" className="ph-back" onClick={onClose} aria-label="Back">
+        <span aria-hidden="true">‹</span>
       </button>
     </div>
   );

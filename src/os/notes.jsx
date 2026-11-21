@@ -1,6 +1,6 @@
 import { MDXProvider } from '@mdx-js/react';
 import MDXComponents from '../components/MDXComponents';
-import { EDUCATION, EXPERIENCE, PROFILE, PROJECTS, SKILL_GROUPS, SOCIALS } from '../data/content';
+import { ACHIEVEMENTS, EDUCATION, EXPERIENCE, POSITIONS, PROFILE, PROJECTS, SKILL_GROUPS, SOCIALS } from '../data/content';
 import { formatDate, getAllPosts } from '../lib/blog';
 
 /* Every section of the portfolio is a note. The desktop's Notes window, the phone's Notes app,
@@ -14,7 +14,17 @@ function Go({ to, open, children }) {
   );
 }
 
-function About({ open }) {
+// the résumé, as a real download a recruiter can save
+export function ResumeButton({ resume, label = 'Download résumé' }) {
+  if (!resume) return null;
+  return (
+    <a className="note-resume" href={resume} download="Dev_Satish_Resume.pdf">
+      ⬇ {label}
+    </a>
+  );
+}
+
+function About({ open, resume }) {
   return (
     <>
       <p>
@@ -22,10 +32,12 @@ function About({ open }) {
         sciences, and I spend most of my time building things for other people to use.
       </p>
       <p>
-        Four internships so far, across fintech, industrial machine learning, architecture software and
-        business tools. On campus I launched a mess portal that 2,000 students used in its first week, and I
-        wrote a README generator that gets 500+ downloads a week.
+        Most recently I was an AI Engineering Intern at Callistra AI, building a research workspace that
+        processes 10,000+ documents for financial analysts. Before that, operations at Aditya Birla Group and
+        the founder&apos;s office at Anitum. On campus I coordinate placements for 700+ students and launched the
+        Yearbook Portal, which brought in INR 7L+.
       </p>
+      <ResumeButton resume={resume} />
       <h3>What I&apos;m after</h3>
       <p>
         Work where product, strategy and engineering meet: figuring out what to build, why it matters, and then
@@ -56,19 +68,21 @@ function About({ open }) {
 function Experience() {
   return (
     <>
-      <p>Four internships, most recent first.</p>
-      {EXPERIENCE.map((e) => (
+      <p>Internships, most recent first, then positions of responsibility.</p>
+      {[...EXPERIENCE, ...POSITIONS].map((e, i) => (
         <section key={e.company} className="note-block">
+          {i === EXPERIENCE.length && <h3 className="note-group">Positions of responsibility</h3>}
           <h3>{e.company}</h3>
           <p className="note-sub">
-            {e.role}, {e.domain.toLowerCase()} <span className="note-when">{e.date}</span>
+            {e.role} <span className="note-when">{e.date}</span>
           </p>
+          {e.about && <p className="note-about">{e.about}</p>}
           <ul>
             {e.bullets.map((b) => (
               <li key={b}>{b}</li>
             ))}
           </ul>
-          <p className="note-tags">{e.tags.map((t) => <span key={t}>{t}</span>)}</p>
+          {e.tags?.length > 0 && <p className="note-tags">{e.tags.map((t) => <span key={t}>{t}</span>)}</p>}
         </section>
       ))}
     </>
@@ -78,7 +92,7 @@ function Experience() {
 function Projects() {
   return (
     <>
-      <p>Things I&apos;ve shipped, and what happened when people used them.</p>
+      <p>From my latest résumé: what I built, and what happened when people used it.</p>
       {PROJECTS.map((p) => (
         <section key={p.name} className="note-block">
           <h3>{p.name}</h3>
@@ -94,8 +108,16 @@ function Projects() {
               decoding="async"
             />
           )}
-          <p>{p.blurb}</p>
-          <p className="note-tags">{p.stack.map((t) => <span key={t}>{t}</span>)}</p>
+          {p.bullets ? (
+            <ul>
+              {p.bullets.map((b) => (
+                <li key={b}>{b}</li>
+              ))}
+            </ul>
+          ) : (
+            <p>{p.blurb}</p>
+          )}
+          {p.stack.length > 0 && <p className="note-tags">{p.stack.map((t) => <span key={t}>{t}</span>)}</p>}
           {p.links.length > 0 && (
             <p>
               {p.links.map((l) => (
@@ -119,6 +141,14 @@ function Skills() {
         {EDUCATION.map((e) => (
           <li key={e.degree}>
             {e.degree}, {e.school}. {e.date}.
+          </li>
+        ))}
+      </ul>
+      <h3>Achievements</h3>
+      <ul>
+        {ACHIEVEMENTS.map(([who, what]) => (
+          <li key={who}>
+            <strong>{who}</strong>: {what}
           </li>
         ))}
       </ul>
@@ -166,12 +196,13 @@ function Contact({ resume }) {
         {resume && (
           <li>
             <span>Résumé</span>
-            <a href={resume} target="_blank" rel="noreferrer">
-              resume.pdf
+            <a href={resume} download="Dev_Satish_Resume.pdf">
+              Dev_Satish_Resume.pdf
             </a>
           </li>
         )}
       </ul>
+      <ResumeButton resume={resume} />
     </>
   );
 }
@@ -206,7 +237,7 @@ export const NOTES = [
     group: 'Work',
     emoji: '💼',
     title: 'Experience',
-    meta: '4 roles',
+    meta: `${EXPERIENCE.length + POSITIONS.length} roles`,
     preview: EXPERIENCE.map((e) => e.company).join(', '),
     Body: Experience,
   },
@@ -215,7 +246,7 @@ export const NOTES = [
     group: 'Work',
     emoji: '🛠️',
     title: 'Projects',
-    meta: `${PROJECTS.length} shipped`,
+    meta: `${PROJECTS.length} projects`,
     preview: PROJECTS.map((p) => p.name).join(', '),
     Body: Projects,
   },
@@ -225,7 +256,7 @@ export const NOTES = [
     emoji: '🎓',
     title: 'Skills & education',
     meta: 'Since 2023',
-    preview: SKILL_GROUPS.map((g) => g.title).join(', '),
+    preview: `BITS Pilani, achievements, ${SKILL_GROUPS.map((g) => g.title).join(', ')}`,
     Body: Skills,
   },
   ...posts.map((p) => ({

@@ -43,7 +43,8 @@ function initialFrames() {
   return {
     notes: { x: 14, y: 44, w: nw, h: nh },
     messages: { x: Math.round(W * 0.535), y: 68, w: Math.min(820, Math.round(W * 0.93 - W * 0.535)), h: Math.round(H * 0.56) },
-    settings: { x: Math.round(W * 0.79), y: Math.round(H * 0.14), w: Math.min(640, Math.round(W * 0.36)), h: Math.round(H * 0.6) },
+    // keeps clear of the desktop icons' column on the right, so read-me and the résumé stay clickable
+    settings: { x: W - 130 - Math.min(560, Math.round(W * 0.34)), y: Math.round(H * 0.14), w: Math.min(560, Math.round(W * 0.34)), h: Math.round(H * 0.6) },
     claude: { x: -8, y: Math.round(H * 0.6), w: Math.round(W * 0.46), h: Math.round(H * 0.4) - 92 },
     finder: { x: Math.round(W * 0.2), y: 120, w: 720, h: 440 },
     terminal: { x: Math.round(W * 0.25), y: 160, w: Math.min(680, W - 160), h: 400 },
@@ -533,6 +534,16 @@ export default function Desktop({ noteId, openNote, resume }) {
     File: [
       item('New Message', () => focus('messages')),
       item('Open read-me.txt', () => openFile({ name: 'read-me.txt', text: README })),
+      ...(resume
+        ? [
+            item('Download Résumé', () => {
+              const a = document.createElement('a');
+              a.href = resume;
+              a.download = 'Dev_Satish_Resume.pdf';
+              a.click();
+            }),
+          ]
+        : []),
       item('Close Window', () => focused && patch(focused, { open: false, zoomed: false })),
     ],
     Edit: [item('Copy Email Address', () => navigator.clipboard?.writeText(PROFILE.email))],
@@ -611,7 +622,7 @@ export default function Desktop({ noteId, openNote, resume }) {
           <span>read-me.txt</span>
         </button>
         {resume && (
-          <a className="desk-icon" href={resume} target="_blank" rel="noreferrer">
+          <a className="desk-icon" href={resume} download="Dev_Satish_Resume.pdf" title="Download résumé">
             <AppIcon id="resume" />
             <span>resume.pdf</span>
           </a>
