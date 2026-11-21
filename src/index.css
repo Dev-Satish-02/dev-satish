@@ -3205,6 +3205,14 @@ button.status-row:hover {
   font-size: 13.5px;
   line-height: 1.55;
 }
+.gh-project-meta {
+  margin-top: 10px !important;
+  color: #8d96a0;
+  font-size: 12.5px;
+}
+.gh-project-meta a {
+  color: #4493f8;
+}
 .gh-inline {
   display: inline-block;
   padding: 5px 16px;
@@ -3274,6 +3282,10 @@ button.status-row:hover {
   object-fit: contain;
   background: #fff;
   padding: 3px;
+}
+.li-logo-word {
+  font-size: 12px;
+  letter-spacing: 0.02em;
 }
 .li-about {
   margin: 4px 0 0 !important;

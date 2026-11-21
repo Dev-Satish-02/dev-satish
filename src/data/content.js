@@ -54,7 +54,7 @@ export const EXPERIENCE = [
     date: 'Dec 2024 to Jan 2025',
     domain: 'Applied AI',
     about: 'AI-driven intelligence platform transforming workplaces with real-time analytics, reducing inefficiencies',
-    logo: null,
+    logo: 'images/logos/anitum.png',
     bullets: [
       'Accelerated issue identification and response by 20–30% across multi-industry client deployments by streamlining operations.',
       'Defined the product, turning live operational data into actionable insights that guided decisions across 4+ client deployments.',
@@ -103,7 +103,7 @@ export const POSITIONS = [
   },
 ];
 
-// Links set to null are hidden. Fill them in when you have them.
+// The Yearbook is from the latest résumé; the rest come from Dev's public repositories and earlier résumés.
 export const PROJECTS = [
   {
     name: 'The Yearbook',
@@ -116,32 +116,110 @@ export const PROJECTS = [
       'Cut manual effort by 90%+ and scaled adoption to 9,000+ quotes through digitized workflows and targeted student outreach.',
     ],
     stack: [],
-    links: [],
+    links: [{ label: 'Snaps', href: 'https://snaps-dun.vercel.app' }],
   },
   {
-    name: 'College Merchandise',
-    kind: 'Campus apparel for large-scale fests',
-    blurb: 'Drove merchandise sales across campus fests such as OASIS, securing 1,200+ orders and generating INR 1.5L+ in revenue.',
-    metric: '1,200+ orders, INR 1.5L+ revenue',
+    name: 'PU Outreach',
+    kind: 'AI outreach tool for the BITS Pilani Placement Unit',
+    blurb: 'Screenshot a LinkedIn profile, get a tracker row and a Gmail draft; a person reviews and sends every email.',
+    metric: '2.25 min to 10 s per company',
     bullets: [
-      'Drove merchandise sales across campus fests such as OASIS, securing 1,200+ orders and generating INR 1.5L+ in revenue.',
-      'Optimized demand planning and inventory allocation using student insights, achieving high sell-through across peak fest cycles.',
-      'Owned the end-to-end supply chain across sourcing, production and distribution, ensuring timely delivery and quality standards.',
+      'Turns a LinkedIn screenshot into a Google Sheets row and a drafted pitch email, with local OCR and a human approving every send.',
+      'Cut per-company outreach time from 2.25 minutes to 10 seconds for the Placement Unit.',
     ],
-    stack: [],
-    links: [],
+    stack: ['Python', 'Google Apps Script', 'Tesseract OCR'],
+    links: [{ label: 'GitHub', href: 'https://github.com/Dev-Satish-02/PU-Outreach' }],
+  },
+  {
+    name: 'NEXUS: AMR Fleet Coordination',
+    kind: 'Smart India Hackathon 2026, problem statement SIH26123',
+    blurb: 'Decentralized coordination for warehouse robots: each robot plans with its neighbours peer-to-peer, with no central traffic controller.',
+    metric: 'Up to 24% faster than zone locking',
+    bullets: [
+      'Every robot runs the same agent and shares its position and intent peer-to-peer, with no central traffic controller.',
+      'Includes a lane-based multi-robot warehouse simulator, a live fleet dashboard, a layout editor and a benchmark harness.',
+      'Finished a 12-robot intersection scenario in 362 s against 476 s for classical zone locking.',
+    ],
+    stack: ['Python'],
+    links: [
+      { label: 'Live demo', href: 'https://amr-smart-warehouse.onrender.com/' },
+      { label: 'GitHub', href: 'https://github.com/Dev-Satish-02/AMR-smart-warehouse' },
+    ],
+  },
+  {
+    name: 'Stadium Evacuation Models',
+    kind: 'Crowd-flow and emergency-evacuation simulation',
+    blurb: 'A Python framework comparing four crowd-flow models on the same stadiums, crowds and scenarios.',
+    metric: '4 models, 40,000+ person crowds',
+    bullets: [
+      'Builds parametric stadiums from YAML: a 41,355-person football bowl, a 40,603-person cricket oval and an indoor arena.',
+      'Generates seeded crowds with mobility classes, walking speeds and pre-movement delays, then runs four models on identical crowds.',
+    ],
+    stack: ['Python'],
+    links: [{ label: 'GitHub', href: 'https://github.com/Dev-Satish-02/stadium-evac' }],
+  },
+  {
+    name: 'BITS Mess Portal',
+    kind: 'Campus product',
+    blurb: 'Menus, ratings and feedback for the BITS Pilani mess, launched to the whole campus.',
+    metric: '2,000+ users in 7 days',
+    stack: ['React', 'REST API'],
+    links: [
+      { label: 'Live', href: 'https://mess-menu-seven.vercel.app' },
+      { label: 'GitHub', href: 'https://github.com/Dev-Satish-02/mess-dev' },
+    ],
+  },
+  {
+    name: 'Readmebot',
+    kind: 'Developer tool on npm',
+    blurb: 'A command-line tool that reads a codebase and writes a polished README.md with AI.',
+    metric: 'Published on npm',
+    stack: ['Node.js', 'OpenAI'],
+    links: [
+      { label: 'npm', href: 'https://www.npmjs.com/package/readmebot' },
+      { label: 'GitHub', href: 'https://github.com/Dev-Satish-02/readmebot' },
+    ],
+  },
+  {
+    name: 'Corrosion Detector',
+    kind: 'Computer vision, built during the Aditya Birla Group internship',
+    blurb: 'A browser app that flags pipe corrosion from live camera feeds, using a model trained on 4,000+ images.',
+    metric: '4,000+ training images',
+    stack: ['TensorFlow.js', 'Python', 'OpenCV'],
+    links: [
+      { label: 'Live', href: 'https://rust-detector.vercel.app' },
+      { label: 'GitHub', href: 'https://github.com/Dev-Satish-02/rust-detector' },
+    ],
+  },
+  {
+    name: 'Nirmaan Pilani website',
+    kind: 'Website for the Nirmaan Organization, Pilani chapter',
+    blurb: 'Digital outreach site for Nirmaan, the student-run NGO Dev led projects for.',
+    metric: 'Live',
+    stack: ['Angular', 'TypeScript', 'Tailwind'],
+    links: [
+      { label: 'Live', href: 'https://nirmaanpilani.org/' },
+      { label: 'GitHub', href: 'https://github.com/Dev-Satish-02/bits-nirmaan' },
+    ],
   },
 ];
 
 // The npm package GitHub's Packages tab shows, with live download counts.
 export const PACKAGES = [{ name: 'readmebot', repo: 'readmebot' }];
 
+// [who, what, logo]
 export const ACHIEVEMENTS = [
-  ['Procter & Gamble', 'Top 47 among 5k+ students across India for the P&G Spotlight Program; offered a summer internship.'],
-  ['Siemens', 'Top 10 at BITS Pilani in the AI for the Real World Hackathon; invited to Siemens Innovation Day 2026, New Delhi.'],
-  ['Student Faculty Council', 'Built a feedback system, drove policy improvements and increased student–faculty engagement by 40%.'],
-  ['Team Robocon', 'Won the 20K Maze-Solving Competition, building drones, a quadruped and IoT systems while leading tech initiatives.'],
-  ['CEL, Bedrock', 'Third in Bedrock, a one-day marketing event, with a 500% increase in sales revenue (Rs. 70,000).'],
+  ['Procter & Gamble', 'Top 47 among 5k+ students across India for the P&G Spotlight Program; offered a summer internship.', 'images/logos/pg.png'],
+  ['Siemens', 'Top 10 at BITS Pilani in the AI for the Real World Hackathon; invited to Siemens Innovation Day 2026, New Delhi.', 'images/logos/siemens.svg'],
+  ['Student Faculty Council', 'Built a feedback system, drove policy improvements and increased student–faculty engagement by 40%.', 'images/logos/bits.png'],
+  ['Team Robocon', 'Won the 20K Maze-Solving Competition, building drones, a quadruped and IoT systems while leading tech initiatives.', 'images/logos/robocon.png'],
+  ['CEL, Bedrock', 'Third in Bedrock, a one-day marketing event, with a 500% increase in sales revenue (Rs. 70,000).', null],
+];
+
+// [name, issuer, logo]
+export const CERTIFICATIONS = [
+  ['Machine Learning Specialization', 'Stanford University, DeepLearning.AI', 'images/logos/stanford.png'],
+  ['AWS DevOps', 'Amazon Web Services', 'images/logos/aws.png'],
 ];
 
 export const EDUCATION = [
