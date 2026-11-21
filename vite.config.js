@@ -6,7 +6,7 @@ import remarkGfm from 'remark-gfm';
 import remarkMdxImages from 'remark-mdx-images';
 
 export default defineConfig({
-  base: '/dev-satish/',
+  base: '/',
   // remark-gfm: tables, strikethrough; remark-mdx-images: `![](./img.png)` next to the post just works
   plugins: [mdx({ remarkPlugins: [remarkGfm, remarkMdxImages] }), react(), tailwindcss()],
   // three.js + three-vrm live in their own lazily-loaded chunk (~210 KB gzipped)
