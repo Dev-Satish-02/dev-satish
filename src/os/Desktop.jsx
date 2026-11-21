@@ -15,6 +15,7 @@ import SettingsApp from './apps/SettingsApp';
 import FinderApp from './apps/FinderApp';
 import SocialApp from './apps/SocialApp';
 import SpotifyApp from './apps/SpotifyApp';
+import PreviewApp, { downloadResume } from './apps/PreviewApp';
 
 const NAMES = {
   finder: 'Finder',
@@ -28,6 +29,7 @@ const NAMES = {
   twitter: 'X',
   weather: 'Weather',
   spotify: 'Spotify',
+  preview: 'Preview',
   aboutmac: 'About This Mac',
   readme: 'TextEdit',
 };
@@ -54,6 +56,7 @@ function initialFrames() {
     twitter: { x: Math.max(20, Math.round(W * 0.3)), y: 70, w: Math.min(860, W - 60), h: Math.min(700, H - 170) },
     weather: { x: Math.round(W * 0.42), y: 64, w: Math.min(820, W - 80), h: Math.min(600, H - 170) },
     spotify: { x: Math.max(20, Math.round(W * 0.24)), y: 56, w: Math.min(1000, W - 60), h: Math.min(720, H - 150) },
+    preview: { x: Math.max(20, Math.round(W / 2 - Math.min(760, W - 80) / 2)), y: 40, w: Math.min(760, W - 80), h: H - 140 },
     aboutmac: { x: Math.round(W / 2 - 170), y: Math.round(H * 0.18), w: 340, h: 470 },
     roomy,
   };
@@ -412,6 +415,7 @@ export default function Desktop({ noteId, openNote, resume }) {
       finder: { open: false, z: 1 },
       weather: { open: false, z: 1 },
       spotify: { open: false, z: 1 },
+      preview: { open: false, z: 1 },
       aboutmac: { open: false, z: 1 },
       terminal: { open: false, z: 1 },
       readme: { open: false, z: 1 },
@@ -448,13 +452,71 @@ export default function Desktop({ noteId, openNote, resume }) {
   };
   // a file from Finder or Terminal opens in the app it belongs to
   const openFile = (it) => {
-    if (it.app) onApp(it.app);
+    if (it.ext === 'pdf') focus('preview');
+    else if (it.app) onApp(it.app);
     else if (it.note) showNote(it.note);
     else if (it.href) window.open(it.href, '_blank', 'noreferrer');
     else if (it.text) {
       setTextFile({ name: it.name, text: it.text });
       focus('readme');
     }
+  };
+
+  // anything on the site can ask for an app, such as Notes' "View résumé" button
+  useEffect(() => {
+    const open = (e) => focus(e.detail);
+    window.addEventListener('open-app', open);
+    return () => window.removeEventListener('open-app', open);
+  });
+
+  // full screen, the way a Mac does it: the focused window fills the display and the menu bar and
+  // dock slide away, coming back while the pointer rests at the top or bottom edge
+  const fullscreen = !!(focused && wins[focused]?.zoomed);
+  const [reveal, setReveal] = useState(null);
+  useEffect(() => {
+    if (!fullscreen) {
+      setReveal(null);
+      return undefined;
+    }
+    const watch = (e) => {
+      const H = window.innerHeight;
+      setReveal((r) => {
+        if (e.clientY <= 3) return 'top';
+        if (e.clientY >= H - 3) return 'bottom';
+        if (r === 'top' && e.clientY > 40 && !e.target.closest?.('.menubar, .menu-list, .status-panel')) return null;
+        if (r === 'bottom' && e.clientY < H - 100) return null;
+        return r;
+      });
+    };
+    window.addEventListener('pointermove', watch);
+    return () => window.removeEventListener('pointermove', watch);
+  }, [fullscreen]);
+
+  // click-and-drag on the desktop draws a selection box; icons inside it are selected
+  const [picked, setPicked] = useState([]);
+  const [box, setBox] = useState(null);
+  const startBox = (e) => {
+    if (e.button !== 0 || e.target !== e.currentTarget) return;
+    setPicked([]);
+    setMenu(null);
+    setPanel(null);
+    const start = { x: e.clientX, y: e.clientY };
+    const drawn = (ev) => {
+      const r = { x: Math.min(start.x, ev.clientX), y: Math.min(start.y, ev.clientY), w: Math.abs(ev.clientX - start.x), h: Math.abs(ev.clientY - start.y) };
+      setBox(r);
+      const hit = [...document.querySelectorAll('.desk-icon')].filter((el) => {
+        const b = el.getBoundingClientRect();
+        return b.left < r.x + r.w && b.right > r.x && b.top < r.y + r.h && b.bottom > r.y;
+      });
+      setPicked(hit.map((el) => el.dataset.id));
+    };
+    const done = () => {
+      setBox(null);
+      window.removeEventListener('pointermove', drawn);
+      window.removeEventListener('pointerup', done);
+    };
+    window.addEventListener('pointermove', drawn);
+    window.addEventListener('pointerup', done);
   };
 
   useEffect(() => {
@@ -488,6 +550,7 @@ export default function Desktop({ noteId, openNote, resume }) {
     messages: <MessagesApp layout="desktop" />,
     claude: <ClaudeApp layout="desktop" />,
     settings: <SettingsApp key={settingsPage} layout="desktop" resume={resume} start={settingsPage} />,
+    preview: <PreviewApp layout="desktop" />,
     terminal: <TerminalApp layout="desktop" openNote={showNote} openApp={onApp} openFile={openFile} resume={resume} />,
     readme: <TextEdit file={textFile} />,
     weather: <WeatherApp />,
@@ -536,19 +599,15 @@ export default function Desktop({ noteId, openNote, resume }) {
       item('Open read-me.txt', () => openFile({ name: 'read-me.txt', text: README })),
       ...(resume
         ? [
-            item('Download Résumé', () => {
-              const a = document.createElement('a');
-              a.href = resume;
-              a.download = 'Dev_Satish_Resume.pdf';
-              a.click();
-            }),
+            item('View Résumé', () => focus('preview')),
+            item('Download Résumé', downloadResume),
           ]
         : []),
       item('Close Window', () => focused && patch(focused, { open: false, zoomed: false })),
     ],
     Edit: [item('Copy Email Address', () => navigator.clipboard?.writeText(PROFILE.email))],
     View: [
-      item('Zoom Window', () => focused && patch(focused, { zoomed: !wins[focused].zoomed })),
+      item(fullscreen ? 'Exit Full Screen' : 'Enter Full Screen', () => focused && patch(focused, { zoomed: !wins[focused].zoomed })),
       item('Show All Windows', () => Object.keys(NAMES).forEach((a) => a !== 'readme' && focus(a))),
     ],
     Window: Object.keys(NAMES).map((a) => item(`${wins[a].open && !wins[a].min ? '✓ ' : ''}${a === 'readme' ? textFile.name : NAMES[a]}`, () => onApp(a))),
@@ -569,7 +628,10 @@ export default function Desktop({ noteId, openNote, resume }) {
   );
 
   return (
-    <div className="desktop">
+    <div
+      className={`desktop${fullscreen ? ' is-fullscreen' : ''}${reveal ? ` show-${reveal}` : ''}`}
+      onPointerDown={startBox}
+    >
       <Wallpaper />
 
       <header className="menubar">
@@ -612,21 +674,27 @@ export default function Desktop({ noteId, openNote, resume }) {
       </header>
 
       <div className="desk-icons">
-        <button
-          type="button"
-          className="desk-icon"
-          onDoubleClick={() => openFile({ name: 'read-me.txt', text: README })}
-          onKeyDown={(e) => e.key === 'Enter' && openFile({ name: 'read-me.txt', text: README })}
-        >
-          <AppIcon id="readme" />
-          <span>read-me.txt</span>
-        </button>
-        {resume && (
-          <a className="desk-icon" href={resume} download="Dev_Satish_Resume.pdf" title="Download résumé">
-            <AppIcon id="resume" />
-            <span>resume.pdf</span>
-          </a>
-        )}
+        {[
+          { id: 'readme', name: 'read-me.txt', open: () => openFile({ name: 'read-me.txt', text: README }) },
+          ...(resume ? [{ id: 'resume', name: 'resume.pdf', open: () => focus('preview') }] : []),
+        ].map((d) => (
+          <button
+            key={d.id}
+            type="button"
+            data-id={d.id}
+            className={`desk-icon${picked.includes(d.id) ? ' is-picked' : ''}`}
+            title="Double-click to open"
+            onPointerDown={(e) => {
+              e.stopPropagation();
+              setPicked([d.id]);
+            }}
+            onDoubleClick={d.open}
+            onKeyDown={(e) => e.key === 'Enter' && d.open()}
+          >
+            <AppIcon id={d.id} />
+            <span>{d.name}</span>
+          </button>
+        ))}
       </div>
 
       {Object.entries(wins).map(([app, w]) =>
@@ -645,12 +713,17 @@ export default function Desktop({ noteId, openNote, resume }) {
             onClose={() => patch(app, { open: false, zoomed: false })}
             onMinimize={() => patch(app, { min: true })}
             onZoom={() => patch(app, { zoomed: !w.zoomed })}
+            onSnap={(zoomed, f) => {
+              if (f) setFrames((x) => ({ ...x, [app]: f }));
+              patch(app, { zoomed });
+            }}
           >
             {apps[app]}
           </Window>
         ) : null
       )}
 
+      {box && <div className="marquee" style={{ left: box.x, top: box.y, width: box.w, height: box.h }} aria-hidden="true" />}
       <Dock wins={wins} onApp={onApp} />
       {confirm && (
         <Confirm

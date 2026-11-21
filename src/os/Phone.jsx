@@ -11,13 +11,14 @@ import SettingsApp from './apps/SettingsApp';
 import SpotifyApp from './apps/SpotifyApp';
 import WeatherApp from './apps/WeatherApp';
 import SocialApp from './apps/SocialApp';
+import PreviewApp from './apps/PreviewApp';
 
 /* On a phone the desk becomes an iPhone home screen: widgets and apps up top, four apps in the
    dock below. Each app opens full screen out of its icon and has its own way back home. */
 
 const base = import.meta.env.BASE_URL;
 const firstPost = NOTES.find((n) => n.group === 'Writing')?.id;
-const NAMES = { notes: 'Notes', messages: 'Messages', claude: 'Claude', settings: 'Settings', spotify: 'Spotify', weather: 'Weather', github: 'GitHub', linkedin: 'LinkedIn', twitter: 'X' };
+const NAMES = { preview: 'Résumé', notes: 'Notes', messages: 'Messages', claude: 'Claude', settings: 'Settings', spotify: 'Spotify', weather: 'Weather', github: 'GitHub', linkedin: 'LinkedIn', twitter: 'X' };
 
 function useTime() {
   const [now, setNow] = useState(() => new Date());
@@ -103,6 +104,17 @@ export default function Phone({ noteId, openNote, resume, startApp }) {
     if (app) sheet.current?.focus();
   }, [app]);
 
+  // Notes' "View résumé" (and anything else) can open an app by name
+  useEffect(() => {
+    const open = (e) => {
+      setOrigin('50% 50%');
+      setLeaving(false);
+      setApp(e.detail);
+    };
+    window.addEventListener('open-app', open);
+    return () => window.removeEventListener('open-app', open);
+  }, []);
+
   const time = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
   const grid = [
@@ -122,7 +134,7 @@ export default function Phone({ noteId, openNote, resume, startApp }) {
     { id: 'mail', label: 'Mail', href: `mailto:${PROFILE.email}` },
     { id: 'messages', label: 'Messages', go: (e) => launch(e, 'messages') },
     resume
-      ? { id: 'cv', label: 'Download résumé', href: resume, download: 'Dev_Satish_Resume.pdf' }
+      ? { id: 'cv', label: 'Résumé', go: (e) => launch(e, 'preview') }
       : { id: 'contacts', label: 'About Dev', go: (e) => launch(e, 'notes', 'about') },
   ];
 
@@ -193,6 +205,7 @@ export default function Phone({ noteId, openNote, resume, startApp }) {
           {app === 'settings' && <SettingsApp layout="phone" onClose={home} resume={resume} />}
           {app === 'spotify' && <SpotifyApp layout="phone" onClose={home} />}
           {app === 'weather' && <WeatherApp layout="phone" onClose={home} />}
+          {app === 'preview' && <PreviewApp layout="phone" onClose={home} />}
           {['github', 'linkedin', 'twitter'].includes(app) && <SocialApp network={app} layout="phone" onClose={home} />}
         </div>
       )}

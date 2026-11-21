@@ -2,6 +2,7 @@ import { MDXProvider } from '@mdx-js/react';
 import MDXComponents from '../components/MDXComponents';
 import { ACHIEVEMENTS, EDUCATION, EXPERIENCE, POSITIONS, PROFILE, PROJECTS, SKILL_GROUPS, SOCIALS } from '../data/content';
 import { formatDate, getAllPosts } from '../lib/blog';
+import { viewResume } from './apps/PreviewApp';
 
 /* Every section of the portfolio is a note. The desktop's Notes window, the phone's Notes app,
    the terminal and the home-screen shortcuts all read this one list. */
@@ -15,12 +16,17 @@ function Go({ to, open, children }) {
 }
 
 // the résumé, as a real download a recruiter can save
-export function ResumeButton({ resume, label = 'Download résumé' }) {
+export function ResumeButton({ resume }) {
   if (!resume) return null;
   return (
-    <a className="note-resume" href={resume} download="Dev_Satish_Resume.pdf">
-      ⬇ {label}
-    </a>
+    <span className="note-resume-row">
+      <button type="button" className="note-resume" onClick={viewResume}>
+        View résumé
+      </button>
+      <a className="note-resume note-resume-ghost" href={resume} download="Dev_Satish_Resume.pdf">
+        ⬇ Download
+      </a>
+    </span>
   );
 }
 
