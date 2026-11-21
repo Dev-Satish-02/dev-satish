@@ -466,8 +466,18 @@ function Twitter() {
   );
 }
 
-export default function SocialApp({ network }) {
-  if (network === 'github') return <GitHub />;
-  if (network === 'linkedin') return <LinkedIn />;
-  return <Twitter />;
+export default function SocialApp({ network, layout, onClose }) {
+  const body = network === 'github' ? <GitHub /> : network === 'linkedin' ? <LinkedIn /> : <Twitter />;
+  if (layout !== 'phone') return body;
+  // on a phone the profile fills the screen, under a back button home
+  return (
+    <div className={`ph-app ph-social ph-${network}`}>
+      <div className="ph-nav">
+        <button type="button" className="ph-back" onClick={onClose}>
+          <span aria-hidden="true">‹</span> Home
+        </button>
+      </div>
+      {body}
+    </div>
+  );
 }
