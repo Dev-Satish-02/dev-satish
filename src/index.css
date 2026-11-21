@@ -244,8 +244,61 @@ picture {
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
 }
 .win.is-zoomed {
-  inset: 28px 0 0 0;
+  inset: 0;
+  border: 0;
   border-radius: 0;
+  box-shadow: none;
+}
+/* full screen: the menu bar and dock step aside, and return at the screen's top or bottom edge */
+.menubar,
+.dock {
+  transition: transform 0.28s var(--ease), opacity 0.28s var(--ease);
+}
+.desktop.is-fullscreen .menubar {
+  transform: translateY(-100%);
+}
+.desktop.is-fullscreen.show-top .menubar {
+  transform: none;
+  z-index: 3000;
+}
+.desktop.is-fullscreen .dock {
+  transform: translate(-50%, calc(100% + 20px));
+}
+.desktop.is-fullscreen.show-bottom .dock {
+  transform: translateX(-50%);
+  z-index: 3000;
+}
+.desktop.is-fullscreen .desk-icons {
+  visibility: hidden;
+}
+/* where a window will land if let go at the top edge */
+.snap-ghost {
+  position: fixed;
+  inset: 4px;
+  z-index: 2500;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  pointer-events: none;
+  animation: fade 0.15s ease;
+}
+/* the desktop's selection box */
+.marquee {
+  position: fixed;
+  z-index: 5;
+  border: 1px solid rgba(170, 200, 255, 0.85);
+  background: rgba(120, 160, 255, 0.18);
+  pointer-events: none;
+}
+.desk-icon.is-picked .app-icon {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 6px;
+  outline: 2px solid rgba(255, 255, 255, 0.22);
+}
+.desk-icon.is-picked span {
+  background: var(--blue);
 }
 @keyframes win-in {
   from {
@@ -285,11 +338,23 @@ picture {
   place-items: center;
   width: 12px;
   height: 12px;
+  padding: 0;
   border-radius: 50%;
-  font-size: 8px;
-  font-weight: 800;
-  line-height: 1;
-  color: transparent;
+  color: rgba(0, 0, 0, 0.62);
+}
+.light svg {
+  display: block;
+  width: 8px;
+  height: 8px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  opacity: 0;
+}
+.light svg .fill {
+  fill: currentColor;
+  stroke: none;
 }
 .light-close {
   background: var(--red);
@@ -303,9 +368,9 @@ picture {
 .win:not(.is-focused) .light {
   background: #4a4a4e;
 }
-.lights:hover .light,
-.light:focus-visible {
-  color: rgba(0, 0, 0, 0.6);
+.lights:hover .light svg,
+.light:focus-visible svg {
+  opacity: 1;
 }
 /* resize grips: thin strips inside the edges, squares at the corners (the window clips anything outside) */
 .grip {
@@ -686,7 +751,13 @@ picture {
 }
 .msg-scroll {
   flex: 1;
+  overflow-x: hidden;
   overflow-y: auto;
+  scrollbar-width: thin;
+}
+.messages-side {
+  min-width: 0;
+  overflow: hidden;
 }
 .pins {
   display: grid;
@@ -3889,4 +3960,120 @@ button.status-row:hover {
     animation: none !important;
     transition: none !important;
   }
+}
+
+/* Preview: the résumé, page by page */
+.pv {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: #2b2b2d;
+}
+.pv-bar {
+  flex: none;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px 0 90px;
+  background: #323234;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+  font-size: 13px;
+}
+.win.is-zoomed .pv-bar,
+.ph-preview .pv-bar {
+  padding-left: 90px;
+}
+.pv-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pv-name em {
+  margin-left: 8px;
+  font-style: normal;
+  font-weight: 400;
+  color: var(--muted);
+}
+.pv-zoom {
+  display: flex;
+  margin-left: auto;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.08);
+}
+.pv-zoom button {
+  min-width: 30px;
+  padding: 3px 8px;
+  font-size: 13px;
+  color: #ddd;
+}
+.pv-zoom button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 7px;
+}
+.pv-download {
+  padding: 5px 12px;
+  border-radius: 7px;
+  background: var(--blue);
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.ph-preview .pv-download {
+  margin-left: auto;
+}
+.pv-pages {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 22px 24px 40px;
+  user-select: text;
+}
+.pv-page {
+  flex: none;
+  background: #fff;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+}
+.pv-note {
+  margin: auto;
+  color: var(--muted);
+}
+.pv-note a {
+  color: var(--blue);
+}
+.ph-preview {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;
+  overflow: hidden;
+}
+.ph-preview .pv-bar {
+  padding: 0 12px 0 4px;
+  height: 48px;
+}
+.ph-preview .pv-pages {
+  padding: 12px 8px 40px;
+}
+.ph-preview .ph-back {
+  color: var(--blue);
+}
+.note-resume-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 14px;
+}
+.note-resume-row .note-resume {
+  margin: 0;
+}
+.note-resume-ghost {
+  background: transparent !important;
+  color: var(--notes) !important;
+  box-shadow: inset 0 0 0 1.5px var(--notes);
 }

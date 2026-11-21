@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { marked } from 'marked';
 import { ACHIEVEMENTS, AVATAR, CERTIFICATIONS, EDUCATION, EXPERIENCE, GITHUB, LINKEDIN, PACKAGES, POSITIONS, PROFILE, PROJECTS, SKILL_GROUPS, SOCIALS, X_PROFILE } from '../../data/content';
 import { AppIcon } from '../icons';
+import { viewResume } from './PreviewApp';
 
 /* Dev's profiles, opened as windows on the desk. GitHub is live (its public API allows it); the
    others show what's on the profile and link through, since those sites can't be embedded. */
@@ -281,8 +282,11 @@ function Projects() {
           </li>
         ))}
       </ul>
+      <button type="button" className="gh-follow gh-inline" onClick={viewResume}>
+        View résumé
+      </button>{' '}
       <a className="gh-follow gh-inline" href={resume} download="Dev_Satish_Resume.pdf">
-        ⬇ Download résumé
+        ⬇ Download
       </a>
     </>
   );
