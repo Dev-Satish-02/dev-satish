@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { marked } from 'marked';
-import { ACHIEVEMENTS, AVATAR, EDUCATION, EXPERIENCE, GITHUB, LINKEDIN, PACKAGES, POSITIONS, PROFILE, PROJECTS, SKILL_GROUPS, SOCIALS, X_PROFILE } from '../../data/content';
+import { ACHIEVEMENTS, AVATAR, CERTIFICATIONS, EDUCATION, EXPERIENCE, GITHUB, LINKEDIN, PACKAGES, POSITIONS, PROFILE, PROJECTS, SKILL_GROUPS, SOCIALS, X_PROFILE } from '../../data/content';
 import { AppIcon } from '../icons';
 
 /* Dev's profiles, opened as windows on the desk. GitHub is live (its public API allows it); the
@@ -254,7 +254,7 @@ function Projects() {
   const resume = `${import.meta.env.BASE_URL}${PROFILE.resume}`;
   return (
     <>
-      <p className="social-muted gh-tab-lede">From Dev&apos;s latest résumé.</p>
+      <p className="social-muted gh-tab-lede">From Dev&apos;s résumé and his public repositories.</p>
       <ul className="gh-projects">
         {PROJECTS.map((p) => (
           <li key={p.name} className="gh-box">
@@ -268,6 +268,16 @@ function Projects() {
                 <li key={b}>{b}</li>
               ))}
             </ul>
+            {(p.stack.length > 0 || p.links.length > 0) && (
+              <p className="gh-meta gh-project-meta">
+                {p.stack.length > 0 && <span>{p.stack.join(' · ')}</span>}
+                {p.links.map((l) => (
+                  <a key={l.href} href={l.href} target="_blank" rel="noreferrer">
+                    {l.label} ↗
+                  </a>
+                ))}
+              </p>
+            )}
           </li>
         ))}
       </ul>
@@ -374,6 +384,10 @@ function GitHub() {
           )}
           <ul className="gh-links">
             <li>
+              ✉{' '}
+              <a href={`mailto:${PROFILE.email}`}>{PROFILE.email}</a>
+            </li>
+            <li>
               🔗{' '}
               <a href={GITHUB.website} target="_blank" rel="noreferrer">
                 {GITHUB.website.replace(/^https:\/\//, '')}
@@ -447,15 +461,13 @@ function Logo({ src, name }) {
   return src ? (
     <img className="li-logo li-logo-img" src={`${import.meta.env.BASE_URL}${src}`} alt="" loading="lazy" />
   ) : (
-    <span className="li-logo" aria-hidden="true">
-      {name[0]}
+    <span className={`li-logo${name.length <= 4 ? ' li-logo-word' : ''}`} aria-hidden="true">
+      {name.length <= 4 ? name : name[0]}
     </span>
   );
 }
 
-const certs = SKILL_GROUPS.find((g) => g.title === 'Certifications')?.items || [];
 const skills = SKILL_GROUPS.filter((g) => g.title !== 'Certifications').flatMap((g) => g.items);
-const issuer = (c) => (c.match(/\(([^)]+)\)/) || [])[1] || (c.startsWith('AWS') ? 'Amazon Web Services' : '');
 
 function LinkedIn() {
   const base = import.meta.env.BASE_URL;
@@ -521,14 +533,35 @@ function LinkedIn() {
 
         <section className="li-card li-list">
           <h3>Experience</h3>
-          {[...EXPERIENCE, ...POSITIONS].map((e) => (
+          {EXPERIENCE.map((e) => (
+            <div key={e.company} className="li-item">
+              <Logo src={e.logo} name={e.company} />
+              <div>
+                <strong>{e.role}</strong>
+                <p>
+                  {e.company} · Internship
+                </p>
+                <p className="social-muted">{e.date}</p>
+                {e.about && <p className="li-about">{e.about}</p>}
+                <ul>
+                  {e.bullets.map((b) => (
+                    <li key={b}>{b}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
+        </section>
+
+        <section className="li-card li-list">
+          <h3>Positions of responsibility</h3>
+          {POSITIONS.map((e) => (
             <div key={e.company} className="li-item">
               <Logo src={e.logo} name={e.company} />
               <div>
                 <strong>{e.role}</strong>
                 <p>
                   {e.company}
-                  {EXPERIENCE.includes(e) ? ' · Internship' : ''}
                 </p>
                 <p className="social-muted">{e.date}</p>
                 {e.about && <p className="li-about">{e.about}</p>}
@@ -556,30 +589,24 @@ function LinkedIn() {
           ))}
         </section>
 
-        {certs.length > 0 && (
-          <section className="li-card li-list">
-            <h3>Licenses &amp; certifications</h3>
-            {certs.map((c) => (
-              <div key={c} className="li-item">
-                <span className="li-logo" aria-hidden="true">
-                  {c[0]}
-                </span>
-                <div>
-                  <strong>{c.replace(/\s*\([^)]*\)/, '')}</strong>
-                  {issuer(c) && <p>{issuer(c)}</p>}
-                </div>
+        <section className="li-card li-list">
+          <h3>Licenses &amp; certifications</h3>
+          {CERTIFICATIONS.map(([name, by, logo]) => (
+            <div key={name} className="li-item">
+              <Logo src={logo} name={name} />
+              <div>
+                <strong>{name}</strong>
+                <p>{by}</p>
               </div>
-            ))}
-          </section>
-        )}
+            </div>
+          ))}
+        </section>
 
         <section className="li-card li-list">
           <h3>Honors &amp; awards</h3>
-          {ACHIEVEMENTS.map(([who, what]) => (
+          {ACHIEVEMENTS.map(([who, what, logo]) => (
             <div key={who} className="li-item">
-              <span className="li-logo" aria-hidden="true">
-                🏆
-              </span>
+              <Logo src={logo} name={who.startsWith('CEL') ? 'CEL' : who} />
               <div>
                 <strong>{who}</strong>
                 <p>{what}</p>
