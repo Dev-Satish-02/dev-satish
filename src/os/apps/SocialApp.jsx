@@ -526,7 +526,8 @@ function LinkedIn() {
           <h3>About</h3>
           <p>
             {PROFILE.summary} Most recently an AI Engineering Intern at Callistra AI, building a research workspace for
-            financial analysts; before that, operations at Aditya Birla Group and the founder&apos;s office at Anitum. On
+            financial analysts; before that, Python trading systems at Sysstra, operations at Aditya Birla Group and the
+            founder&apos;s office at Anitum. On
             campus I coordinate placements for 700+ students and lead alumni outreach.
           </p>
         </section>

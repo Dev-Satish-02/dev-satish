@@ -16,7 +16,7 @@ const ANSWERS = [
   {
     keys: ['hire', 'why', 'good', 'fit', 'strength', 'best'],
     text: () =>
-      `Three reasons. He ships: an AI research workspace at Callistra AI that processes 10,000+ documents and cut analysis time by 40%, and the Yearbook Portal, which reached 80% of his batch and brought in INR 7L+. He has range: AI engineering, plant operations at Aditya Birla Group and a founder's office role at Anitum. And he leads: he coordinates placements for 700+ students and was top 47 of 5k+ in P&G's Spotlight Program.`,
+      `Three reasons. He ships: an AI research workspace at Callistra AI that processes 10,000+ documents and cut analysis time by 40%, and the Yearbook Portal, which reached 80% of his batch and brought in INR 7L+. He has range: AI engineering, Python trading systems at Sysstra, plant operations at Aditya Birla Group and a founder's office role at Anitum. And he leads: he coordinates placements for 700+ students and was top 47 of 5k+ in P&G's Spotlight Program.`,
 
   },
   {
