@@ -469,28 +469,7 @@ export default function Desktop({ noteId, openNote, resume }) {
     return () => window.removeEventListener('open-app', open);
   });
 
-  // full screen, the way a Mac does it: the focused window fills the display and the menu bar and
-  // dock slide away, coming back while the pointer rests at the top or bottom edge
   const fullscreen = !!(focused && wins[focused]?.zoomed);
-  const [reveal, setReveal] = useState(null);
-  useEffect(() => {
-    if (!fullscreen) {
-      setReveal(null);
-      return undefined;
-    }
-    const watch = (e) => {
-      const H = window.innerHeight;
-      setReveal((r) => {
-        if (e.clientY <= 3) return 'top';
-        if (e.clientY >= H - 3) return 'bottom';
-        if (r === 'top' && e.clientY > 40 && !e.target.closest?.('.menubar, .menu-list, .status-panel')) return null;
-        if (r === 'bottom' && e.clientY < H - 100) return null;
-        return r;
-      });
-    };
-    window.addEventListener('pointermove', watch);
-    return () => window.removeEventListener('pointermove', watch);
-  }, [fullscreen]);
 
   // click-and-drag on the desktop draws a selection box; icons inside it are selected
   const [picked, setPicked] = useState([]);
@@ -607,7 +586,7 @@ export default function Desktop({ noteId, openNote, resume }) {
     ],
     Edit: [item('Copy Email Address', () => navigator.clipboard?.writeText(PROFILE.email))],
     View: [
-      item(fullscreen ? 'Exit Full Screen' : 'Enter Full Screen', () => focused && patch(focused, { zoomed: !wins[focused].zoomed })),
+      item(fullscreen ? 'Restore Window' : 'Maximise Window', () => focused && patch(focused, { zoomed: !wins[focused].zoomed })),
       item('Show All Windows', () => Object.keys(NAMES).forEach((a) => a !== 'readme' && focus(a))),
     ],
     Window: Object.keys(NAMES).map((a) => item(`${wins[a].open && !wins[a].min ? '✓ ' : ''}${a === 'readme' ? textFile.name : NAMES[a]}`, () => onApp(a))),
@@ -629,7 +608,7 @@ export default function Desktop({ noteId, openNote, resume }) {
 
   return (
     <div
-      className={`desktop${fullscreen ? ' is-fullscreen' : ''}${reveal ? ` show-${reveal}` : ''}`}
+      className="desktop"
       onPointerDown={startBox}
     >
       <Wallpaper />
