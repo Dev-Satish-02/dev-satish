@@ -244,37 +244,15 @@ picture {
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
 }
 .win.is-zoomed {
-  inset: 0;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-}
-/* full screen: the menu bar and dock step aside, and return at the screen's top or bottom edge */
-.menubar,
-.dock {
-  transition: transform 0.28s var(--ease), opacity 0.28s var(--ease);
-}
-.desktop.is-fullscreen .menubar {
-  transform: translateY(-100%);
-}
-.desktop.is-fullscreen.show-top .menubar {
-  transform: none;
-  z-index: 3000;
-}
-.desktop.is-fullscreen .dock {
-  transform: translate(-50%, calc(100% + 20px));
-}
-.desktop.is-fullscreen.show-bottom .dock {
-  transform: translateX(-50%);
-  z-index: 3000;
-}
-.desktop.is-fullscreen .desk-icons {
-  visibility: hidden;
+  /* a maximised window fills the space between the menu bar and the dock, which stay visible */
+  inset: 28px 0 86px 0;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 /* where a window will land if let go at the top edge */
 .snap-ghost {
   position: fixed;
-  inset: 4px;
+  inset: 30px 2px 88px;
   z-index: 2500;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.14);

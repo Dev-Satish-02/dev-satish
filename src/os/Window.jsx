@@ -107,7 +107,7 @@ export default function Window({ app, title, caption, frame, z, focused, zoomed,
             {[
               ['close', onClose, `Close ${title}`],
               ['min', onMinimize, `Minimise ${title}`],
-              ['zoom', onZoom, zoomed ? `Exit full screen` : `Enter full screen`],
+              ['zoom', onZoom, zoomed ? `Restore ${title}` : `Maximise ${title}`],
             ].map(([kind, run, label]) => (
               <button key={kind} type="button" className={`light light-${kind}`} aria-label={label} onClick={run}>
                 <svg viewBox="0 0 8 8" aria-hidden="true">
