@@ -10,13 +10,14 @@ import ClaudeApp from './apps/ClaudeApp';
 import SettingsApp from './apps/SettingsApp';
 import SpotifyApp from './apps/SpotifyApp';
 import WeatherApp from './apps/WeatherApp';
+import SocialApp from './apps/SocialApp';
 
 /* On a phone the desk becomes an iPhone home screen: widgets and apps up top, four apps in the
    dock below. Each app opens full screen out of its icon and has its own way back home. */
 
 const base = import.meta.env.BASE_URL;
 const firstPost = NOTES.find((n) => n.group === 'Writing')?.id;
-const NAMES = { notes: 'Notes', messages: 'Messages', claude: 'Claude', settings: 'Settings', spotify: 'Spotify', weather: 'Weather' };
+const NAMES = { notes: 'Notes', messages: 'Messages', claude: 'Claude', settings: 'Settings', spotify: 'Spotify', weather: 'Weather', github: 'GitHub', linkedin: 'LinkedIn', twitter: 'X' };
 
 function useTime() {
   const [now, setNow] = useState(() => new Date());
@@ -113,7 +114,7 @@ export default function Phone({ noteId, openNote, resume, startApp }) {
     { id: 'projects', label: 'Projects', go: (e) => launch(e, 'notes', 'projects') },
     { id: 'skills', label: 'Skills and education', go: (e) => launch(e, 'notes', 'skills') },
     { id: 'writing', label: 'Writing', go: (e) => launch(e, 'notes', firstPost) },
-    ...SOCIALS.map((s) => ({ id: s.label.toLowerCase(), label: s.label === 'Twitter' ? 'X' : s.label, href: s.href, external: true })),
+    ...SOCIALS.map((s) => ({ id: s.label.toLowerCase(), label: s.label === 'Twitter' ? 'X' : s.label, go: (e) => launch(e, s.label.toLowerCase()) })),
     { id: 'settings', label: 'Settings', go: (e) => launch(e, 'settings') },
     ...(resume ? [{ id: 'resume', label: 'Résumé', href: resume, external: true }] : []),
   ];
@@ -184,6 +185,7 @@ export default function Phone({ noteId, openNote, resume, startApp }) {
           {app === 'settings' && <SettingsApp layout="phone" onClose={home} resume={resume} />}
           {app === 'spotify' && <SpotifyApp layout="phone" onClose={home} />}
           {app === 'weather' && <WeatherApp layout="phone" onClose={home} />}
+          {['github', 'linkedin', 'twitter'].includes(app) && <SocialApp network={app} layout="phone" onClose={home} />}
         </div>
       )}
     </div>

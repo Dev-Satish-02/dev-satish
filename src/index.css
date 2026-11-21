@@ -3096,6 +3096,48 @@ button.status-row:hover {
   -webkit-backdrop-filter: blur(28px) saturate(1.6);
 }
 
+/* profiles on a phone */
+.ph-social {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;
+  overflow: hidden;
+  container-type: inline-size;
+}
+.ph-social .social {
+  flex: 1;
+  min-height: 0;
+}
+.ph-social .li-top,
+.ph-social .x-rail {
+  display: none;
+}
+.ph-social .gh-tabs {
+  padding-top: 4px;
+}
+.ph-social .social-linkedin .social-scroll {
+  padding: 10px 10px 24px;
+}
+.ph-social .social-github .gh-page {
+  padding: 16px 16px 30px;
+}
+.ph-social .x-top {
+  padding-left: 16px;
+}
+.ph-social .li-intro {
+  flex-direction: column;
+}
+.ph-github .ph-nav,
+.ph-twitter .ph-nav,
+.ph-linkedin .ph-nav {
+  background: rgba(0, 0, 0, 0.85);
+}
+.ph-github .ph-back,
+.ph-twitter .ph-back,
+.ph-linkedin .ph-back {
+  color: #fff;
+}
+
 /* Spotify */
 .sp {
   flex: 1;

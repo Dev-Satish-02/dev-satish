@@ -57,10 +57,10 @@ export default function OS() {
   // the desk always has a note open; the phone starts on its home screen
   const deskNote = noteId || 'about';
 
+  // the tab is always just the name
   useEffect(() => {
-    const note = NOTES.find((n) => n.id === (phone ? noteId : deskNote));
-    document.title = note && note.id !== 'about' ? `${note.title} · ${PROFILE.name}` : `${PROFILE.name} · Portfolio`;
-  }, [noteId, deskNote, phone]);
+    document.title = PROFILE.name;
+  }, []);
 
   return phone ? (
     <Phone noteId={noteId} openNote={openNote} resume={resume} startApp={linked ? 'notes' : null} />
