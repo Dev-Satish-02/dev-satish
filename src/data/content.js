@@ -274,7 +274,7 @@ export const X_PROFILE = {
 // GitHub: pinned repositories, in the order the profile shows them, and a few profile extras.
 export const GITHUB = {
   pinned: ['bits-nirmaan', 'mess-dev', 'snaps', 'meshery', 'meshery.io', 'readmebot'],
-  website: 'https://dev-satish-02.github.io/dev-satish/',
+  website: 'https://dev-satish-02.github.io/',
   achievements: [
     ['Pair Extraordinaire', '🫛', '#7fc96b'],
     ['Quickdraw', '🤠', '#f2a65a'],
